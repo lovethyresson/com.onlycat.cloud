@@ -1,0 +1,6 @@
+{
+  "0.1.0": {
+    "en": "First release. Adds your OnlyCat flap to Homey: who came in, who went out, who was turned away and why. Every Flow card carries the snapshot, so a prey alert can show you the picture.",
+    "sv": "Första versionen. Lägger till din OnlyCat-lucka i Homey: vem som kom in, vem som gick ut, vem som nekades och varför. Varje flödeskort har med stillbilden, så en bytesvarning kan visa bilden."
+  }
+}

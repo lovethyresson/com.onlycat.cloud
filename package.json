@@ -1,0 +1,27 @@
+{
+  "name": "com.onlycat.cloud",
+  "version": "0.1.0",
+  "main": "app.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint --ext .js,.ts --ignore-path .gitignore .",
+    "test": "node --import tsx --test test/*.test.ts",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.test.json"
+  },
+  "devDependencies": {
+    "@tsconfig/node18": "^18.2.4",
+    "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.4",
+    "@types/node": "^18.19.0",
+    "eslint": "^7.32.0",
+    "eslint-config-athom": "^3.1.1",
+    "socket.io": "^4.8.1",
+    "tsx": "^4.23.1",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "socket.io-client": "^4.8.1"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

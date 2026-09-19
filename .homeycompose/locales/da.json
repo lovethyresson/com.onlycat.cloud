@@ -1,0 +1,33 @@
+{
+  "event": {
+    "transit": { "inward": "{{name}} kom ind", "outward": "{{name}} gik ud" },
+    "breach": { "inward": "{{name}} pressede sig ind gennem lemmen", "outward": "{{name}} pressede sig ud gennem lemmen" },
+    "peek": { "inward": "{{name}} kiggede ind, men blev ude", "outward": "{{name}} kiggede ud, men blev inde" },
+    "deny": { "inward": "{{name}} blev afvist på vej ind", "outward": "{{name}} blev afvist på vej ud" },
+    "unknown_cat": "En ukendt kat",
+    "a_cat": "En kat"
+  },
+  "reason": {
+    "prey": "Afvist — bar på noget",
+    "prey_named": "{{name}} blev afvist — hun bar på noget",
+    "human": "Afvist — lemmen så et menneske, ikke en kat",
+    "curfew": "Afvist — udgangsforbuddet låser lemmen mellem {{range}}",
+    "curfew_named": "{{name}} blev afvist — udgangsforbuddet låser lemmen mellem {{range}}",
+    "not_allowed": "Afvist — må ikke passere lige nu",
+    "not_allowed_named": "{{name}} blev afvist — hun må ikke passere lige nu",
+    "idle": "Afvist — lemmen er låst, når ingen regel gælder",
+    "idle_named": "{{name}} blev afvist — lemmen er låst, når ingen regel gælder",
+    "rule": "Afvist af en regel i dørreglen",
+    "rule_named": "{{name}} blev afvist af en regel i dørreglen",
+    "unknown": "Afvist — lemmens regler bruger dens egne sensorer, så appen kan ikke sige hvilken der afviste",
+    "unknown_named": "{{name}} blev afvist — lemmens regler bruger dens egne sensorer, så appen kan ikke sige hvilken der afviste hende"
+  },
+  "policy": { "unnamed": "Regel {{id}}", "unknown": "Ukendt" },
+  "flow": { "any_cat": "Enhver kat" },
+  "error": {
+    "no_connection": "Ikke forbundet til OnlyCat",
+    "unauthorized": "OnlyCat-API-nøglen blev afvist. Åbn Reparer, og indsæt en ny.",
+    "unknown_policy": "Den dørregel findes ikke længere på lemmen",
+    "unknown_cat": "Den kat følges ikke på denne lem"
+  }
+}

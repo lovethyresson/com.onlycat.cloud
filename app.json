@@ -1,0 +1,1770 @@
+{
+  "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
+  "id": "com.onlycat.cloud",
+  "version": "0.1.0",
+  "compatibility": ">=12.2.0",
+  "sdk": 3,
+  "platforms": [
+    "local"
+  ],
+  "name": {
+    "en": "OnlyCat"
+  },
+  "description": {
+    "en": "Your cat flap in Homey — who came in, who was turned away, and why",
+    "sv": "Kattluckan i Homey — vem kom in, vem nekades och varför",
+    "de": "Deine Katzenklappe in Homey — wer hereinkam, wer abgewiesen wurde und warum",
+    "nl": "Je kattenluik in Homey — wie er binnenkwam, wie werd geweigerd en waarom",
+    "no": "Katteluken i Homey — hvem kom inn, hvem ble avvist og hvorfor",
+    "da": "Din kattelem i Homey — hvem kom ind, hvem blev afvist og hvorfor"
+  },
+  "category": [
+    "security"
+  ],
+  "brandColor": "#0084FF",
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "author": {
+    "name": "Love Thyresson",
+    "email": "love@thyresson.se"
+  },
+  "contributing": {
+    "donate": {
+      "paypal": {
+        "username": "lovethyresson"
+      }
+    }
+  },
+  "homepage": "https://github.com/lovethyresson/com.onlycat.cloud",
+  "source": "https://github.com/lovethyresson/com.onlycat.cloud",
+  "bugs": {
+    "url": "https://github.com/lovethyresson/com.onlycat.cloud/issues"
+  },
+  "license": "MIT",
+  "flow": {
+    "triggers": [
+      {
+        "id": "cat_came_in",
+        "title": {
+          "en": "A cat came in",
+          "sv": "En katt kom in",
+          "de": "Eine Katze kam herein",
+          "nl": "Een kat kwam binnen",
+          "no": "En katt kom inn",
+          "da": "En kat kom ind"
+        },
+        "titleFormatted": {
+          "en": "[[cat]] came in",
+          "sv": "[[cat]] kom in",
+          "de": "[[cat]] kam herein",
+          "nl": "[[cat]] kwam binnen",
+          "no": "[[cat]] kom inn",
+          "da": "[[cat]] kom ind"
+        },
+        "hint": {
+          "en": "Fires when a cat comes through the flap into the house.",
+          "sv": "Utlöses när en katt kommer in genom luckan.",
+          "de": "Wird ausgelöst, wenn eine Katze durch die Klappe hereinkommt.",
+          "nl": "Wordt geactiveerd wanneer een kat door het luik naar binnen komt.",
+          "no": "Utløses når en katt kommer inn gjennom luken.",
+          "da": "Udløses, når en kat kommer ind gennem lemmen."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=cat_flap"
+          },
+          {
+            "name": "cat",
+            "type": "autocomplete",
+            "title": {
+              "en": "Cat",
+              "sv": "Katt",
+              "de": "Katze",
+              "nl": "Kat",
+              "no": "Katt",
+              "da": "Kat"
+            },
+            "placeholder": {
+              "en": "Any cat",
+              "sv": "Vilken katt som helst",
+              "de": "Jede Katze",
+              "nl": "Elke kat",
+              "no": "Hvilken som helst katt",
+              "da": "Enhver kat"
+            }
+          }
+        ],
+        "tokens": [
+          {
+            "name": "cat",
+            "type": "string",
+            "title": {
+              "en": "Cat",
+              "sv": "Katt",
+              "de": "Katze",
+              "nl": "Kat",
+              "no": "Katt",
+              "da": "Kat"
+            },
+            "example": {
+              "en": "Misan",
+              "sv": "Misan",
+              "de": "Misan",
+              "nl": "Misan",
+              "no": "Misan",
+              "da": "Misan"
+            }
+          },
+          {
+            "name": "rfid",
+            "type": "string",
+            "title": {
+              "en": "Chip code",
+              "sv": "Chipnummer",
+              "de": "Chipnummer",
+              "nl": "Chipnummer",
+              "no": "Chipnummer",
+              "da": "Chipnummer"
+            },
+            "example": {
+              "en": "956000015949802",
+              "sv": "956000015949802",
+              "de": "956000015949802",
+              "nl": "956000015949802",
+              "no": "956000015949802",
+              "da": "956000015949802"
+            }
+          },
+          {
+            "name": "classification",
+            "type": "string",
+            "title": {
+              "en": "Classification",
+              "sv": "Klassificering",
+              "de": "Klassifizierung",
+              "nl": "Classificatie",
+              "no": "Klassifisering",
+              "da": "Klassificering"
+            },
+            "example": {
+              "en": "clear",
+              "sv": "ren",
+              "de": "sauber",
+              "nl": "schoon",
+              "no": "ren",
+              "da": "ren"
+            }
+          },
+          {
+            "name": "image",
+            "type": "image",
+            "title": {
+              "en": "Snapshot",
+              "sv": "Stillbild",
+              "de": "Standbild",
+              "nl": "Momentopname",
+              "no": "Stillbilde",
+              "da": "Stillbillede"
+            }
+          }
+        ]
+      },
+      {
+        "id": "cat_went_out",
+        "title": {
+          "en": "A cat went out",
+          "sv": "En katt gick ut",
+          "de": "Eine Katze ging hinaus",
+          "nl": "Een kat ging naar buiten",
+          "no": "En katt gikk ut",
+          "da": "En kat gik ud"
+        },
+        "titleFormatted": {
+          "en": "[[cat]] went out",
+          "sv": "[[cat]] gick ut",
+          "de": "[[cat]] ging hinaus",
+          "nl": "[[cat]] ging naar buiten",
+          "no": "[[cat]] gikk ut",
+          "da": "[[cat]] gik ud"
+        },
+        "hint": {
+          "en": "Fires when a cat goes out through the flap.",
+          "sv": "Utlöses när en katt går ut genom luckan.",
+          "de": "Wird ausgelöst, wenn eine Katze durch die Klappe hinausgeht.",
+          "nl": "Wordt geactiveerd wanneer een kat door het luik naar buiten gaat.",
+          "no": "Utløses når en katt går ut gjennom luken.",
+          "da": "Udløses, når en kat går ud gennem lemmen."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=cat_flap"
+          },
+          {
+            "name": "cat",
+            "type": "autocomplete",
+            "title": {
+              "en": "Cat",
+              "sv": "Katt",
+              "de": "Katze",
+              "nl": "Kat",
+              "no": "Katt",
+              "da": "Kat"
+            },
+            "placeholder": {
+              "en": "Any cat",
+              "sv": "Vilken katt som helst",
+              "de": "Jede Katze",
+              "nl": "Elke kat",
+              "no": "Hvilken som helst katt",
+              "da": "Enhver kat"
+            }
+          }
+        ],
+        "tokens": [
+          {
+            "name": "cat",
+            "type": "string",
+            "title": {
+              "en": "Cat",
+              "sv": "Katt",
+              "de": "Katze",
+              "nl": "Kat",
+              "no": "Katt",
+              "da": "Kat"
+            },
+            "example": {
+              "en": "Misan",
+              "sv": "Misan",
+              "de": "Misan",
+              "nl": "Misan",
+              "no": "Misan",
+              "da": "Misan"
+            }
+          },
+          {
+            "name": "rfid",
+            "type": "string",
+            "title": {
+              "en": "Chip code",
+              "sv": "Chipnummer",
+              "de": "Chipnummer",
+              "nl": "Chipnummer",
+              "no": "Chipnummer",
+              "da": "Chipnummer"
+            },
+            "example": {
+              "en": "956000015949802",
+              "sv": "956000015949802",
+              "de": "956000015949802",
+              "nl": "956000015949802",
+              "no": "956000015949802",
+              "da": "956000015949802"
+            }
+          },
+          {
+            "name": "classification",
+            "type": "string",
+            "title": {
+              "en": "Classification",
+              "sv": "Klassificering",
+              "de": "Klassifizierung",
+              "nl": "Classificatie",
+              "no": "Klassifisering",
+              "da": "Klassificering"
+            },
+            "example": {
+              "en": "clear",
+              "sv": "ren",
+              "de": "sauber",
+              "nl": "schoon",
+              "no": "ren",
+              "da": "ren"
+            }
+          },
+          {
+            "name": "image",
+            "type": "image",
+            "title": {
+              "en": "Snapshot",
+              "sv": "Stillbild",
+              "de": "Standbild",
+              "nl": "Momentopname",
+              "no": "Stillbilde",
+              "da": "Stillbillede"
+            }
+          }
+        ]
+      },
+      {
+        "id": "cat_denied",
+        "title": {
+          "en": "A cat was turned away",
+          "sv": "En katt nekades",
+          "de": "Eine Katze wurde abgewiesen",
+          "nl": "Een kat werd geweigerd",
+          "no": "En katt ble avvist",
+          "da": "En kat blev afvist"
+        },
+        "titleFormatted": {
+          "en": "[[cat]] was turned away",
+          "sv": "[[cat]] nekades",
+          "de": "[[cat]] wurde abgewiesen",
+          "nl": "[[cat]] werd geweigerd",
+          "no": "[[cat]] ble avvist",
+          "da": "[[cat]] blev afvist"
+        },
+        "hint": {
+          "en": "Fires when the flap refused to open. The reason tag says why, when the app can tell.",
+          "sv": "Utlöses när luckan vägrade öppna. Taggen Anledning säger varför, när appen kan avgöra det.",
+          "de": "Wird ausgelöst, wenn die Klappe nicht geöffnet hat. Das Tag Grund sagt warum, sofern die App es feststellen kann.",
+          "nl": "Wordt geactiveerd wanneer het luik niet openging. De tag Reden zegt waarom, als de app dat kan bepalen.",
+          "no": "Utløses når luken nektet å åpne. Taggen Årsak sier hvorfor, når appen kan avgjøre det.",
+          "da": "Udløses, når lemmen nægtede at åbne. Tagget Årsag siger hvorfor, når appen kan afgøre det."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=cat_flap"
+          },
+          {
+            "name": "cat",
+            "type": "autocomplete",
+            "title": {
+              "en": "Cat",
+              "sv": "Katt",
+              "de": "Katze",
+              "nl": "Kat",
+              "no": "Katt",
+              "da": "Kat"
+            },
+            "placeholder": {
+              "en": "Any cat",
+              "sv": "Vilken katt som helst",
+              "de": "Jede Katze",
+              "nl": "Elke kat",
+              "no": "Hvilken som helst katt",
+              "da": "Enhver kat"
+            }
+          }
+        ],
+        "tokens": [
+          {
+            "name": "cat",
+            "type": "string",
+            "title": {
+              "en": "Cat",
+              "sv": "Katt",
+              "de": "Katze",
+              "nl": "Kat",
+              "no": "Katt",
+              "da": "Kat"
+            },
+            "example": {
+              "en": "Misan",
+              "sv": "Misan",
+              "de": "Misan",
+              "nl": "Misan",
+              "no": "Misan",
+              "da": "Misan"
+            }
+          },
+          {
+            "name": "rfid",
+            "type": "string",
+            "title": {
+              "en": "Chip code",
+              "sv": "Chipnummer",
+              "de": "Chipnummer",
+              "nl": "Chipnummer",
+              "no": "Chipnummer",
+              "da": "Chipnummer"
+            },
+            "example": {
+              "en": "956000015949802",
+              "sv": "956000015949802",
+              "de": "956000015949802",
+              "nl": "956000015949802",
+              "no": "956000015949802",
+              "da": "956000015949802"
+            }
+          },
+          {
+            "name": "direction",
+            "type": "string",
+            "title": {
+              "en": "Direction",
+              "sv": "Riktning",
+              "de": "Richtung",
+              "nl": "Richting",
+              "no": "Retning",
+              "da": "Retning"
+            },
+            "example": {
+              "en": "in",
+              "sv": "in",
+              "de": "herein",
+              "nl": "binnen",
+              "no": "inn",
+              "da": "ind"
+            }
+          },
+          {
+            "name": "reason",
+            "type": "string",
+            "title": {
+              "en": "Reason",
+              "sv": "Anledning",
+              "de": "Grund",
+              "nl": "Reden",
+              "no": "Årsak",
+              "da": "Årsag"
+            },
+            "example": {
+              "en": "she was carrying something",
+              "sv": "hon bar på något",
+              "de": "sie trug etwas bei sich",
+              "nl": "ze droeg iets mee",
+              "no": "hun bar på noe",
+              "da": "hun bar på noget"
+            }
+          },
+          {
+            "name": "image",
+            "type": "image",
+            "title": {
+              "en": "Snapshot",
+              "sv": "Stillbild",
+              "de": "Standbild",
+              "nl": "Momentopname",
+              "no": "Stillbilde",
+              "da": "Stillbillede"
+            }
+          }
+        ]
+      },
+      {
+        "id": "cat_peeked",
+        "title": {
+          "en": "A cat looked but did not come through",
+          "sv": "En katt tittade men gick inte igenom",
+          "de": "Eine Katze schaute, ging aber nicht durch",
+          "nl": "Een kat keek maar ging er niet door",
+          "no": "En katt kikket, men gikk ikke gjennom",
+          "da": "En kat kiggede, men gik ikke igennem"
+        },
+        "titleFormatted": {
+          "en": "[[cat]] looked but did not come through",
+          "sv": "[[cat]] tittade men gick inte igenom",
+          "de": "[[cat]] schaute, ging aber nicht durch",
+          "nl": "[[cat]] keek maar ging er niet door",
+          "no": "[[cat]] kikket, men gikk ikke gjennom",
+          "da": "[[cat]] kiggede, men gik ikke igennem"
+        },
+        "hint": {
+          "en": "Fires when a cat put its head through and changed its mind.",
+          "sv": "Utlöses när en katt stack in huvudet och ändrade sig.",
+          "de": "Wird ausgelöst, wenn eine Katze den Kopf durchsteckte und es sich anders überlegte.",
+          "nl": "Wordt geactiveerd wanneer een kat zijn kop erdoor stak en zich bedacht.",
+          "no": "Utløses når en katt stakk hodet gjennom og ombestemte seg.",
+          "da": "Udløses, når en kat stak hovedet igennem og skiftede mening."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=cat_flap"
+          },
+          {
+            "name": "cat",
+            "type": "autocomplete",
+            "title": {
+              "en": "Cat",
+              "sv": "Katt",
+              "de": "Katze",
+              "nl": "Kat",
+              "no": "Katt",
+              "da": "Kat"
+            },
+            "placeholder": {
+              "en": "Any cat",
+              "sv": "Vilken katt som helst",
+              "de": "Jede Katze",
+              "nl": "Elke kat",
+              "no": "Hvilken som helst katt",
+              "da": "Enhver kat"
+            }
+          }
+        ],
+        "tokens": [
+          {
+            "name": "cat",
+            "type": "string",
+            "title": {
+              "en": "Cat",
+              "sv": "Katt",
+              "de": "Katze",
+              "nl": "Kat",
+              "no": "Katt",
+              "da": "Kat"
+            },
+            "example": {
+              "en": "Misan",
+              "sv": "Misan",
+              "de": "Misan",
+              "nl": "Misan",
+              "no": "Misan",
+              "da": "Misan"
+            }
+          },
+          {
+            "name": "rfid",
+            "type": "string",
+            "title": {
+              "en": "Chip code",
+              "sv": "Chipnummer",
+              "de": "Chipnummer",
+              "nl": "Chipnummer",
+              "no": "Chipnummer",
+              "da": "Chipnummer"
+            },
+            "example": {
+              "en": "956000015949802",
+              "sv": "956000015949802",
+              "de": "956000015949802",
+              "nl": "956000015949802",
+              "no": "956000015949802",
+              "da": "956000015949802"
+            }
+          },
+          {
+            "name": "direction",
+            "type": "string",
+            "title": {
+              "en": "Direction",
+              "sv": "Riktning",
+              "de": "Richtung",
+              "nl": "Richting",
+              "no": "Retning",
+              "da": "Retning"
+            },
+            "example": {
+              "en": "in",
+              "sv": "in",
+              "de": "herein",
+              "nl": "binnen",
+              "no": "inn",
+              "da": "ind"
+            }
+          },
+          {
+            "name": "image",
+            "type": "image",
+            "title": {
+              "en": "Snapshot",
+              "sv": "Stillbild",
+              "de": "Standbild",
+              "nl": "Momentopname",
+              "no": "Stillbilde",
+              "da": "Stillbillede"
+            }
+          }
+        ]
+      },
+      {
+        "id": "cat_breached",
+        "title": {
+          "en": "A cat forced the flap",
+          "sv": "En katt tvingade luckan",
+          "de": "Eine Katze drückte sich durch",
+          "nl": "Een kat duwde zich door het luik",
+          "no": "En katt tvang luken",
+          "da": "En kat pressede sig igennem"
+        },
+        "titleFormatted": {
+          "en": "[[cat]] forced the flap",
+          "sv": "[[cat]] tvingade luckan",
+          "de": "[[cat]] drückte sich durch",
+          "nl": "[[cat]] duwde zich door het luik",
+          "no": "[[cat]] tvang luken",
+          "da": "[[cat]] pressede sig igennem"
+        },
+        "hint": {
+          "en": "Fires when a cat got through a locked flap.",
+          "sv": "Utlöses när en katt tagit sig igenom en låst lucka.",
+          "de": "Wird ausgelöst, wenn eine Katze durch eine gesperrte Klappe gelangt ist.",
+          "nl": "Wordt geactiveerd wanneer een kat door een vergrendeld luik is gekomen.",
+          "no": "Utløses når en katt har kommet gjennom en låst luke.",
+          "da": "Udløses, når en kat er kommet gennem en låst lem."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=cat_flap"
+          },
+          {
+            "name": "cat",
+            "type": "autocomplete",
+            "title": {
+              "en": "Cat",
+              "sv": "Katt",
+              "de": "Katze",
+              "nl": "Kat",
+              "no": "Katt",
+              "da": "Kat"
+            },
+            "placeholder": {
+              "en": "Any cat",
+              "sv": "Vilken katt som helst",
+              "de": "Jede Katze",
+              "nl": "Elke kat",
+              "no": "Hvilken som helst katt",
+              "da": "Enhver kat"
+            }
+          }
+        ],
+        "tokens": [
+          {
+            "name": "cat",
+            "type": "string",
+            "title": {
+              "en": "Cat",
+              "sv": "Katt",
+              "de": "Katze",
+              "nl": "Kat",
+              "no": "Katt",
+              "da": "Kat"
+            },
+            "example": {
+              "en": "Misan",
+              "sv": "Misan",
+              "de": "Misan",
+              "nl": "Misan",
+              "no": "Misan",
+              "da": "Misan"
+            }
+          },
+          {
+            "name": "rfid",
+            "type": "string",
+            "title": {
+              "en": "Chip code",
+              "sv": "Chipnummer",
+              "de": "Chipnummer",
+              "nl": "Chipnummer",
+              "no": "Chipnummer",
+              "da": "Chipnummer"
+            },
+            "example": {
+              "en": "956000015949802",
+              "sv": "956000015949802",
+              "de": "956000015949802",
+              "nl": "956000015949802",
+              "no": "956000015949802",
+              "da": "956000015949802"
+            }
+          },
+          {
+            "name": "direction",
+            "type": "string",
+            "title": {
+              "en": "Direction",
+              "sv": "Riktning",
+              "de": "Richtung",
+              "nl": "Richting",
+              "no": "Retning",
+              "da": "Retning"
+            },
+            "example": {
+              "en": "in",
+              "sv": "in",
+              "de": "herein",
+              "nl": "binnen",
+              "no": "inn",
+              "da": "ind"
+            }
+          },
+          {
+            "name": "image",
+            "type": "image",
+            "title": {
+              "en": "Snapshot",
+              "sv": "Stillbild",
+              "de": "Standbild",
+              "nl": "Momentopname",
+              "no": "Stillbilde",
+              "da": "Stillbillede"
+            }
+          }
+        ]
+      },
+      {
+        "id": "prey_detected",
+        "title": {
+          "en": "Prey detected",
+          "sv": "Byte upptäckt",
+          "de": "Beute erkannt",
+          "nl": "Prooi gedetecteerd",
+          "no": "Bytte oppdaget",
+          "da": "Bytte registreret"
+        },
+        "hint": {
+          "en": "Fires when the flap decided a cat was carrying something. Drop the snapshot into a notification to see for yourself.",
+          "sv": "Utlöses när luckan bedömde att en katt bar på något. Lägg in stillbilden i en notis för att se själv.",
+          "de": "Wird ausgelöst, wenn die Klappe entschied, dass eine Katze etwas trug. Füge das Standbild in eine Benachrichtigung ein, um selbst nachzusehen.",
+          "nl": "Wordt geactiveerd wanneer het luik vond dat een kat iets meedroeg. Zet de momentopname in een melding om zelf te kijken.",
+          "no": "Utløses når luken mente at en katt bar på noe. Legg stillbildet i et varsel for å se selv.",
+          "da": "Udløses, når lemmen vurderede, at en kat bar på noget. Læg stillbilledet i en notifikation for at se selv."
+        },
+        "tokens": [
+          {
+            "name": "cat",
+            "type": "string",
+            "title": {
+              "en": "Cat",
+              "sv": "Katt",
+              "de": "Katze",
+              "nl": "Kat",
+              "no": "Katt",
+              "da": "Kat"
+            },
+            "example": {
+              "en": "Misan",
+              "sv": "Misan",
+              "de": "Misan",
+              "nl": "Misan",
+              "no": "Misan",
+              "da": "Misan"
+            }
+          },
+          {
+            "name": "rfid",
+            "type": "string",
+            "title": {
+              "en": "Chip code",
+              "sv": "Chipnummer",
+              "de": "Chipnummer",
+              "nl": "Chipnummer",
+              "no": "Chipnummer",
+              "da": "Chipnummer"
+            },
+            "example": {
+              "en": "956000015949802",
+              "sv": "956000015949802",
+              "de": "956000015949802",
+              "nl": "956000015949802",
+              "no": "956000015949802",
+              "da": "956000015949802"
+            }
+          },
+          {
+            "name": "image",
+            "type": "image",
+            "title": {
+              "en": "Snapshot",
+              "sv": "Stillbild",
+              "de": "Standbild",
+              "nl": "Momentopname",
+              "no": "Stillbilde",
+              "da": "Stillbillede"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=cat_flap"
+          }
+        ]
+      },
+      {
+        "id": "unknown_cat",
+        "title": {
+          "en": "An unknown cat used the flap",
+          "sv": "En okänd katt använde luckan",
+          "de": "Eine unbekannte Katze nutzte die Klappe",
+          "nl": "Een onbekende kat gebruikte het luik",
+          "no": "En ukjent katt brukte luken",
+          "da": "En ukendt kat brugte lemmen"
+        },
+        "hint": {
+          "en": "Fires for a chip this flap is not tracking. Use Repair to start tracking it.",
+          "sv": "Utlöses för ett chip som luckan inte följer. Använd Reparera för att börja följa det.",
+          "de": "Wird für einen Chip ausgelöst, den diese Klappe nicht verfolgt. Über Reparieren kannst du ihn aufnehmen.",
+          "nl": "Wordt geactiveerd voor een chip die dit luik niet volgt. Gebruik Repareren om hem te gaan volgen.",
+          "no": "Utløses for en brikke luken ikke følger. Bruk Reparer for å begynne å følge den.",
+          "da": "Udløses for en chip, lemmen ikke følger. Brug Reparer for at følge den."
+        },
+        "tokens": [
+          {
+            "name": "rfid",
+            "type": "string",
+            "title": {
+              "en": "Chip code",
+              "sv": "Chipnummer",
+              "de": "Chipnummer",
+              "nl": "Chipnummer",
+              "no": "Chipnummer",
+              "da": "Chipnummer"
+            },
+            "example": {
+              "en": "956000015949802",
+              "sv": "956000015949802",
+              "de": "956000015949802",
+              "nl": "956000015949802",
+              "no": "956000015949802",
+              "da": "956000015949802"
+            }
+          },
+          {
+            "name": "action",
+            "type": "string",
+            "title": {
+              "en": "What happened",
+              "sv": "Vad hände",
+              "de": "Was geschah",
+              "nl": "Wat er gebeurde",
+              "no": "Hva som skjedde",
+              "da": "Hvad der skete"
+            },
+            "example": {
+              "en": "came in",
+              "sv": "kom in",
+              "de": "kam herein",
+              "nl": "kwam binnen",
+              "no": "kom inn",
+              "da": "kom ind"
+            }
+          },
+          {
+            "name": "direction",
+            "type": "string",
+            "title": {
+              "en": "Direction",
+              "sv": "Riktning",
+              "de": "Richtung",
+              "nl": "Richting",
+              "no": "Retning",
+              "da": "Retning"
+            },
+            "example": {
+              "en": "in",
+              "sv": "in",
+              "de": "herein",
+              "nl": "binnen",
+              "no": "inn",
+              "da": "ind"
+            }
+          },
+          {
+            "name": "image",
+            "type": "image",
+            "title": {
+              "en": "Snapshot",
+              "sv": "Stillbild",
+              "de": "Standbild",
+              "nl": "Momentopname",
+              "no": "Stillbilde",
+              "da": "Stillbillede"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=cat_flap"
+          }
+        ]
+      },
+      {
+        "id": "flap_event",
+        "title": {
+          "en": "Something happened at the flap",
+          "sv": "Något hände vid luckan",
+          "de": "An der Klappe ist etwas passiert",
+          "nl": "Er gebeurde iets bij het luik",
+          "no": "Noe skjedde ved luken",
+          "da": "Der skete noget ved lemmen"
+        },
+        "titleFormatted": {
+          "en": "[[action]] — [[cat]]",
+          "sv": "[[action]] — [[cat]]",
+          "de": "[[action]] — [[cat]]",
+          "nl": "[[action]] — [[cat]]",
+          "no": "[[action]] — [[cat]]",
+          "da": "[[action]] — [[cat]]"
+        },
+        "hint": {
+          "en": "The catch-all card. Filter by what happened and by cat.",
+          "sv": "Kortet som fångar allt. Filtrera på vad som hände och på katt.",
+          "de": "Die Sammelkarte. Filtere nach Ereignis und Katze.",
+          "nl": "De kaart die alles vangt. Filter op wat er gebeurde en op kat.",
+          "no": "Kortet som fanger alt. Filtrer på hva som skjedde og på katt.",
+          "da": "Kortet der fanger alt. Filtrér på hvad der skete og på kat."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=cat_flap"
+          },
+          {
+            "name": "action",
+            "type": "dropdown",
+            "title": {
+              "en": "What happened",
+              "sv": "Vad hände",
+              "de": "Was geschah",
+              "nl": "Wat er gebeurde",
+              "no": "Hva som skjedde",
+              "da": "Hvad der skete"
+            },
+            "values": [
+              {
+                "id": "any",
+                "title": {
+                  "en": "Anything",
+                  "sv": "Vad som helst",
+                  "de": "Alles",
+                  "nl": "Alles",
+                  "no": "Hva som helst",
+                  "da": "Hvad som helst"
+                }
+              },
+              {
+                "id": "transit_in",
+                "title": {
+                  "en": "Came in",
+                  "sv": "Kom in",
+                  "de": "Kam herein",
+                  "nl": "Kwam binnen",
+                  "no": "Kom inn",
+                  "da": "Kom ind"
+                }
+              },
+              {
+                "id": "transit_out",
+                "title": {
+                  "en": "Went out",
+                  "sv": "Gick ut",
+                  "de": "Ging hinaus",
+                  "nl": "Ging naar buiten",
+                  "no": "Gikk ut",
+                  "da": "Gik ud"
+                }
+              },
+              {
+                "id": "peek",
+                "title": {
+                  "en": "Looked only",
+                  "sv": "Bara tittade",
+                  "de": "Nur geschaut",
+                  "nl": "Alleen gekeken",
+                  "no": "Bare kikket",
+                  "da": "Kiggede kun"
+                }
+              },
+              {
+                "id": "deny",
+                "title": {
+                  "en": "Was turned away",
+                  "sv": "Nekades",
+                  "de": "Wurde abgewiesen",
+                  "nl": "Werd geweigerd",
+                  "no": "Ble avvist",
+                  "da": "Blev afvist"
+                }
+              },
+              {
+                "id": "breach",
+                "title": {
+                  "en": "Forced the flap",
+                  "sv": "Tvingade luckan",
+                  "de": "Drückte sich durch",
+                  "nl": "Duwde zich door",
+                  "no": "Tvang luken",
+                  "da": "Pressede sig igennem"
+                }
+              }
+            ]
+          },
+          {
+            "name": "cat",
+            "type": "autocomplete",
+            "title": {
+              "en": "Cat",
+              "sv": "Katt",
+              "de": "Katze",
+              "nl": "Kat",
+              "no": "Katt",
+              "da": "Kat"
+            },
+            "placeholder": {
+              "en": "Any cat",
+              "sv": "Vilken katt som helst",
+              "de": "Jede Katze",
+              "nl": "Elke kat",
+              "no": "Hvilken som helst katt",
+              "da": "Enhver kat"
+            }
+          }
+        ],
+        "tokens": [
+          {
+            "name": "cat",
+            "type": "string",
+            "title": {
+              "en": "Cat",
+              "sv": "Katt",
+              "de": "Katze",
+              "nl": "Kat",
+              "no": "Katt",
+              "da": "Kat"
+            },
+            "example": {
+              "en": "Misan",
+              "sv": "Misan",
+              "de": "Misan",
+              "nl": "Misan",
+              "no": "Misan",
+              "da": "Misan"
+            }
+          },
+          {
+            "name": "rfid",
+            "type": "string",
+            "title": {
+              "en": "Chip code",
+              "sv": "Chipnummer",
+              "de": "Chipnummer",
+              "nl": "Chipnummer",
+              "no": "Chipnummer",
+              "da": "Chipnummer"
+            },
+            "example": {
+              "en": "956000015949802",
+              "sv": "956000015949802",
+              "de": "956000015949802",
+              "nl": "956000015949802",
+              "no": "956000015949802",
+              "da": "956000015949802"
+            }
+          },
+          {
+            "name": "action",
+            "type": "string",
+            "title": {
+              "en": "What happened",
+              "sv": "Vad hände",
+              "de": "Was geschah",
+              "nl": "Wat er gebeurde",
+              "no": "Hva som skjedde",
+              "da": "Hvad der skete"
+            },
+            "example": {
+              "en": "came in",
+              "sv": "kom in",
+              "de": "kam herein",
+              "nl": "kwam binnen",
+              "no": "kom inn",
+              "da": "kom ind"
+            }
+          },
+          {
+            "name": "direction",
+            "type": "string",
+            "title": {
+              "en": "Direction",
+              "sv": "Riktning",
+              "de": "Richtung",
+              "nl": "Richting",
+              "no": "Retning",
+              "da": "Retning"
+            },
+            "example": {
+              "en": "in",
+              "sv": "in",
+              "de": "herein",
+              "nl": "binnen",
+              "no": "inn",
+              "da": "ind"
+            }
+          },
+          {
+            "name": "classification",
+            "type": "string",
+            "title": {
+              "en": "Classification",
+              "sv": "Klassificering",
+              "de": "Klassifizierung",
+              "nl": "Classificatie",
+              "no": "Klassifisering",
+              "da": "Klassificering"
+            },
+            "example": {
+              "en": "clear",
+              "sv": "ren",
+              "de": "sauber",
+              "nl": "schoon",
+              "no": "ren",
+              "da": "ren"
+            }
+          },
+          {
+            "name": "trigger",
+            "type": "string",
+            "title": {
+              "en": "Triggered by",
+              "sv": "Utlöstes av",
+              "de": "Ausgelöst durch",
+              "nl": "Geactiveerd door",
+              "no": "Utløst av",
+              "da": "Udløst af"
+            },
+            "example": {
+              "en": "outdoor motion",
+              "sv": "rörelse ute",
+              "de": "Bewegung draußen",
+              "nl": "beweging buiten",
+              "no": "bevegelse ute",
+              "da": "bevægelse ude"
+            }
+          },
+          {
+            "name": "image",
+            "type": "image",
+            "title": {
+              "en": "Snapshot",
+              "sv": "Stillbild",
+              "de": "Standbild",
+              "nl": "Momentopname",
+              "no": "Stillbilde",
+              "da": "Stillbillede"
+            }
+          }
+        ]
+      }
+    ],
+    "conditions": [
+      {
+        "id": "cat_is_home",
+        "title": {
+          "en": "A cat !{{is|is not}} home",
+          "sv": "En katt !{{är|är inte}} hemma",
+          "de": "Eine Katze !{{ist|ist nicht}} zu Hause",
+          "nl": "Een kat !{{is|is niet}} thuis",
+          "no": "En katt !{{er|er ikke}} hjemme",
+          "da": "En kat !{{er|er ikke}} hjemme"
+        },
+        "titleFormatted": {
+          "en": "[[cat]] !{{is|is not}} home",
+          "sv": "[[cat]] !{{är|är inte}} hemma",
+          "de": "[[cat]] !{{ist|ist nicht}} zu Hause",
+          "nl": "[[cat]] !{{is|is niet}} thuis",
+          "no": "[[cat]] !{{er|er ikke}} hjemme",
+          "da": "[[cat]] !{{er|er ikke}} hjemme"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=cat_flap"
+          },
+          {
+            "name": "cat",
+            "type": "autocomplete",
+            "title": {
+              "en": "Cat",
+              "sv": "Katt",
+              "de": "Katze",
+              "nl": "Kat",
+              "no": "Katt",
+              "da": "Kat"
+            },
+            "placeholder": {
+              "en": "Any cat",
+              "sv": "Vilken katt som helst",
+              "de": "Jede Katze",
+              "nl": "Elke kat",
+              "no": "Hvilken som helst katt",
+              "da": "Enhver kat"
+            }
+          }
+        ]
+      },
+      {
+        "id": "flap_is_locked",
+        "title": {
+          "en": "The flap !{{is|is not}} locked",
+          "sv": "Luckan !{{är|är inte}} låst",
+          "de": "Die Klappe !{{ist|ist nicht}} gesperrt",
+          "nl": "Het luik !{{is|is niet}} vergrendeld",
+          "no": "Luken !{{er|er ikke}} låst",
+          "da": "Lemmen !{{er|er ikke}} låst"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=cat_flap"
+          }
+        ]
+      },
+      {
+        "id": "policy_is",
+        "title": {
+          "en": "The door policy !{{is|is not}}",
+          "sv": "Dörregeln !{{är|är inte}}",
+          "de": "Die Türregel !{{ist|ist nicht}}",
+          "nl": "Het deurbeleid !{{is|is niet}}",
+          "no": "Dørregelen !{{er|er ikke}}",
+          "da": "Dørreglen !{{er|er ikke}}"
+        },
+        "titleFormatted": {
+          "en": "The door policy !{{is|is not}} [[policy]]",
+          "sv": "Dörregeln !{{är|är inte}} [[policy]]",
+          "de": "Die Türregel !{{ist|ist nicht}} [[policy]]",
+          "nl": "Het deurbeleid !{{is|is niet}} [[policy]]",
+          "no": "Dørregelen !{{er|er ikke}} [[policy]]",
+          "da": "Dørreglen !{{er|er ikke}} [[policy]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=cat_flap"
+          },
+          {
+            "name": "policy",
+            "type": "autocomplete",
+            "title": {
+              "en": "Door policy",
+              "sv": "Dörregel",
+              "de": "Türregel",
+              "nl": "Deurbeleid",
+              "no": "Dørregel",
+              "da": "Dørregel"
+            }
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "id": "unlock_flap",
+        "title": {
+          "en": "Unlock the flap",
+          "sv": "Lås upp luckan",
+          "de": "Klappe entriegeln",
+          "nl": "Ontgrendel het luik",
+          "no": "Lås opp luken",
+          "da": "Lås lemmen op"
+        },
+        "hint": {
+          "en": "Unlocks the flap once, the same as the unlock button in the OnlyCat app. The flap relocks according to its door policy.",
+          "sv": "Låser upp luckan en gång, precis som upplåsningsknappen i OnlyCat-appen. Luckan låser sedan enligt dörregeln.",
+          "de": "Entriegelt die Klappe einmalig, wie der Entriegeln-Knopf in der OnlyCat-App. Danach sperrt die Klappe gemäß ihrer Türregel.",
+          "nl": "Ontgrendelt het luik eenmalig, net als de ontgrendelknop in de OnlyCat-app. Daarna vergrendelt het luik volgens het deurbeleid.",
+          "no": "Låser opp luken én gang, som opplåsingsknappen i OnlyCat-appen. Luken låser igjen etter dørregelen.",
+          "da": "Låser lemmen op én gang, som oplåsningsknappen i OnlyCat-appen. Lemmen låser igen efter dørreglen."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=cat_flap"
+          }
+        ]
+      },
+      {
+        "id": "set_policy",
+        "title": {
+          "en": "Switch the door policy",
+          "sv": "Byt dörregel",
+          "de": "Türregel wechseln",
+          "nl": "Wissel het deurbeleid",
+          "no": "Bytt dørregel",
+          "da": "Skift dørregel"
+        },
+        "titleFormatted": {
+          "en": "Switch the door policy to [[policy]]",
+          "sv": "Byt dörregel till [[policy]]",
+          "de": "Türregel auf [[policy]] wechseln",
+          "nl": "Wissel het deurbeleid naar [[policy]]",
+          "no": "Bytt dørregel til [[policy]]",
+          "da": "Skift dørregel til [[policy]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=cat_flap"
+          },
+          {
+            "name": "policy",
+            "type": "autocomplete",
+            "title": {
+              "en": "Door policy",
+              "sv": "Dörregel",
+              "de": "Türregel",
+              "nl": "Deurbeleid",
+              "no": "Dørregel",
+              "da": "Dørregel"
+            }
+          }
+        ]
+      },
+      {
+        "id": "set_cat_location",
+        "title": {
+          "en": "Mark a cat as home or out",
+          "sv": "Markera en katt som hemma eller ute",
+          "de": "Eine Katze als zu Hause oder draußen markieren",
+          "nl": "Markeer een kat als thuis of buiten",
+          "no": "Merk en katt som hjemme eller ute",
+          "da": "Markér en kat som hjemme eller ude"
+        },
+        "titleFormatted": {
+          "en": "Mark [[cat]] as [[where]]",
+          "sv": "Markera [[cat]] som [[where]]",
+          "de": "[[cat]] als [[where]] markieren",
+          "nl": "Markeer [[cat]] als [[where]]",
+          "no": "Merk [[cat]] som [[where]]",
+          "da": "Markér [[cat]] som [[where]]"
+        },
+        "hint": {
+          "en": "Corrects the app's idea of where a cat is — useful when one got in through a window. This only changes Homey, not OnlyCat.",
+          "sv": "Rättar appens uppfattning om var en katt är — bra när någon kommit in genom ett fönster. Ändrar bara Homey, inte OnlyCat.",
+          "de": "Korrigiert, wo die App eine Katze vermutet — nützlich, wenn eine durchs Fenster hereinkam. Ändert nur Homey, nicht OnlyCat.",
+          "nl": "Corrigeert waar de app denkt dat een kat is — handig als er een via een raam binnenkwam. Verandert alleen Homey, niet OnlyCat.",
+          "no": "Retter appens oppfatning av hvor en katt er — nyttig når en kom inn gjennom et vindu. Endrer bare Homey, ikke OnlyCat.",
+          "da": "Retter appens opfattelse af, hvor en kat er — nyttigt når en kom ind gennem et vindue. Ændrer kun Homey, ikke OnlyCat."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=cat_flap"
+          },
+          {
+            "name": "cat",
+            "type": "autocomplete",
+            "title": {
+              "en": "Cat",
+              "sv": "Katt",
+              "de": "Katze",
+              "nl": "Kat",
+              "no": "Katt",
+              "da": "Kat"
+            },
+            "placeholder": {
+              "en": "Any cat",
+              "sv": "Vilken katt som helst",
+              "de": "Jede Katze",
+              "nl": "Elke kat",
+              "no": "Hvilken som helst katt",
+              "da": "Enhver kat"
+            }
+          },
+          {
+            "name": "where",
+            "type": "dropdown",
+            "title": {
+              "en": "Where",
+              "sv": "Var",
+              "de": "Wo",
+              "nl": "Waar",
+              "no": "Hvor",
+              "da": "Hvor"
+            },
+            "values": [
+              {
+                "id": "home",
+                "title": {
+                  "en": "Home",
+                  "sv": "Hemma",
+                  "de": "Zu Hause",
+                  "nl": "Thuis",
+                  "no": "Hjemme",
+                  "da": "Hjemme"
+                }
+              },
+              {
+                "id": "out",
+                "title": {
+                  "en": "Out",
+                  "sv": "Ute",
+                  "de": "Draußen",
+                  "nl": "Buiten",
+                  "no": "Ute",
+                  "da": "Ude"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "reboot_flap",
+        "title": {
+          "en": "Restart the flap",
+          "sv": "Starta om luckan",
+          "de": "Klappe neu starten",
+          "nl": "Herstart het luik",
+          "no": "Start luken på nytt",
+          "da": "Genstart lemmen"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=cat_flap"
+          }
+        ]
+      }
+    ]
+  },
+  "drivers": [
+    {
+      "name": {
+        "en": "Cat flap",
+        "sv": "Kattlucka",
+        "de": "Katzenklappe",
+        "nl": "Kattenluik",
+        "no": "Katteluke",
+        "da": "Kattelem"
+      },
+      "class": "lock",
+      "capabilities": [
+        "locked",
+        "policy_ONLYCAT",
+        "alarm_motion",
+        "alarm_prey_ONLYCAT",
+        "alarm_human_ONLYCAT",
+        "alarm_connectivity",
+        "last_event_ONLYCAT",
+        "last_blocked_ONLYCAT",
+        "button.unlock",
+        "button.reboot"
+      ],
+      "capabilitiesOptions": {
+        "locked": {
+          "setable": false,
+          "getable": true,
+          "uiQuickAction": false
+        },
+        "alarm_motion": {
+          "title": {
+            "en": "Activity at the flap",
+            "sv": "Aktivitet vid luckan",
+            "de": "Aktivität an der Klappe",
+            "nl": "Activiteit bij het luik",
+            "no": "Aktivitet ved luken",
+            "da": "Aktivitet ved lemmen"
+          }
+        },
+        "button.unlock": {
+          "title": {
+            "en": "Unlock now",
+            "sv": "Lås upp nu",
+            "de": "Jetzt entriegeln",
+            "nl": "Nu ontgrendelen",
+            "no": "Lås opp nå",
+            "da": "Lås op nu"
+          },
+          "maintenanceAction": true
+        },
+        "button.reboot": {
+          "title": {
+            "en": "Restart the flap",
+            "sv": "Starta om luckan",
+            "de": "Klappe neu starten",
+            "nl": "Luik herstarten",
+            "no": "Start luken på nytt",
+            "da": "Genstart lemmen"
+          },
+          "maintenanceAction": true
+        }
+      },
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "cloud"
+      ],
+      "images": {
+        "small": "/drivers/cat_flap/assets/images/small.png",
+        "large": "/drivers/cat_flap/assets/images/large.png",
+        "xlarge": "/drivers/cat_flap/assets/images/xlarge.png"
+      },
+      "pair": [
+        {
+          "id": "api_key",
+          "navigation": {
+            "next": "list_devices"
+          }
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "repair": [
+        {
+          "id": "api_key"
+        }
+      ],
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Flap",
+            "sv": "Lucka",
+            "de": "Klappe",
+            "nl": "Luik",
+            "no": "Luke",
+            "da": "Lem"
+          },
+          "children": [
+            {
+              "id": "device_id",
+              "type": "label",
+              "label": {
+                "en": "Device ID",
+                "sv": "Enhets-ID",
+                "de": "Geräte-ID",
+                "nl": "Apparaat-ID",
+                "no": "Enhets-ID",
+                "da": "Enheds-ID"
+              },
+              "value": ""
+            },
+            {
+              "id": "mac_address",
+              "type": "label",
+              "label": {
+                "en": "MAC address",
+                "sv": "MAC-adress",
+                "de": "MAC-Adresse",
+                "nl": "MAC-adres",
+                "no": "MAC-adresse",
+                "da": "MAC-adresse"
+              },
+              "value": ""
+            },
+            {
+              "id": "time_zone",
+              "type": "label",
+              "label": {
+                "en": "Time zone",
+                "sv": "Tidszon",
+                "de": "Zeitzone",
+                "nl": "Tijdzone",
+                "no": "Tidssone",
+                "da": "Tidszone"
+              },
+              "value": ""
+            },
+            {
+              "id": "firmware_channel",
+              "type": "label",
+              "label": {
+                "en": "Firmware channel",
+                "sv": "Firmwarekanal",
+                "de": "Firmware-Kanal",
+                "nl": "Firmwarekanaal",
+                "no": "Fastvarekanal",
+                "da": "Firmwarekanal"
+              },
+              "value": ""
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Cats",
+            "sv": "Katter",
+            "de": "Katzen",
+            "nl": "Katten",
+            "no": "Katter",
+            "da": "Katte"
+          },
+          "children": [
+            {
+              "id": "tracked_cats",
+              "type": "label",
+              "label": {
+                "en": "Tracked",
+                "sv": "Följda",
+                "de": "Verfolgt",
+                "nl": "Gevolgd",
+                "no": "Fulgt",
+                "da": "Fulgt"
+              },
+              "value": ""
+            }
+          ]
+        }
+      ],
+      "id": "cat_flap"
+    }
+  ],
+  "capabilities": {
+    "alarm_human_ONLYCAT": {
+      "type": "boolean",
+      "title": {
+        "en": "Human activity",
+        "sv": "Mänsklig aktivitet",
+        "de": "Menschliche Aktivität",
+        "nl": "Menselijke activiteit",
+        "no": "Menneskelig aktivitet",
+        "da": "Menneskelig aktivitet"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitleTrue": {
+        "en": "Human activity",
+        "sv": "Mänsklig aktivitet",
+        "de": "Menschliche Aktivität",
+        "nl": "Menselijke activiteit",
+        "no": "Menneskelig aktivitet",
+        "da": "Menneskelig aktivitet"
+      },
+      "insightsTitleFalse": {
+        "en": "None",
+        "sv": "Ingen",
+        "de": "Keine",
+        "nl": "Geen",
+        "no": "Ingen",
+        "da": "Ingen"
+      }
+    },
+    "alarm_prey_ONLYCAT": {
+      "type": "boolean",
+      "title": {
+        "en": "Prey detected",
+        "sv": "Byte upptäckt",
+        "de": "Beute erkannt",
+        "nl": "Prooi gedetecteerd",
+        "no": "Bytte oppdaget",
+        "da": "Bytte registreret"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitleTrue": {
+        "en": "Prey detected",
+        "sv": "Byte upptäckt",
+        "de": "Beute erkannt",
+        "nl": "Prooi gedetecteerd",
+        "no": "Bytte oppdaget",
+        "da": "Bytte registreret"
+      },
+      "insightsTitleFalse": {
+        "en": "No prey",
+        "sv": "Inget byte",
+        "de": "Keine Beute",
+        "nl": "Geen prooi",
+        "no": "Ingen bytte",
+        "da": "Intet bytte"
+      }
+    },
+    "cat_home_ONLYCAT": {
+      "type": "boolean",
+      "title": {
+        "en": "Cat",
+        "sv": "Katt",
+        "de": "Katze",
+        "nl": "Kat",
+        "no": "Katt",
+        "da": "Kat"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitleTrue": {
+        "en": "Home",
+        "sv": "Hemma",
+        "de": "Zu Hause",
+        "nl": "Thuis",
+        "no": "Hjemme",
+        "da": "Hjemme"
+      },
+      "insightsTitleFalse": {
+        "en": "Out",
+        "sv": "Ute",
+        "de": "Draußen",
+        "nl": "Buiten",
+        "no": "Ute",
+        "da": "Ude"
+      }
+    },
+    "last_blocked_ONLYCAT": {
+      "type": "string",
+      "title": {
+        "en": "Last refusal",
+        "sv": "Senaste nekande",
+        "de": "Letzte Abweisung",
+        "nl": "Laatste weigering",
+        "no": "Siste avvisning",
+        "da": "Seneste afvisning"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": false
+    },
+    "last_event_ONLYCAT": {
+      "type": "string",
+      "title": {
+        "en": "Last event",
+        "sv": "Senaste händelse",
+        "de": "Letztes Ereignis",
+        "nl": "Laatste gebeurtenis",
+        "no": "Siste hendelse",
+        "da": "Seneste hændelse"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": false
+    },
+    "policy_ONLYCAT": {
+      "type": "enum",
+      "title": {
+        "en": "Door policy",
+        "sv": "Dörregel",
+        "de": "Türregel",
+        "nl": "Deurbeleid",
+        "no": "Dørregel",
+        "da": "Dørregel"
+      },
+      "uiComponent": "picker",
+      "getable": true,
+      "setable": true,
+      "values": []
+    }
+  }
+}

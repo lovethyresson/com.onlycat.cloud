@@ -1,0 +1,33 @@
+{
+  "event": {
+    "transit": { "inward": "{{name}} kom inn", "outward": "{{name}} gikk ut" },
+    "breach": { "inward": "{{name}} tvang seg inn gjennom luken", "outward": "{{name}} tvang seg ut gjennom luken" },
+    "peek": { "inward": "{{name}} kikket inn, men ble ute", "outward": "{{name}} kikket ut, men ble inne" },
+    "deny": { "inward": "{{name}} ble avvist på vei inn", "outward": "{{name}} ble avvist på vei ut" },
+    "unknown_cat": "En ukjent katt",
+    "a_cat": "En katt"
+  },
+  "reason": {
+    "prey": "Avvist — bar på noe",
+    "prey_named": "{{name}} ble avvist — hun bar på noe",
+    "human": "Avvist — luken så et menneske, ikke en katt",
+    "curfew": "Avvist — portforbudet låser luken mellom {{range}}",
+    "curfew_named": "{{name}} ble avvist — portforbudet låser luken mellom {{range}}",
+    "not_allowed": "Avvist — får ikke passere akkurat nå",
+    "not_allowed_named": "{{name}} ble avvist — hun får ikke passere akkurat nå",
+    "idle": "Avvist — luken er låst når ingen regel gjelder",
+    "idle_named": "{{name}} ble avvist — luken er låst når ingen regel gjelder",
+    "rule": "Avvist av en regel i dørregelen",
+    "rule_named": "{{name}} ble avvist av en regel i dørregelen",
+    "unknown": "Avvist — lukens regler bruker dens egne sensorer, så appen kan ikke si hvilken som avviste",
+    "unknown_named": "{{name}} ble avvist — lukens regler bruker dens egne sensorer, så appen kan ikke si hvilken som avviste henne"
+  },
+  "policy": { "unnamed": "Regel {{id}}", "unknown": "Ukjent" },
+  "flow": { "any_cat": "Hvilken som helst katt" },
+  "error": {
+    "no_connection": "Ikke tilkoblet OnlyCat",
+    "unauthorized": "OnlyCat-API-nøkkelen ble avvist. Åpne Reparer og lim inn en ny.",
+    "unknown_policy": "Den dørregelen finnes ikke lenger på luken",
+    "unknown_cat": "Den katten følges ikke på denne luken"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "event": {
+    "transit": {
+      "inward": "{{name}} kwam binnen",
+      "outward": "{{name}} ging naar buiten"
+    },
+    "breach": {
+      "inward": "{{name}} duwde zich naar binnen",
+      "outward": "{{name}} duwde zich naar buiten"
+    },
+    "peek": {
+      "inward": "{{name}} keek naar binnen maar bleef buiten",
+      "outward": "{{name}} keek naar buiten maar bleef binnen"
+    },
+    "deny": {
+      "inward": "{{name}} werd geweigerd bij het binnenkomen",
+      "outward": "{{name}} werd geweigerd bij het naar buiten gaan"
+    },
+    "unknown_cat": "Een onbekende kat",
+    "a_cat": "Een kat"
+  },
+  "reason": {
+    "prey": "Geweigerd — droeg iets mee",
+    "prey_named": "{{name}} werd geweigerd — ze droeg iets mee",
+    "human": "Geweigerd — het luik zag een mens, geen kat",
+    "curfew": "Geweigerd — de avondklok vergrendelt het luik tussen {{range}}",
+    "curfew_named": "{{name}} werd geweigerd — de avondklok vergrendelt het luik tussen {{range}}",
+    "not_allowed": "Geweigerd — mag er op dit moment niet door",
+    "not_allowed_named": "{{name}} werd geweigerd — ze mag er op dit moment niet door",
+    "idle": "Geweigerd — het luik is vergrendeld als geen regel van toepassing is",
+    "idle_named": "{{name}} werd geweigerd — het luik is vergrendeld als geen regel van toepassing is",
+    "rule": "Geweigerd door een regel van het deurbeleid",
+    "rule_named": "{{name}} werd geweigerd door een regel van het deurbeleid",
+    "unknown": "Geweigerd — de regels van dit luik gebruiken de eigen sensoren, dus de app kan niet zeggen welke regel weigerde",
+    "unknown_named": "{{name}} werd geweigerd — de regels van dit luik gebruiken de eigen sensoren, dus de app kan niet zeggen welke regel haar weigerde"
+  },
+  "policy": {
+    "unnamed": "Beleid {{id}}",
+    "unknown": "Onbekend"
+  },
+  "flow": {
+    "any_cat": "Elke kat"
+  },
+  "error": {
+    "no_connection": "Niet verbonden met OnlyCat",
+    "unauthorized": "De OnlyCat-API-sleutel is geweigerd. Open Repareren en plak een nieuwe.",
+    "unknown_policy": "Dat deurbeleid bestaat niet meer op dit luik",
+    "unknown_cat": "Die kat wordt op dit luik niet gevolgd"
+  }
+}

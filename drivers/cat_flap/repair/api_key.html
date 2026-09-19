@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .lead { color: #666; font-size: 13px; line-height: 1.5; margin: 0 0 14px; }
+        ol { color: #666; font-size: 13px; line-height: 1.6; padding-left: 20px; margin: 0 0 14px; }
+        .warn { background: #fff8e6; border: 1px solid #f0dca8; border-radius: 8px;
+                padding: 10px 12px; font-size: 12px; line-height: 1.5; color: #6b5a2a; margin: 0 0 16px; }
+        .err { color: #d0021b; font-size: 13px; line-height: 1.5; margin: 10px 0 0; display: none; }
+        .ok { color: #2f9e44; font-size: 13px; margin: 10px 0 0; display: none; }
+    </style>
+</head>
+<body>
+
+<p class="lead" id="lead"></p>
+
+<ol id="steps"></ol>
+
+<p class="warn" id="warn"></p>
+
+<div class="homey-form">
+    <div class="homey-form-group">
+        <input class="homey-form-input" id="key" type="text" autocomplete="off"
+               autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="oc_live_…">
+    </div>
+    <button class="homey-button-primary-full" id="submit"></button>
+</div>
+
+<p class="err" id="error"></p>
+<p class="ok" id="ok"></p>
+
+<script type="text/javascript">
+    var T = {
+        en: {
+            lead: 'This app talks to your OnlyCat account in the cloud. It needs an API key.',
+            steps: ['Open the OnlyCat app on your phone.',
+                    'Go to Account and turn on Developer Mode.',
+                    'Open API Keys and create a key for Homey.',
+                    'Copy it and paste it below — it is only shown once.'],
+            warn: 'An OnlyCat API key has full access to your OnlyCat account, and there is no way to limit it. Make a key just for Homey so you can revoke it on its own later.',
+            submit: 'Continue',
+            checking: 'Checking…',
+            none: 'That key works, but there are no cat flaps on the account.',
+            found: 'Key accepted.'
+        },
+        sv: {
+            lead: 'Appen pratar med ditt OnlyCat-konto i molnet. Den behöver en API-nyckel.',
+            steps: ['Öppna OnlyCat-appen i telefonen.',
+                    'Gå till Konto och slå på utvecklarläge.',
+                    'Öppna API-nycklar och skapa en nyckel för Homey.',
+                    'Kopiera den och klistra in nedan — den visas bara en gång.'],
+            warn: 'En OnlyCat API-nyckel ger full åtkomst till hela ditt OnlyCat-konto, och det går inte att begränsa den. Skapa en egen nyckel för Homey så att du kan återkalla just den senare.',
+            submit: 'Fortsätt',
+            checking: 'Kontrollerar…',
+            none: 'Nyckeln fungerar, men det finns inga kattluckor på kontot.',
+            found: 'Nyckeln godkänd.'
+        }
+    };
+
+    function onHomeyReady(Homey) {
+        var t = T[(Homey.__('language') || 'en')] || T[navigator.language.slice(0, 2)] || T.en;
+
+        document.getElementById('lead').textContent = t.lead;
+        document.getElementById('warn').textContent = t.warn;
+        document.getElementById('submit').textContent = t.submit;
+        var steps = document.getElementById('steps');
+        t.steps.forEach(function (step) {
+            var li = document.createElement('li');
+            li.textContent = step;
+            steps.appendChild(li);
+        });
+
+        var input = document.getElementById('key');
+        var button = document.getElementById('submit');
+        var error = document.getElementById('error');
+        var ok = document.getElementById('ok');
+
+        function submit() {
+            error.style.display = 'none';
+            ok.style.display = 'none';
+            button.disabled = true;
+            button.textContent = t.checking;
+
+            Homey.emit('verify_key', input.value, function (err, result) {
+                button.disabled = false;
+                button.textContent = t.submit;
+
+                if (err) {
+                    error.textContent = (err && err.message) ? err.message : String(err);
+                    error.style.display = 'block';
+                    return;
+                }
+
+                if (!result || result.count === 0) {
+                    error.textContent = t.none;
+                    error.style.display = 'block';
+                    return;
+                }
+
+                ok.textContent = t.found;
+                ok.style.display = 'block';
+                Homey.nextView();
+            });
+        }
+
+        button.addEventListener('click', submit);
+        input.addEventListener('keydown', function (e) { if (e.key === 'Enter') submit(); });
+        input.focus();
+
+        Homey.ready();
+    }
+</script>
+</body>
+</html>

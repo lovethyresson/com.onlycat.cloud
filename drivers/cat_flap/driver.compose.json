@@ -1,0 +1,151 @@
+{
+  "name": {
+    "en": "Cat flap",
+    "sv": "Kattlucka",
+    "de": "Katzenklappe",
+    "nl": "Kattenluik",
+    "no": "Katteluke",
+    "da": "Kattelem"
+  },
+  "class": "lock",
+  "capabilities": [
+    "locked",
+    "policy_ONLYCAT",
+    "alarm_motion",
+    "alarm_prey_ONLYCAT",
+    "alarm_human_ONLYCAT",
+    "alarm_connectivity",
+    "last_event_ONLYCAT",
+    "last_blocked_ONLYCAT",
+    "button.unlock",
+    "button.reboot"
+  ],
+  "capabilitiesOptions": {
+    "locked": {
+      "setable": false,
+      "getable": true,
+      "uiQuickAction": false
+    },
+    "alarm_motion": {
+      "title": {
+        "en": "Activity at the flap",
+        "sv": "Aktivitet vid luckan",
+        "de": "Aktivität an der Klappe",
+        "nl": "Activiteit bij het luik",
+        "no": "Aktivitet ved luken",
+        "da": "Aktivitet ved lemmen"
+      }
+    },
+    "button.unlock": {
+      "title": {
+        "en": "Unlock now",
+        "sv": "Lås upp nu",
+        "de": "Jetzt entriegeln",
+        "nl": "Nu ontgrendelen",
+        "no": "Lås opp nå",
+        "da": "Lås op nu"
+      },
+      "maintenanceAction": true
+    },
+    "button.reboot": {
+      "title": {
+        "en": "Restart the flap",
+        "sv": "Starta om luckan",
+        "de": "Klappe neu starten",
+        "nl": "Luik herstarten",
+        "no": "Start luken på nytt",
+        "da": "Genstart lemmen"
+      },
+      "maintenanceAction": true
+    }
+  },
+  "platforms": [
+    "local"
+  ],
+  "connectivity": [
+    "cloud"
+  ],
+  "images": {
+    "small": "/drivers/cat_flap/assets/images/small.png",
+    "large": "/drivers/cat_flap/assets/images/large.png",
+    "xlarge": "/drivers/cat_flap/assets/images/xlarge.png"
+  },
+  "pair": [
+    {
+      "id": "api_key",
+      "navigation": { "next": "list_devices" }
+    },
+    {
+      "id": "list_devices",
+      "template": "list_devices",
+      "navigation": { "next": "add_devices" }
+    },
+    {
+      "id": "add_devices",
+      "template": "add_devices"
+    }
+  ],
+  "repair": [
+    {
+      "id": "api_key"
+    }
+  ],
+  "settings": [
+    {
+      "type": "group",
+      "label": {
+        "en": "Flap",
+        "sv": "Lucka",
+        "de": "Klappe",
+        "nl": "Luik",
+        "no": "Luke",
+        "da": "Lem"
+      },
+      "children": [
+        {
+          "id": "device_id",
+          "type": "label",
+          "label": { "en": "Device ID", "sv": "Enhets-ID", "de": "Geräte-ID", "nl": "Apparaat-ID", "no": "Enhets-ID", "da": "Enheds-ID" },
+          "value": ""
+        },
+        {
+          "id": "mac_address",
+          "type": "label",
+          "label": { "en": "MAC address", "sv": "MAC-adress", "de": "MAC-Adresse", "nl": "MAC-adres", "no": "MAC-adresse", "da": "MAC-adresse" },
+          "value": ""
+        },
+        {
+          "id": "time_zone",
+          "type": "label",
+          "label": { "en": "Time zone", "sv": "Tidszon", "de": "Zeitzone", "nl": "Tijdzone", "no": "Tidssone", "da": "Tidszone" },
+          "value": ""
+        },
+        {
+          "id": "firmware_channel",
+          "type": "label",
+          "label": { "en": "Firmware channel", "sv": "Firmwarekanal", "de": "Firmware-Kanal", "nl": "Firmwarekanaal", "no": "Fastvarekanal", "da": "Firmwarekanal" },
+          "value": ""
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": {
+        "en": "Cats",
+        "sv": "Katter",
+        "de": "Katzen",
+        "nl": "Katten",
+        "no": "Katter",
+        "da": "Katte"
+      },
+      "children": [
+        {
+          "id": "tracked_cats",
+          "type": "label",
+          "label": { "en": "Tracked", "sv": "Följda", "de": "Verfolgt", "nl": "Gevolgd", "no": "Fulgt", "da": "Fulgt" },
+          "value": ""
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "type": "enum",
+  "title": { "en": "Door policy", "sv": "Dörregel", "de": "Türregel", "nl": "Deurbeleid", "no": "Dørregel", "da": "Dørregel" },
+  "uiComponent": "picker",
+  "getable": true,
+  "setable": true,
+  "values": []
+}

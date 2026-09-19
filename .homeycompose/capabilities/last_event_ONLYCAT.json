@@ -1,0 +1,8 @@
+{
+  "type": "string",
+  "title": { "en": "Last event", "sv": "Senaste händelse", "de": "Letztes Ereignis", "nl": "Laatste gebeurtenis", "no": "Siste hendelse", "da": "Seneste hændelse" },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false,
+  "insights": false
+}

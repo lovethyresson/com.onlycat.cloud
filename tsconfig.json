@@ -1,0 +1,23 @@
+{
+  "extends": "@tsconfig/node18/tsconfig.json",
+  "compilerOptions": {
+    // Stated explicitly rather than inherited: every module in lib/ is written assuming
+    // strictNullChecks, and a base-config bump must not be able to switch that off quietly.
+    "strict": true,
+    // Homey Pro (Early 2023) runs Node 18. Keep the target where the runtime is; there is no
+    // reason to emit syntax the hub has to be lucky to support.
+    "target": "es2021",
+    "module": "commonjs",
+    // The node18 base sets moduleResolution: Node16, which TS refuses to pair with a
+    // commonjs module target. Homey apps are CommonJS, so the module setting wins.
+    "moduleResolution": "node",
+    "outDir": ".homeybuild/",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  // Explicit: without it, `allowJs`-adjacent defaults sweep in dev/*.mjs and the pair views,
+  // neither of which ships in the bundle (see .homeyignore) nor is written to be type-checked.
+  "include": ["app.ts", "lib/**/*.ts", "drivers/**/*.ts"],
+  "exclude": ["test", ".homeybuild", "node_modules", "dev"]
+}

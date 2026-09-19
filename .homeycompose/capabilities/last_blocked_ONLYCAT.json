@@ -1,0 +1,8 @@
+{
+  "type": "string",
+  "title": { "en": "Last refusal", "sv": "Senaste nekande", "de": "Letzte Abweisung", "nl": "Laatste weigering", "no": "Siste avvisning", "da": "Seneste afvisning" },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false,
+  "insights": false
+}

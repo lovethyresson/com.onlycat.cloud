@@ -1,0 +1,46 @@
+{
+  "id": "com.onlycat.cloud",
+  "version": "0.1.0",
+  "compatibility": ">=12.2.0",
+  "sdk": 3,
+  "platforms": [
+    "local"
+  ],
+  "name": {
+    "en": "OnlyCat"
+  },
+  "description": {
+    "en": "Your cat flap in Homey — who came in, who was turned away, and why",
+    "sv": "Kattluckan i Homey — vem kom in, vem nekades och varför",
+    "de": "Deine Katzenklappe in Homey — wer hereinkam, wer abgewiesen wurde und warum",
+    "nl": "Je kattenluik in Homey — wie er binnenkwam, wie werd geweigerd en waarom",
+    "no": "Katteluken i Homey — hvem kom inn, hvem ble avvist og hvorfor",
+    "da": "Din kattelem i Homey — hvem kom ind, hvem blev afvist og hvorfor"
+  },
+  "category": [
+    "security"
+  ],
+  "brandColor": "#0084FF",
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "author": {
+    "name": "Love Thyresson",
+    "email": "love@thyresson.se"
+  },
+  "contributing": {
+    "donate": {
+      "paypal": {
+        "username": "lovethyresson"
+      }
+    }
+  },
+  "homepage": "https://github.com/lovethyresson/com.onlycat.cloud",
+  "source": "https://github.com/lovethyresson/com.onlycat.cloud",
+  "bugs": {
+    "url": "https://github.com/lovethyresson/com.onlycat.cloud/issues"
+  },
+  "license": "MIT"
+}
