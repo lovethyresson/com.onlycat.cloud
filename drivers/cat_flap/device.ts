@@ -2,7 +2,9 @@ import Homey from 'homey';
 import {
   CAT_CAPABILITY, TrackedCat, capabilityForCat, capabilitySyncPlan, initialLocation, rfidFromCapability,
 } from '../../lib/cats';
-import { EventStore, imageUrl, isEventConcluded } from '../../lib/event-store';
+import {
+  EventStore, clipUrl, imageUrl, isEventConcluded,
+} from '../../lib/event-store';
 import { SubEventKind, kindOf, locationAfter } from '../../lib/events';
 import { Gateway, GATEWAY_URL, OnlyCatAuthError } from '../../lib/gateway';
 import { Logger } from '../../lib/log';
@@ -23,6 +25,11 @@ function describeSubevents(subevents: OnlyCatSubEvent[] | undefined): string {
 
 /** How long to wait for a final summary before settling on what we have. */
 const SUMMARY_GRACE_MS = 45000;
+/** One id shared by the still and the clip, so the still becomes the clip's poster frame. */
+const CAMERA_ID = 'event';
+/** A HEAD request to find out whether the clip has finished processing. */
+const CLIP_PROBE_MS = 4000;
+
 /** Clear the activity alarm if the flap never tells us the event concluded. */
 const MOTION_TIMEOUT_MS = 120000;
 
@@ -67,6 +74,15 @@ module.exports = class CatFlapDevice extends Homey.Device {
       return this.getData().id as string;
     }
 
+    /**
+     * `this.homey.__()` is typed `string | undefined` — a key with no translation returns
+     * nothing. Falling back to the key itself makes a missing string visible and greppable
+     * instead of rendering as an empty label nobody can trace.
+     */
+    private t(key: string, tags?: Record<string, string>): string {
+      return this.homey.__(key, tags) ?? key;
+    }
+
     // ------------------------------------------------------------------------------------------
     // Lifecycle
     // ------------------------------------------------------------------------------------------
@@ -95,6 +111,13 @@ module.exports = class CatFlapDevice extends Homey.Device {
       });
       this.lastImage = image;
 
+      // Same id for the image and the video on purpose: Homey uses a matching image as the
+      // poster frame behind a video while it loads, which is exactly the right still to show.
+      await this.setCameraImage(CAMERA_ID, this.t('camera.last_event'), image)
+        .catch((error) => this.logger.error('setCameraImage failed:', error?.message ?? error));
+
+      await this.registerClips();
+
       await this.connect();
     }
 
@@ -109,6 +132,52 @@ module.exports = class CatFlapDevice extends Homey.Device {
       if (changedKeys.includes('debug_logging')) {
         this.logger.setDebug(newSettings.debug_logging === true);
       }
+    }
+
+    /**
+     * The event clip, as an HLS stream.
+     *
+     * OnlyCat serves a per-event HLS playlist, not a live feed — so this is "the clip of the last
+     * thing that happened", not a camera you can watch. The title says so.
+     *
+     * Wrapped in try/catch the way Athom's own example is: videos need Homey 12.7.0 and are not
+     * on every model. An older hub simply gets everything except clips, which is better than
+     * raising `compatibility` and excluding it from the app entirely.
+     */
+    private async registerClips(): Promise<void> {
+      try {
+        const video = await this.homey.videos.createVideoHLS();
+
+        video.registerVideoUrlListener(async () => ({ url: await this.currentClipUrl() }));
+
+        await this.setCameraVideo(CAMERA_ID, this.t('camera.last_event'), video);
+        this.logger.debug('clips registered');
+      } catch (error: any) {
+        // Not an error worth alarming anyone about — it is what an older Homey looks like.
+        this.logger.info(`clips unavailable on this Homey: ${error?.message ?? error}`);
+      }
+    }
+
+    /** Throws rather than returning a URL that would play nothing. */
+    private async currentClipUrl(): Promise<string> {
+      const { tracked } = this.store;
+      const url = tracked ? clipUrl(GATEWAY_URL, tracked.event) : null;
+      if (!url) throw new Error(this.t('error.no_clip'));
+
+      // The playlist is not written the instant an event ends; the reference implementation
+      // treats 404 and 5xx as "not ready yet" for the same reason. Better to say so than to hand
+      // the player a URL that 404s.
+      const probe = await fetch(url, {
+        method: 'HEAD', signal: AbortSignal.timeout(CLIP_PROBE_MS),
+      }).catch(() => null);
+
+      if (!probe || probe.status === 404 || probe.status >= 500) {
+        this.logger.debug(`clip for event ${tracked?.eventId} not ready (${probe?.status ?? 'no response'})`);
+        throw new Error(this.t('error.clip_not_ready'));
+      }
+
+      this.logger.debug(`clip for event ${tracked?.eventId} ready`);
+      return url;
     }
 
     async onUninit(): Promise<void> {
@@ -141,7 +210,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
       const apiKey = this.getStoreValue('apiKey') as string | undefined;
       if (!apiKey) {
         this.logger.error('no API key in the device store — re-pair, or use Repair');
-        await this.markUnavailable(this.homey.__('error.unauthorized'));
+        await this.markUnavailable(this.t('error.unauthorized'));
         return;
       }
 
@@ -180,13 +249,13 @@ module.exports = class CatFlapDevice extends Homey.Device {
     };
 
     private onDown = (reason: string): void => {
-      void this.markUnavailable(`${this.homey.__('error.no_connection')} (${reason})`);
+      void this.markUnavailable(`${this.t('error.no_connection')} (${reason})`);
       void this.setCapabilityValue('alarm_connectivity', true).catch(() => {});
     };
 
     private onUnauthorized = (): void => {
       this.logger.error('the API key was rejected — open Repair and paste a new one');
-      void this.markUnavailable(this.homey.__('error.unauthorized'));
+      void this.markUnavailable(this.t('error.unauthorized'));
     };
 
     private onDeviceUpdate = (deviceId: string): void => {
@@ -279,7 +348,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
 
       await this.setCapabilityValue('alarm_connectivity', !connected).catch(() => {});
       if (connected) await this.markAvailable();
-      else await this.markUnavailable(this.homey.__('error.no_connection'));
+      else await this.markUnavailable(this.t('error.no_connection'));
 
       await this.setSettings({
         device_id: this.deviceId,
@@ -289,7 +358,6 @@ module.exports = class CatFlapDevice extends Homey.Device {
         tracked_cats: this.cats.map((cat) => cat.name).join(', ') || '—',
       }).catch(() => {});
 
-      await this.updateLockState();
     }
 
     private async refreshPolicies(): Promise<void> {
@@ -316,7 +384,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
     }
 
     private policyName(policy: OnlyCatDeviceTransitPolicy): string {
-      return policy.name ?? this.homey.__('policy.unnamed', { id: String(policy.deviceTransitPolicyId) });
+      return policy.name ?? this.t('policy.unnamed', { id: String(policy.deviceTransitPolicyId) });
     }
 
     private async applyPolicyCapability(): Promise<void> {
@@ -340,19 +408,6 @@ module.exports = class CatFlapDevice extends Homey.Device {
     private activePolicy(): OnlyCatDeviceTransitPolicy | null {
       if (this.activePolicyId == null) return null;
       return this.policies.find((p) => p.deviceTransitPolicyId === this.activePolicyId) ?? null;
-    }
-
-    /**
-     * The flap does not report lock state, so this is the idle-state simulation: what the policy
-     * decides when nothing is happening.
-     */
-    private async updateLockState(): Promise<void> {
-      const outcome = evaluatePolicy(this.activePolicy(), {
-        minutesOfDay: minutesOfDayIn(this.timeZone),
-      });
-      this.logger.debug(`lock state: ${outcome.locked ? 'locked' : 'unlocked'}`
-        + ` (rule ${outcome.ruleIndex ?? 'none, idle state'}, ${outcome.confident ? 'confident' : 'NOT confident'})`);
-      await this.setCapabilityValue('locked', outcome.locked).catch(() => {});
     }
 
     private async refreshCatLocations(): Promise<void> {
@@ -401,11 +456,10 @@ module.exports = class CatFlapDevice extends Homey.Device {
       this.registerCapabilityListener('policy_ONLYCAT', async (value: string) => {
         const policyId = Number(value);
         if (!this.policies.some((p) => p.deviceTransitPolicyId === policyId)) {
-          throw new Error(this.homey.__('error.unknown_policy'));
+          throw new Error(this.t('error.unknown_policy'));
         }
         await this.gateway.activateDeviceTransitPolicy(this.deviceId, policyId);
         this.activePolicyId = policyId;
-        await this.updateLockState();
       });
 
       this.registerCapabilityListener('button.unlock', async () => {
@@ -546,7 +600,6 @@ module.exports = class CatFlapDevice extends Homey.Device {
         await this.commitSubevent(event, subevent, kind, classification);
       }
 
-      await this.updateLockState();
     }
 
     private async commitSubevent(
@@ -559,7 +612,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
       const tracked = rfid ? this.cats.find((cat) => cat.rfidCode === rfid) ?? null : null;
       const name = this.nameFor(rfid || null);
       const direction = subevent.direction === 'INWARD' ? 'in' : 'out';
-      const actionLabel = this.homey.__(`event.${kind.key}`, { name });
+      const actionLabel = this.t(`event.${kind.key}`, { name });
 
       this.logger.info(actionLabel);
       await this.setCapabilityValue('last_event_ONLYCAT', actionLabel).catch(() => {});
@@ -586,7 +639,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
       if (kind.trigger === 'cat_denied') {
         const outcome = this.refusalOutcome(event, rfid);
         const reason = explainRefusal(outcome, tracked ? name : null);
-        const line = this.homey.__(reason.key, reason.tags);
+        const line = this.t(reason.key, reason.tags);
         this.logger.info(`refusal: ${line}`
           + ` (rule ${outcome.ruleIndex ?? 'none, idle state'}, ${outcome.confident ? 'confident' : 'NOT confident'})`);
         await this.setCapabilityValue('last_blocked_ONLYCAT', line).catch(() => {});
@@ -615,9 +668,9 @@ module.exports = class CatFlapDevice extends Homey.Device {
     }
 
     private nameFor(rfid: string | null): string {
-      if (!rfid) return this.homey.__('event.a_cat');
+      if (!rfid) return this.t('event.a_cat');
       const tracked = this.cats.find((cat) => cat.rfidCode === rfid);
-      return tracked?.name ?? this.homey.__('event.unknown_cat');
+      return tracked?.name ?? this.t('event.unknown_cat');
     }
 
     private async fire(card: string, tokens: Record<string, any>, state: Record<string, any> = {}): Promise<void> {
@@ -655,7 +708,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
 
     async setCatLocation(rfid: string, home: boolean): Promise<void> {
       const capability = capabilityForCat(rfid);
-      if (!this.hasCapability(capability)) throw new Error(this.homey.__('error.unknown_cat'));
+      if (!this.hasCapability(capability)) throw new Error(this.t('error.unknown_cat'));
       await this.setCapabilityValue(capability, home);
     }
 
@@ -671,7 +724,6 @@ module.exports = class CatFlapDevice extends Homey.Device {
       await this.gateway.activateDeviceTransitPolicy(this.deviceId, policyId);
       this.activePolicyId = policyId;
       await this.setCapabilityValue('policy_ONLYCAT', String(policyId)).catch(() => {});
-      await this.updateLockState();
     }
 
     /** Called by the driver after a Repair that changed the key or the tracked cats. */
@@ -697,7 +749,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
 
     handleAuthError(error: unknown): void {
       if (error instanceof OnlyCatAuthError) {
-        void this.setUnavailableSafely(this.homey.__('error.unauthorized'));
+        void this.setUnavailableSafely(this.t('error.unauthorized'));
       }
     }
 

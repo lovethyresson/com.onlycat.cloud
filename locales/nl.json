@@ -45,7 +45,9 @@
     "no_connection": "Niet verbonden met OnlyCat",
     "unauthorized": "De OnlyCat-API-sleutel is geweigerd. Open Repareren en plak een nieuwe.",
     "unknown_policy": "Dat deurbeleid bestaat niet meer op dit luik",
-    "unknown_cat": "Die kat wordt op dit luik niet gevolgd"
+    "unknown_cat": "Die kat wordt op dit luik niet gevolgd",
+    "clip_not_ready": "De clip wordt nog verwerkt",
+    "no_clip": "Geen clip voor deze gebeurtenis"
   },
   "pair": {
     "title": "Verbinden met OnlyCat",
@@ -59,5 +61,8 @@
     "checking": "Controleren…",
     "empty": "Plak eerst je OnlyCat-API-sleutel.",
     "none": "De sleutel werkt, maar er staan geen kattenluiken op het account."
+  },
+  "camera": {
+    "last_event": "Laatste gebeurtenis"
   }
 }

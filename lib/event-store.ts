@@ -58,6 +58,17 @@ export function posterFrame(event: OnlyCatEvent): number {
   return 1;
 }
 
+/**
+ * The HLS playlist for an event's clip, or null when there is nothing to play.
+ *
+ * The token is mandatory here, unlike the still frames, which are served unauthenticated. Events
+ * can arrive with `accessToken: null`, and that means "no clip", not "try anyway".
+ */
+export function clipUrl(gatewayUrl: string, event: OnlyCatEvent): string | null {
+  if (!event.accessToken) return null;
+  return `${gatewayUrl}/sharing/video/${event.deviceId}/${event.eventId}?t=${event.accessToken}`;
+}
+
 export function imageUrl(gatewayUrl: string, event: OnlyCatEvent): string {
   return `${gatewayUrl}/events/${event.deviceId}/${event.eventId}/${posterFrame(event)}`;
 }

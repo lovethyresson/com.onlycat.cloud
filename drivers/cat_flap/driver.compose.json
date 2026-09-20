@@ -7,9 +7,8 @@
     "no": "Katteluke",
     "da": "Kattelem"
   },
-  "class": "lock",
+  "class": "sensor",
   "capabilities": [
-    "locked",
     "policy_ONLYCAT",
     "alarm_motion",
     "alarm_prey_ONLYCAT",
@@ -21,11 +20,6 @@
     "button.reboot"
   ],
   "capabilitiesOptions": {
-    "locked": {
-      "setable": false,
-      "getable": true,
-      "uiQuickAction": false
-    },
     "alarm_motion": {
       "title": {
         "en": "Activity at the flap",

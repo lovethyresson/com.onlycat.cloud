@@ -45,7 +45,9 @@
     "no_connection": "Inte ansluten till OnlyCat",
     "unauthorized": "OnlyCat-API-nyckeln avvisades. Öppna Reparera och klistra in en ny.",
     "unknown_policy": "Den dörregeln finns inte längre på luckan",
-    "unknown_cat": "Den katten följs inte på den här luckan"
+    "unknown_cat": "Den katten följs inte på den här luckan",
+    "clip_not_ready": "Klippet bearbetas fortfarande",
+    "no_clip": "Inget klipp för den här händelsen"
   },
   "pair": {
     "title": "Anslut till OnlyCat",
@@ -59,5 +61,8 @@
     "checking": "Kontrollerar…",
     "empty": "Klistra in din OnlyCat API-nyckel först.",
     "none": "Nyckeln fungerar, men det finns inga kattluckor på kontot."
+  },
+  "camera": {
+    "last_event": "Senaste händelsen"
   }
 }

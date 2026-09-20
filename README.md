@@ -33,6 +33,9 @@ not expose. If one of those could have fired first, the app says so rather than 
 > Misan was turned away. This flap's rules depend on its own sensors, so the app can't tell you
 > which one refused her.
 
+**Plays the clip.** OnlyCat records a short video of every event, and Homey can play HLS — so the
+device has a camera tile showing the last event, with the still frame as its poster.
+
 **Switches door policies.** The policies you built in the OnlyCat app appear as a picker on the
 tile and as a Flow action, so "curfew at sunset" is one Flow.
 
@@ -70,7 +73,7 @@ use the device's **Repair**.
 | | |
 |---|---|
 | **When** | A cat came in · A cat went out · A cat was turned away · A cat looked but did not come through · A cat forced the flap · Prey detected · An unknown cat used the flap · Something happened at the flap |
-| **And** | A cat is home · The flap is locked · The door policy is… |
+| **And** | A cat is home · The door policy is… |
 | **Then** | Unlock the flap · Switch the door policy · Mark a cat as home or out · Restart the flap |
 
 Every "when" card carries a **Snapshot** tag — drop it into a push notification and the photo
@@ -92,9 +95,22 @@ on the device itself, so it keeps letting the right cats in with no internet at 
 Homey knowing about it — no events, no Flows, and the device shows as unavailable until the
 connection comes back.
 
-**Lock state is worked out, not read.** OnlyCat does not report whether the flap is locked, so the
-app runs your door policy's rules itself. Rules that depend on the flap's own sensors cannot be
-evaluated from outside, which is the same limit behind the "can't tell you which one" message.
+**There is no lock state, and that is deliberate.** The API defines one — `LockState` with
+Locked, Unlocked and LongTermUnlocked — but only inside `FrameMetadata`, the per-frame data
+captured during an event. No socket message and no endpoint delivers it: `Device`, `DeviceEvent`
+and `EventSummary` all have no lock field. So a live "locked" readout could only ever be a
+simulation of your door policy's rules, guessed from outside, and rules that depend on the flap's
+own sensors cannot be evaluated at all. The app shows the **active door policy** instead, which is
+real data — the same thing OnlyCat's own app shows.
+
+The refusal reason uses that same rule engine, but it is anchored to a `DENY` the flap actually
+sent: it explains something that happened rather than asserting a state, and it says when it
+cannot be sure.
+
+**Clips are per event, not a live feed.** OnlyCat records each event and serves it as an HLS
+playlist; there is no continuous stream to watch. The playlist also is not written the instant an
+event ends, so the tile says the clip is still processing rather than handing the player a URL
+that 404s. Clips need Homey 12.7.0 or newer; on anything older everything else still works.
 
 **Refusal alerts arrive a few seconds late, on purpose.** OnlyCat revises an event while it is
 happening: a cat that starts coming through and turns back changes from a transit to a peek. Homey
@@ -163,4 +179,8 @@ VirtualV Trading Ltd.
 
 ## Licence
 
-[MIT](LICENSE) © 2026 Love Thyresson.
+[GNU General Public License v3.0 or later](LICENSE) © 2026 Love Thyresson.
+
+Copyleft rather than permissive on purpose: this is built on a vendor's cloud, using their
+artwork, with their GPL-3.0 Home Assistant integration as the reference. Anyone distributing a
+modified version ships its source under the same terms.

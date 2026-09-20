@@ -45,7 +45,9 @@
     "no_connection": "Not connected to OnlyCat",
     "unauthorized": "The OnlyCat API key was rejected. Open Repair and paste a new one.",
     "unknown_policy": "That door policy no longer exists on this flap",
-    "unknown_cat": "That cat is not tracked on this flap"
+    "unknown_cat": "That cat is not tracked on this flap",
+    "clip_not_ready": "The clip is still being processed",
+    "no_clip": "No clip for this event"
   },
   "pair": {
     "title": "Connect to OnlyCat",
@@ -59,5 +61,8 @@
     "checking": "Checking…",
     "empty": "Paste your OnlyCat API key first.",
     "none": "That key works, but there are no cat flaps on the account."
+  },
+  "camera": {
+    "last_event": "Last event"
   }
 }

@@ -45,7 +45,9 @@
     "no_connection": "Nicht mit OnlyCat verbunden",
     "unauthorized": "Der OnlyCat-API-Schlüssel wurde abgelehnt. Öffne Reparieren und füge einen neuen ein.",
     "unknown_policy": "Diese Türregel gibt es auf dieser Klappe nicht mehr",
-    "unknown_cat": "Diese Katze wird an dieser Klappe nicht verfolgt"
+    "unknown_cat": "Diese Katze wird an dieser Klappe nicht verfolgt",
+    "clip_not_ready": "Der Clip wird noch verarbeitet",
+    "no_clip": "Kein Clip für dieses Ereignis"
   },
   "pair": {
     "title": "Mit OnlyCat verbinden",
@@ -59,5 +61,8 @@
     "checking": "Wird geprüft…",
     "empty": "Füge zuerst deinen OnlyCat-API-Schlüssel ein.",
     "none": "Der Schlüssel funktioniert, aber auf dem Konto gibt es keine Katzenklappen."
+  },
+  "camera": {
+    "last_event": "Letztes Ereignis"
   }
 }

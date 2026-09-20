@@ -5,7 +5,7 @@ import {
   capabilityForCat, capabilitySyncPlan, initialLocation, offerableCats, rfidFromCapability,
 } from '../lib/cats';
 import {
-  EventStore, isSummaryFinal, posterFrame, usableSubevents,
+  EventStore, clipUrl, isSummaryFinal, posterFrame, usableSubevents,
 } from '../lib/event-store';
 import { SUB_EVENT_KINDS, kindOf, locationAfter } from '../lib/events';
 import {
@@ -381,7 +381,7 @@ describe('the flow card surface', () => {
   const driver = manifest.drivers.find((d: any) => d.id === 'cat_flap');
 
   it('declares every capability the device code sets', () => {
-    const expected = ['locked', 'policy_ONLYCAT', 'alarm_motion', 'alarm_prey_ONLYCAT',
+    const expected = ['policy_ONLYCAT', 'alarm_motion', 'alarm_prey_ONLYCAT',
       'alarm_human_ONLYCAT', 'alarm_connectivity', 'last_event_ONLYCAT', 'last_blocked_ONLYCAT'];
     for (const capability of expected) {
       assert.ok(driver.capabilities.includes(capability), `missing ${capability}`);
@@ -392,10 +392,20 @@ describe('the flow card surface', () => {
     assert.ok(manifest.capabilities.cat_home_ONLYCAT, 'cat_home_ONLYCAT type not declared');
   });
 
-  it('keeps `locked` read-only, which is what makes class lock honest', () => {
-    assert.equal(driver.capabilitiesOptions.locked.setable, false);
-    assert.equal(driver.capabilitiesOptions.locked.uiQuickAction, false);
-    assert.equal(driver.class, 'lock');
+  it('claims no lock state, because the API cannot report one', () => {
+    // OnlyCat's own app shows the active door policy and never asserts whether the flap is
+    // locked right now — the API does not tell it. We had a `locked` capability driven by a
+    // local simulation of the flap's rule engine, which is an unhedged live claim built on
+    // guesswork. Gone, along with the `lock` device class it was the whole justification for.
+    assert.ok(!driver.capabilities.includes('locked'),
+      'a guessed lock state is back');
+    assert.equal(driver.capabilitiesOptions.locked, undefined);
+    assert.notEqual(driver.class, 'lock',
+      'class lock implies a lock state this device cannot report');
+    assert.equal(driver.class, 'sensor');
+
+    const conditions = (manifest.flow.conditions ?? []).map((c: any) => c.id);
+    assert.ok(!conditions.includes('flap_is_locked'), 'the lock condition card is back');
   });
 
   it('gives every arg-bearing card a titleFormatted', () => {
@@ -644,6 +654,20 @@ describe('assets', () => {
 describe('the app manifest', () => {
   const manifest = require('../app.json');
 
+  it('declares one licence, consistently', () => {
+    // erdebee/onlycat-homey shipped a GPL-3.0 LICENSE file alongside "license": "MIT" in
+    // package.json and a README claiming MIT. That contradiction is the reason its code could
+    // not safely be reused, and it is cheap to make impossible here.
+    const expected = 'GPL-3.0-or-later';
+    assert.equal(manifest.license, expected, 'app manifest licence');
+    assert.equal(JSON.parse(readFileSync('package.json', 'utf8')).license, expected,
+      'package.json licence');
+    assert.match(readFileSync('LICENSE', 'utf8'), /GNU GENERAL PUBLIC LICENSE\s+Version 3/,
+      'LICENSE is not the GPLv3 text');
+    assert.match(readFileSync('README.md', 'utf8'), /GNU General Public License v3\.0/,
+      'README states a different licence');
+  });
+
   it('has the properties the App Store needs', () => {
     for (const key of ['id', 'version', 'compatibility', 'sdk', 'platforms', 'name',
       'description', 'category', 'brandColor', 'images', 'author', 'source', 'bugs', 'license']) {
@@ -691,5 +715,21 @@ describe('the app manifest', () => {
     for (const person of manifest.contributors?.developers ?? []) {
       assert.ok(!/onlycat/i.test(person.name), 'do not list the vendor as a contributor');
     }
+  });
+});
+
+describe('event clips', () => {
+  const gateway = 'https://gateway.onlycat.com';
+
+  it('builds the HLS playlist URL OnlyCat serves', () => {
+    const url = clipUrl(gateway, { deviceId: 'OC-1', eventId: 42, accessToken: 'I7qGbO' });
+    assert.equal(url, 'https://gateway.onlycat.com/sharing/video/OC-1/42?t=I7qGbO');
+  });
+
+  it('returns null without an access token rather than a URL that plays nothing', () => {
+    // Unlike the still frames, which are served unauthenticated, the clip needs the token — and
+    // events legitimately arrive with accessToken: null. That means "no clip", not "try anyway".
+    assert.equal(clipUrl(gateway, { deviceId: 'OC-1', eventId: 42, accessToken: null }), null);
+    assert.equal(clipUrl(gateway, { deviceId: 'OC-1', eventId: 42 }), null);
   });
 });

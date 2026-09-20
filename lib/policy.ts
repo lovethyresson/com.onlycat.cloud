@@ -1,6 +1,15 @@
 /**
  * The flap's own rule engine, re-implemented.
  *
+ * NOT for reporting lock state. An earlier version drove a `locked` capability from this, which
+ * was an unhedged live claim built on a simulation with known blind spots — and OnlyCat's own app
+ * does not make that claim, because the API cannot tell it one. The capability is gone.
+ *
+ * What is left is legitimate because it is anchored to something that definitely happened: when a
+ * DENY subevent arrives, the flap really did refuse, and this works out which of the owner's own
+ * rules most likely did it — reporting `confident: false` when it cannot be sure. Explaining a
+ * fact, rather than asserting a state.
+ *
  * OnlyCat does not report lock state. `LockState` exists in their models but only inside
  * `FrameMetadata`, the per-frame device state, and no socket event delivers it. The flap
  * evaluates its transit policy locally on every frame, so a client that wants to show a lock

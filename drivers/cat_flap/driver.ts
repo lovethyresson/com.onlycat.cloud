@@ -49,7 +49,8 @@ module.exports = class CatFlapDriver extends Homey.Driver {
   // ------------------------------------------------------------------------------------------
 
   private anyCat(): { name: string; rfid: string } {
-    return { name: this.homey.__('flow.any_cat'), rfid: '' };
+    // `__()` is typed `string | undefined`; fall back to something legible rather than blank.
+    return { name: this.homey.__('flow.any_cat') ?? 'Any cat', rfid: '' };
   }
 
     private catAutocomplete = async (query: string, args: any) => {
@@ -109,9 +110,6 @@ module.exports = class CatFlapDriver extends Homey.Driver {
       });
       isHome.registerArgumentAutocompleteListener('cat', this.catAutocomplete);
 
-      this.homey.flow.getConditionCard('flap_is_locked')
-        .registerRunListener(async (args: any) => args.device.getCapabilityValue('locked') === true);
-
       const policyIs = this.homey.flow.getConditionCard('policy_is');
       policyIs.registerRunListener(async (args: any) => {
         const device = args.device as CatFlapDevice;
@@ -128,7 +126,7 @@ module.exports = class CatFlapDriver extends Homey.Driver {
       const setPolicy = this.homey.flow.getActionCard('set_policy');
       setPolicy.registerRunListener(async (args: any) => {
         const id = Number(args?.policy?.id);
-        if (!Number.isFinite(id)) throw new Error(this.homey.__('error.unknown_policy'));
+        if (!Number.isFinite(id)) throw new Error(this.homey.__('error.unknown_policy') ?? 'error.unknown_policy');
         await (args.device as CatFlapDevice).activatePolicy(id);
       });
       setPolicy.registerArgumentAutocompleteListener('policy', this.policyAutocomplete);
@@ -136,7 +134,7 @@ module.exports = class CatFlapDriver extends Homey.Driver {
       const setLocation = this.homey.flow.getActionCard('set_cat_location');
       setLocation.registerRunListener(async (args: any) => {
         const rfid = args?.cat?.rfid;
-        if (!rfid) throw new Error(this.homey.__('error.unknown_cat'));
+        if (!rfid) throw new Error(this.homey.__('error.unknown_cat') ?? 'error.unknown_cat');
         await (args.device as CatFlapDevice).setCatLocation(rfid, args?.where === 'home');
       });
       setLocation.registerArgumentAutocompleteListener('cat', this.catAutocomplete);

@@ -45,7 +45,9 @@
     "no_connection": "Ikke forbundet til OnlyCat",
     "unauthorized": "OnlyCat-API-nøglen blev afvist. Åbn Reparer, og indsæt en ny.",
     "unknown_policy": "Den dørregel findes ikke længere på lemmen",
-    "unknown_cat": "Den kat følges ikke på denne lem"
+    "unknown_cat": "Den kat følges ikke på denne lem",
+    "clip_not_ready": "Klippet behandles stadig",
+    "no_clip": "Intet klip for denne hændelse"
   },
   "pair": {
     "title": "Forbind til OnlyCat",
@@ -59,5 +61,8 @@
     "checking": "Kontrollerer…",
     "empty": "Indsæt din OnlyCat-API-nøgle først.",
     "none": "Nøglen virker, men der er ingen kattelemme på kontoen."
+  },
+  "camera": {
+    "last_event": "Seneste hændelse"
   }
 }

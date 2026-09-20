@@ -89,10 +89,16 @@ prints "three policies, Night is active, two rules the app cannot evaluate", not
 
 - **`app.json` is generated.** Sources are `.homeycompose/`. Run `homey app build`; never
   hand-edit it. It is committed because the CLI refuses to run without it.
-- **`locked` is the official capability with `setable: false`** via `capabilitiesOptions`, which is
-  what lets the driver be `class: "lock"` honestly. It also carries `uiQuickAction: false` so the
-  policy picker owns the tile's quick action. If a Zone "lock all" Flow turns out to target a
-  non-setable `locked` anyway, the retreat is a custom `locked_ONLYCAT` and `class: "sensor"`.
+- **There is no `locked` capability, and there must not be one.** The API defines `LockState`
+  only inside `FrameMetadata` — per-frame data captured during an event — and no socket message
+  or endpoint delivers it. `Device`, `DeviceEvent` and `EventSummary` carry no lock field. A
+  `locked` capability could therefore only be a client-side simulation of the door policy,
+  presented as a live fact, with no way to signal that rules depending on the flap's own sensors
+  were skipped. It shipped that way once and was removed. `class` is `sensor` accordingly —
+  `lock` implied a state this device cannot report.
+- **`lib/policy.ts` still exists, for the refusal reason only.** That is defensible where a lock
+  readout was not: it is anchored to a `DENY` the flap actually sent, so it explains a fact
+  rather than asserting a state, and it reports `confident: false` rather than guessing.
 - **Cats are runtime capability instances**, `cat_home_ONLYCAT.c<chip>`. Only the *type* is declared
   in compose. Two consequences: `addCapability()` does not apply per-instance options, so
   `setCapabilityOptions()` must be pushed explicitly or every cat is titled "Cat"; and an Insights
@@ -100,6 +106,9 @@ prints "three policies, Night is active, two rules the app cannot evaluate", not
   renamed in the OnlyCat app keeps its old name in Insights forever. Accepted and documented.
 - **The `c` prefix on the chip code is deliberate** — 15-digit chip codes start with a digit, which
   is exactly what broke the reference implementation's entity ids.
+- **Clips are `createVideoHLS()` + `setCameraVideo()`**, sharing one id with `setCameraImage()`
+  so the still becomes the video's poster frame. Wrapped in try/catch the way Athom's own example
+  is: videos need Homey 12.7.0, and an older hub should lose clips rather than the whole app.
 - **Six languages at parity** — `en`, `sv`, `de`, `nl`, `no`, `da`. A test enforces it.
 - **`this.homey.setTimeout`, never the global**, and no module-level state. Neither is required
   today (`platforms: ["local"]`), both are required for Homey Cloud, and honouring them now keeps

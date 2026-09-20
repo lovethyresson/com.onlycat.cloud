@@ -143,9 +143,15 @@ describe('Gateway against a live socket', () => {
   it('times out a hung ack instead of wedging', async () => {
     const g = await connect();
     fake.swallowNextAcks = 1;
-    // Documented to happen on getDeviceTransitPolicies and friends. A hung call must degrade
-    // one value, not the device.
-    await assert.rejects(() => g.send('getDevices', {}), OnlyCatRequestError);
+    // Deliberately NOT getDevices: resubscription calls that too, and the `userUpdate` push
+    // lands just after connect — so a stray resubscribe could eat the swallowed ack and this
+    // test would pass or fail on timing. It flaked roughly one run in three before this.
+    // getDeviceTelemetryMetrics is one of the calls actually documented to hang, and
+    // resubscribe never issues it.
+    await assert.rejects(
+      () => g.send('getDeviceTelemetryMetrics', { deviceId: DEVICE }),
+      OnlyCatRequestError,
+    );
   });
 
   it('delivers a deviceEventUpdate carrying its token inside body', async () => {

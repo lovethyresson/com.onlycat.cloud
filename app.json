@@ -113,7 +113,7 @@
   "bugs": {
     "url": "https://github.com/lovethyresson/com.onlycat.cloud/issues"
   },
-  "license": "MIT",
+  "license": "GPL-3.0-or-later",
   "flow": {
     "triggers": [
       {
@@ -1273,24 +1273,6 @@
         ]
       },
       {
-        "id": "flap_is_locked",
-        "title": {
-          "en": "The flap !{{is|is not}} locked",
-          "sv": "Luckan !{{är|är inte}} låst",
-          "de": "Die Klappe !{{ist|ist nicht}} gesperrt",
-          "nl": "Het luik !{{is|is niet}} vergrendeld",
-          "no": "Luken !{{er|er ikke}} låst",
-          "da": "Lemmen !{{er|er ikke}} låst"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=cat_flap"
-          }
-        ]
-      },
-      {
         "id": "policy_is",
         "title": {
           "en": "The door policy !{{is|is not}}",
@@ -1514,9 +1496,8 @@
         "no": "Katteluke",
         "da": "Kattelem"
       },
-      "class": "lock",
+      "class": "sensor",
       "capabilities": [
-        "locked",
         "policy_ONLYCAT",
         "alarm_motion",
         "alarm_prey_ONLYCAT",
@@ -1528,11 +1509,6 @@
         "button.reboot"
       ],
       "capabilitiesOptions": {
-        "locked": {
-          "setable": false,
-          "getable": true,
-          "uiQuickAction": false
-        },
         "alarm_motion": {
           "title": {
             "en": "Activity at the flap",

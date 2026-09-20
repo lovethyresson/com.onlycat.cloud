@@ -45,7 +45,9 @@
     "no_connection": "Ikke tilkoblet OnlyCat",
     "unauthorized": "OnlyCat-API-nøkkelen ble avvist. Åpne Reparer og lim inn en ny.",
     "unknown_policy": "Den dørregelen finnes ikke lenger på luken",
-    "unknown_cat": "Den katten følges ikke på denne luken"
+    "unknown_cat": "Den katten følges ikke på denne luken",
+    "clip_not_ready": "Klippet behandles fortsatt",
+    "no_clip": "Ingen klipp for denne hendelsen"
   },
   "pair": {
     "title": "Koble til OnlyCat",
@@ -59,5 +61,8 @@
     "checking": "Sjekker…",
     "empty": "Lim inn OnlyCat-API-nøkkelen din først.",
     "none": "Nøkkelen virker, men det finnes ingen kateluker på kontoen."
+  },
+  "camera": {
+    "last_event": "Siste hendelse"
   }
 }

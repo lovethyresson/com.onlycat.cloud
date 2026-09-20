@@ -1108,17 +1108,6 @@
       ]
     },
     {
-      "id": "flap_is_locked",
-      "title": {
-        "en": "The flap !{{is|is not}} locked",
-        "sv": "Luckan !{{är|är inte}} låst",
-        "de": "Die Klappe !{{ist|ist nicht}} gesperrt",
-        "nl": "Het luik !{{is|is niet}} vergrendeld",
-        "no": "Luken !{{er|er ikke}} låst",
-        "da": "Lemmen !{{er|er ikke}} låst"
-      }
-    },
-    {
       "id": "policy_is",
       "title": {
         "en": "The door policy !{{is|is not}}",
