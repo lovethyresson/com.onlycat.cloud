@@ -116,8 +116,11 @@ prints "three policies, Night is active, two rules the app cannot evaluate", not
 - **The `c` prefix on the chip code is deliberate** — 15-digit chip codes start with a digit, which
   is exactly what broke the reference implementation's entity ids.
 - **Clips are `createVideoHLS()` + `setCameraVideo()`**, sharing one id with `setCameraImage()`
-  so the still becomes the video's poster frame. Wrapped in try/catch the way Athom's own example
-  is: videos need Homey 12.7.0, and an older hub should lose clips rather than the whole app.
+  so the still becomes the video's poster frame. Video landed in Homey **12.7.0**, and
+  `compatibility` is `>=12.7.0` rather than degrading on older firmware: this app's whole job is
+  showing you what happened at the door. The try/catch stays anyway — `validate` cannot prove
+  `homey.videos` exists on **Homey Cloud**, which we have no way to test, and losing clips there
+  beats losing the app.
 - **A camera entry is keyed by its `id`, its title is set once and never changes, and it cannot
   be removed.** Verified against the live API, after two rounds of guessing wrong. Re-registering
   an id upserts the resource without adding a row; a new title is silently ignored; and `Device`
@@ -125,10 +128,12 @@ prints "three policies, Night is active, two rules the app cannot evaluate", not
   camera id). Correcting a title means re-pairing the device. **Never put changing text in a
   camera title** — it freezes on the first value. The time goes on `last_event_ONLYCAT`.
 - **An image and a video are two separate entries**, even sharing an id — that is what "two rows
-  in the picker" was. So the app registers exactly one: the clip where Homey can play one, the
-  still otherwise, once, behind a guard, the way every mature camera app does it.
-- **The camera is attached by `showEvent()`, not at init**, so the entry appears once there is an
-  event behind it rather than as a row that renders nothing.
+  in the picker" was. Rather than fight it, both are registered and **named for what they are**:
+  "Last still image" and "Last clip". Two rows called the same thing tell you nothing.
+- **Both entries are registered once, in `onInit`** — `setCameraImage` directly, `setCameraVideo`
+  in `registerClips`. `showEvent()` only re-points the image resource. A guard placed in
+  `showEvent` is dead code, because init has already registered by the time it runs; that mistake
+  shipped once. Before touching this, `grep -n setCamera drivers/cat_flap/device.ts`.
 - **The last event is backfilled on connect**, adopted as already-settled so no Flow card fires.
   Without it a freshly started app shows an empty camera until the next cat, which can be hours;
   with it, nobody gets a prey alert about last Tuesday because their Homey rebooted.

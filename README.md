@@ -125,7 +125,9 @@ carry a time from an earlier build, re-pairing the device is the only way to cle
 **Clips are per event, not a live feed.** OnlyCat records each event and serves it as an HLS
 playlist; there is no continuous stream to watch. The playlist also is not written the instant an
 event ends, so the tile says the clip is still processing rather than handing the player a URL
-that 404s. Clips need Homey 12.7.0 or newer; on anything older everything else still works.
+that 404s. Clips are why the app requires Homey 12.7.0 — that is the release that added video
+playback, and a cat flap whose whole job is showing you what happened at the door is not worth
+shipping without them.
 
 **Refusal alerts arrive a few seconds late, on purpose.** OnlyCat revises an event while it is
 happening: a cat that starts coming through and turns back changes from a transit to a peek. Homey

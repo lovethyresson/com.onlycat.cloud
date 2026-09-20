@@ -195,9 +195,10 @@ module.exports = class CatFlapDevice extends Homey.Device {
      * OnlyCat serves a per-event HLS playlist, not a live feed — so this is "the clip of the last
      * thing that happened", not a camera you can watch. The title says so.
      *
-     * Wrapped in try/catch the way Athom's own example is: videos need Homey 12.7.0 and are not
-     * on every model. An older hub simply gets everything except clips, which is better than
-     * raising `compatibility` and excluding it from the app entirely.
+     * The app requires Homey 12.7.0, which is the release that added video, so this should
+     * always succeed on a Pro. The try/catch stays for **Homey Cloud**, where we cannot verify
+     * that `homey.videos` exists and have no way to test: losing clips there beats throwing out
+     * of `onInit` and losing the device.
      */
     private async registerClips(): Promise<void> {
       try {
@@ -919,9 +920,9 @@ module.exports = class CatFlapDevice extends Homey.Device {
      * 3. **An image and a video are separate entries**, even under one id. That is what "two
      *    rows" was the whole time: a pair, not a duplicate.
      *
-     * Fact 3 is not worth fighting, so the two rows say which is which — "Last still image"
-     * loads instantly and works on every hub; "Last clip" needs Homey 12.7.0 and OnlyCat to
-     * finish processing. They keep a shared id so the still serves as the clip's poster frame.
+     * Fact 3 is not worth fighting, so the two rows say which is which — "Last still image" is
+     * there the moment an event lands; "Last clip" waits for OnlyCat to finish processing. They
+     * keep a shared id so the still serves as the clip's poster frame.
      *
      * **A stored title cannot be changed and an entry cannot be removed.** `Device` has no
      * `unsetCameraImage`, and `unregisterImage`/`unregisterVideo` take a resource instance
