@@ -188,24 +188,36 @@ a method that ran *after* the registrations it was supposed to be preventing. A 
 `grep -n setCamera` over the one file I was editing would have shown all three sites; it is what
 finally found them. **I had researched the platform correctly and then not read my own code.**
 
-**And the actual cause, five fixes later: the shared camera id.** The still and the clip both
-registered under the id `event`, because Athom's docs say a matching image becomes the video's
-poster frame. Observed behaviour, once the app logged what it was asked for: with the shared id
-Homey requested the **clip repeatedly and the still not once**, across every build. Split into
-`still` and `clip`, Homey asked for the still within seconds — `still JPEG, 30387 bytes`.
+**And then I called it solved on evidence that did not exist.** After splitting the shared id into
+`still` and `clip`, the live log showed `still JPEG, 30387 bytes` and I announced the shared id had
+been the bug all along. The owner asked, mildly, whether it might just be that there had been no
+event since the install.
 
-That poster frame had never been seen working. I kept it through four rounds of debugging *the
-thing it was breaking*, and wrote it into a source comment as "on purpose". A documented feature
+He was right to ask. Re-reading the failing log: it ends three seconds after init, at
+`refresh complete`, and contains **no `still` line and no `clip for event` line**. It captured no
+camera interaction whatsoever. It was never evidence about the still — I had read "the absent line
+I was looking for is absent" as a finding, when the whole log predated anyone opening the camera.
+
+Three things changed between the two runs: a fresh install, an event present to show, and the id
+split. One observation cannot separate them, and I attributed it to the one I had just worked on.
+
+The poster-frame coupling was still worth removing — a documented behaviour nobody has ever
+observed should not be load-bearing, and I kept it through four rounds of debugging *the thing it
+was breaking*, written into a source comment as "on purpose". A documented feature
 nobody has observed is a hypothesis, and this one was load-bearing under every wrong theory I had.
 
-**The log line is what ended it.** Three sessions of reasoning produced three wrong answers; one
-`this.logger.debug(\`still ${kind}, ${buffer.length} bytes\`)` produced the right one in twenty
-seconds, by making "Homey never asked" distinguishable from "Homey asked and we failed". Those two
-look identical from outside and need completely opposite fixes.
+**The logging was still the right move** — it makes "Homey never asked" distinguishable from
+"Homey asked and we failed", and those look identical from outside while needing opposite fixes.
+But it only pays off in a window that actually contains the event, and I did not check that the
+window did.
 
 **Rules:**
+- **A missing log line proves nothing unless the log covers the moment.** Check the window before
+  reading absence as a finding: what was the last line, and had the thing been tried yet?
+- **When several things changed at once, say so instead of crediting the one you just did.** "It
+  works now" and "my change fixed it" are different claims, and the second needs the first plus an
+  experiment.
 - **When a component has several paths, log which one ran before theorising about why none did.**
-  Absence of a log line is evidence; absence of instrumentation is nothing at all.
 - **A vendor-documented behaviour you have never observed is an assumption.** Write it down as one.
   If it is coupling two things together, uncouple them before debugging either.
 - **Before changing how a resource is registered, grep for every call site of the registering
