@@ -14,7 +14,7 @@ import {
   OnlyCatEventSummary, OnlyCatSubEvent, effectiveClassification, macAddress,
 } from '../../lib/onlycat/models';
 import {
-  OutsideState, applyLocation, emptyState, hoursToday, localDay, rollOver,
+  OutsideState, applyLocation, emptyState, hoursToday, localDay, rollOver, unseenFraction,
 } from '../../lib/outside';
 import { PolicyOutcome, evaluatePolicy, minutesOfDayIn } from '../../lib/policy';
 import { explainRefusal } from '../../lib/reason';
@@ -184,6 +184,10 @@ module.exports = class CatFlapDevice extends Homey.Device {
     }): Promise<void> {
       if (changedKeys.includes('debug_logging')) {
         this.logger.setDebug(newSettings.debug_logging === true);
+      }
+      if (changedKeys.includes('unseen_trips')) {
+        // Only changes what future unseen trips assume; today's total already banked stands.
+        this.logger.info(`unseen trips now assume: ${newSettings.unseen_trips}`);
       }
     }
 
@@ -551,13 +555,25 @@ module.exports = class CatFlapDevice extends Homey.Device {
       }
 
       const day = localDay(this.timeZone, new Date(at));
+      const dayStart = this.localMidnight(at);
       const current = this.outside[rfid] ?? emptyState(day);
       const outside = home === null ? null : !home;
+
+      const before = this.outside[rfid];
       this.outside[rfid] = applyLocation(
-        rollOver(current, day, at, this.localMidnight(at)),
+        rollOver(current, day, at, dayStart),
         outside,
         at,
+        { fraction: unseenFraction(this.getSetting('unseen_trips')), dayStart },
       );
+
+      // Worth a line when it happens: it means the cat used a route the flap cannot see, and it
+      // is the one place "Outside today" stops being a measurement and starts being an estimate.
+      if (before && (before.since !== null) === (outside === true)) {
+        this.logger.info(`${this.nameFor(rfid)}: unseen trip — it was ${outside ? 'in' : 'out'}`
+          + ' at some point without using the flap'
+          + ` (assuming: ${this.getSetting('unseen_trips') ?? 'half'})`);
+      }
 
       await this.setStoreValue('outside', this.outside).catch(() => {});
       await this.publishOutside(rfid, at);

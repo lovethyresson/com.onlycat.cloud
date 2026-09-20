@@ -17,7 +17,7 @@ import {
 } from '../lib/policy';
 import { Logger, redactKey } from '../lib/log';
 import {
-  applyLocation, emptyState, hoursToday, localDay, rollOver,
+  applyLocation, emptyState, hoursToday, localDay, rollOver, unseenFraction,
 } from '../lib/outside';
 import { explainRefusal } from '../lib/reason';
 
@@ -917,5 +917,79 @@ describe('time outside, and the assumptions under it', () => {
     const before = applyLocation(emptyState('2026-09-20'), true, noon);
     const afterRestart = JSON.parse(JSON.stringify(before));
     assert.equal(hoursToday(afterRestart, noon + 5 * H), 5);
+  });
+});
+
+describe('unseen trips', () => {
+  const H = 3600000;
+  const noon = Date.parse('2026-09-20T12:00:00Z');
+  const half = { fraction: 0.5 };
+  const none = { fraction: 0 };
+  const all = { fraction: 1 };
+
+  /** Seen inside at `noon`, nothing since. */
+  const insideAtNoon = () => applyLocation(emptyState('2026-09-20'), false, noon);
+
+  it('credits an unseen exit when a cat comes in that we thought was already in', () => {
+    // The case that started this: it came back, so it must have gone out. We do not know when,
+    // but we know it was somewhere in the four hours since we last had evidence.
+    const state = applyLocation(insideAtNoon(), false, noon + 4 * H, half);
+    assert.equal(hoursToday(state, noon + 4 * H), 2, 'half of the unknown four hours');
+  });
+
+  it('honours the setting at both extremes', () => {
+    assert.equal(hoursToday(applyLocation(insideAtNoon(), false, noon + 4 * H, none), noon + 4 * H), 0);
+    assert.equal(hoursToday(applyLocation(insideAtNoon(), false, noon + 4 * H, all), noon + 4 * H), 4);
+  });
+
+  it('takes time back when a cat goes out that we thought was already out', () => {
+    // The mirror image, and the one that silently overcounts: it went out, so it must have come
+    // in first, and we have been counting that whole stretch as outside.
+    let state = applyLocation(emptyState('2026-09-20'), true, noon);
+    state = applyLocation(state, true, noon + 4 * H, half);
+    assert.equal(hoursToday(state, noon + 4 * H), 2, 'kept counting the time it was indoors');
+  });
+
+  it('never drives a total below zero', () => {
+    let state = applyLocation(emptyState('2026-09-20'), true, noon);
+    state = applyLocation(state, true, noon + H, all);
+    assert.ok(hoursToday(state, noon + H) >= 0);
+  });
+
+  it('assumes nothing for a cat it has never seen', () => {
+    // No last observation means no gap to divide. An unbounded guess here would invent a whole
+    // day of outside time for a cat that just walked in for the first time.
+    const first = applyLocation(emptyState('2026-09-20'), false, noon, all);
+    assert.equal(hoursToday(first, noon), 0);
+  });
+
+  it('never reaches back past midnight', () => {
+    // A cat last seen at 22:00 yesterday, coming in at 02:00, must not be credited with four
+    // hours — two of which belong to a day that has already been totalled and rolled away.
+    const yesterday = applyLocation(emptyState('2026-09-19'), false, noon);
+    const midnight = noon + 12 * H;
+    const rolled = rollOver(yesterday, '2026-09-20', midnight + 2 * H, midnight);
+    const state = applyLocation(rolled, false, midnight + 2 * H, { fraction: 1, dayStart: midnight });
+    assert.equal(hoursToday(state, midnight + 2 * H), 2, 'counted time from before midnight');
+  });
+
+  it('defaults to half on a missing or nonsense setting', () => {
+    assert.equal(unseenFraction('half'), 0.5);
+    assert.equal(unseenFraction('ignore'), 0);
+    assert.equal(unseenFraction('full'), 1);
+    assert.equal(unseenFraction(undefined), 0.5);
+    assert.equal(unseenFraction('nonsense'), 0.5);
+  });
+
+  it('is offered in the device\'s Advanced settings', () => {
+    const manifest = require('../app.json');
+    const driver = manifest.drivers.find((d: any) => d.id === 'cat_flap');
+    const advanced = driver.settings.find((g: any) => g.label?.en === 'Advanced');
+    const setting = advanced.children.find((c: any) => c.id === 'unseen_trips');
+    assert.ok(setting, 'no unseen_trips setting');
+    assert.equal(setting.type, 'dropdown');
+    assert.deepEqual(setting.values.map((v: any) => v.id), ['ignore', 'half', 'full']);
+    assert.equal(setting.value, 'half');
+    assert.ok(setting.hint?.en.length > 100, 'this one needs explaining, not labelling');
   });
 });

@@ -278,6 +278,62 @@
       },
       "children": [
         {
+          "id": "unseen_trips",
+          "type": "dropdown",
+          "value": "half",
+          "label": {
+            "en": "Unseen trips",
+            "sv": "Osedda turer",
+            "de": "Nicht gesehene Ausflüge",
+            "nl": "Ongeziene uitstapjes",
+            "no": "Usette turer",
+            "da": "Usete ture"
+          },
+          "hint": {
+            "en": "A cat can leave through a window or be carried out, and the flap sees none of it — so sometimes a cat comes back in when the app thought it was already indoors. It must have been out; the app just does not know for how long. This decides what to assume for \"Outside today\".",
+            "sv": "En katt kan gå ut genom ett fönster eller bäras ut, och luckan ser ingenting av det — så ibland kommer en katt in när appen trodde att den redan var inne. Den måste ha varit ute; appen vet bara inte hur länge. Det här avgör vad som antas för \"Ute idag\".",
+            "de": "Eine Katze kann durch ein Fenster verschwinden oder hinausgetragen werden, und die Klappe sieht davon nichts — manchmal kommt eine Katze also herein, obwohl die App sie drinnen wähnte. Draußen war sie in jedem Fall; nur wie lange, weiß die App nicht. Dies legt fest, was für \"Heute draußen\" angenommen wird.",
+            "nl": "Een kat kan via een raam weggaan of naar buiten gedragen worden, en het luik ziet daar niets van — soms komt een kat dus binnen terwijl de app dacht dat hij al binnen was. Buiten is hij hoe dan ook geweest; alleen niet hoe lang. Dit bepaalt wat er voor \"Vandaag buiten\" wordt aangenomen.",
+            "no": "En katt kan gå ut gjennom et vindu eller bæres ut, og luken ser ingenting av det — så noen ganger kommer en katt inn når appen trodde den allerede var inne. Ute har den vært uansett; appen vet bare ikke hvor lenge. Dette avgjør hva som antas for \"Ute i dag\".",
+            "da": "En kat kan gå ud gennem et vindue eller blive båret ud, og lemmen ser intet af det — så nogle gange kommer en kat ind, når appen troede, den allerede var inde. Ude har den været under alle omstændigheder; appen ved bare ikke hvor længe. Dette afgør, hvad der antages for \"Ude i dag\"."
+          },
+          "values": [
+            {
+              "id": "ignore",
+              "label": {
+                "en": "Count nothing",
+                "sv": "Räkna ingenting",
+                "de": "Nichts zählen",
+                "nl": "Niets meetellen",
+                "no": "Ikke tell noe",
+                "da": "Tæl ingenting"
+              }
+            },
+            {
+              "id": "half",
+              "label": {
+                "en": "Assume half the unknown time",
+                "sv": "Anta halva den okända tiden",
+                "de": "Die Hälfte der unbekannten Zeit annehmen",
+                "nl": "Ga uit van de helft van de onbekende tijd",
+                "no": "Anta halvparten av den ukjente tiden",
+                "da": "Antag halvdelen af den ukendte tid"
+              }
+            },
+            {
+              "id": "full",
+              "label": {
+                "en": "Assume all of it",
+                "sv": "Anta hela tiden",
+                "de": "Die gesamte Zeit annehmen",
+                "nl": "Ga uit van de hele tijd",
+                "no": "Anta hele tiden",
+                "da": "Antag hele tiden"
+              }
+            }
+          ]
+        },
+        {
           "id": "debug_logging",
           "type": "checkbox",
           "value": false,

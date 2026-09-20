@@ -126,11 +126,20 @@ cannot un-fire a Flow, so the app waits for the final version. The activity sens
 still reacts immediately.
 
 **"Outside today" is an estimate, and here is what it assumes.** The flap sees the flap, not the
-cat. If one leaves through a window or gets carried to the vet, the app will happily keep counting
-it as outside — so the *Mark a cat as home or out* Flow action is treated as better evidence than
-a transit, because somebody looked at the cat. A cat the app has never seen counts nothing rather
-than being guessed as in or out, and the day turns over at local midnight in the **flap's** time
-zone, not Homey's.
+cat. Cats leave through windows and get carried to the vet, so sometimes one comes back in when
+the app thought it was already indoors — it was out, the app just does not know for how long. All
+it knows is that the trip happened somewhere between the last sighting and now.
+
+**Unseen trips** in the device's Advanced settings decides what to do with that gap: count
+nothing, assume half of it (the default — the least-wrong single answer if the cat could have
+slipped out at any moment), or assume all of it. The same applies in reverse, where it takes time
+*back*: a cat that goes out when the app thought it was already outside must have come in first,
+and that stretch was being counted as outside.
+
+The *Mark a cat as home or out* Flow action is treated as better evidence than a flap transit,
+because somebody looked at the cat. A cat the app has never seen counts nothing rather than being
+guessed at, an unseen gap never reaches back past midnight, and the day turns over in the
+**flap's** time zone, not Homey's.
 
 **Subscription flaps need connectivity for more than notifications** — OnlyCat's subscription tier
 checks its subscription online, and individual events can be gated.
