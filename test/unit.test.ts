@@ -483,6 +483,10 @@ describe('logging', () => {
   it('never prints a whole key', () => {
     // The one rule this module exists to keep. A support log is something people paste into a
     // public forum thread, and an OnlyCat key grants full account access.
+    //
+    // This fixture is a made-up key with the real shape. An earlier version of this test used a
+    // real one, which put it in the git history of a repo about to go public — exactly the
+    // mistake the function under test exists to prevent.
     const key = 'oc_live_EXAMPLE0000_NotARealKeyOnlyUsedForTestingRedaction00';
     const shown = redactKey(key);
     assert.ok(!shown.includes('NotARealKey'), `redactKey leaked the middle: ${shown}`);
