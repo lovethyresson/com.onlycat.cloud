@@ -188,7 +188,26 @@ a method that ran *after* the registrations it was supposed to be preventing. A 
 `grep -n setCamera` over the one file I was editing would have shown all three sites; it is what
 finally found them. **I had researched the platform correctly and then not read my own code.**
 
+**And the actual cause, five fixes later: the shared camera id.** The still and the clip both
+registered under the id `event`, because Athom's docs say a matching image becomes the video's
+poster frame. Observed behaviour, once the app logged what it was asked for: with the shared id
+Homey requested the **clip repeatedly and the still not once**, across every build. Split into
+`still` and `clip`, Homey asked for the still within seconds — `still JPEG, 30387 bytes`.
+
+That poster frame had never been seen working. I kept it through four rounds of debugging *the
+thing it was breaking*, and wrote it into a source comment as "on purpose". A documented feature
+nobody has observed is a hypothesis, and this one was load-bearing under every wrong theory I had.
+
+**The log line is what ended it.** Three sessions of reasoning produced three wrong answers; one
+`this.logger.debug(\`still ${kind}, ${buffer.length} bytes\`)` produced the right one in twenty
+seconds, by making "Homey never asked" distinguishable from "Homey asked and we failed". Those two
+look identical from outside and need completely opposite fixes.
+
 **Rules:**
+- **When a component has several paths, log which one ran before theorising about why none did.**
+  Absence of a log line is evidence; absence of instrumentation is nothing at all.
+- **A vendor-documented behaviour you have never observed is an assumption.** Write it down as one.
+  If it is coupling two things together, uncouple them before debugging either.
 - **Before changing how a resource is registered, grep for every call site of the registering
   method.** "The function I am looking at is the only one that does this" is an assumption, and in
   a 1000-line device class it is usually wrong.
