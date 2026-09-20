@@ -392,20 +392,25 @@ describe('the flow card surface', () => {
     assert.ok(manifest.capabilities.cat_home_ONLYCAT, 'cat_home_ONLYCAT type not declared');
   });
 
-  it('claims no lock state, because the API cannot report one', () => {
-    // OnlyCat's own app shows the active door policy and never asserts whether the flap is
-    // locked right now — the API does not tell it. We had a `locked` capability driven by a
-    // local simulation of the flap's rule engine, which is an unhedged live claim built on
-    // guesswork. Gone, along with the `lock` device class it was the whole justification for.
-    assert.ok(!driver.capabilities.includes('locked'),
-      'a guessed lock state is back');
-    assert.equal(driver.capabilitiesOptions.locked, undefined);
-    assert.notEqual(driver.class, 'lock',
-      'class lock implies a lock state this device cannot report');
-    assert.equal(driver.class, 'sensor');
+  it('puts unlock on the tile and reboot in maintenance', () => {
+    // Unlock is the one manual control the flap has; burying it in maintenance was wrong.
+    // Reboot genuinely is maintenance — and is a Flow action too, for anyone automating it.
+    assert.notEqual(driver.capabilitiesOptions['button.unlock'].maintenanceAction, true,
+      'unlock is a primary control, not a maintenance action');
+    assert.equal(driver.capabilitiesOptions['button.reboot'].maintenanceAction, true);
+    const actions = (manifest.flow.actions ?? []).map((a: any) => a.id);
+    assert.ok(actions.includes('reboot_flap'), 'reboot should also be automatable');
+    assert.ok(actions.includes('unlock_flap'));
+  });
 
-    const conditions = (manifest.flow.conditions ?? []).map((c: any) => c.id);
-    assert.ok(!conditions.includes('flap_is_locked'), 'the lock condition card is back');
+  it('reports lock state read-only, since there is no command to set it', () => {
+    // OnlyCat has no "lock now" — only policy activation and a one-shot unlock — so a setable
+    // `locked` would be a lie half the time. Read-only, and out of the quick-action slot so the
+    // policy picker keeps it.
+    assert.ok(driver.capabilities.includes('locked'));
+    assert.equal(driver.capabilitiesOptions.locked.setable, false);
+    assert.equal(driver.capabilitiesOptions.locked.uiQuickAction, false);
+    assert.equal(driver.class, 'lock');
   });
 
   it('gives every arg-bearing card a titleFormatted', () => {
@@ -731,5 +736,72 @@ describe('event clips', () => {
     // events legitimately arrive with accessToken: null. That means "no clip", not "try anyway".
     assert.equal(clipUrl(gateway, { deviceId: 'OC-1', eventId: 42, accessToken: null }), null);
     assert.equal(clipUrl(gateway, { deviceId: 'OC-1', eventId: 42 }), null);
+  });
+});
+
+describe('lock state, and refusing to assert one', () => {
+  const policy = (transitPolicy: any) => ({
+    deviceTransitPolicyId: 1, deviceId: 'OC-1', name: 'Test', transitPolicy,
+  });
+  /** What the device does: idle evaluation, and null when it cannot stand behind the answer. */
+  const reported = (p: any, minutesOfDay: number | null = 12 * 60) => {
+    const outcome = evaluatePolicy(p, { minutesOfDay });
+    return outcome.confident ? outcome.locked : null;
+  };
+
+  it('reports the idle state when the policy is fully evaluable', () => {
+    assert.equal(reported(policy({ idleLock: true, rules: [] })), true);
+    assert.equal(reported(policy({ idleLock: false, rules: [] })), false);
+  });
+
+  it('reports locked while a curfew rule is in force, and unlocked outside it', () => {
+    const curfew = policy({
+      idleLock: false,
+      rules: [{ criteria: { timeRange: '22:00-07:00' }, action: { lock: true } }],
+    });
+    assert.equal(reported(curfew, 23 * 60), true, 'inside the curfew');
+    assert.equal(reported(curfew, 2 * 60), true, 'after midnight, still inside');
+    assert.equal(reported(curfew, 12 * 60), false, 'outside the curfew');
+  });
+
+  it('reports nothing when a rule it cannot evaluate could have fired first', () => {
+    // The whole point. `flapState` and `motionSensorState` are live sensor data the API does not
+    // expose, so a rule using them might have pre-empted the one we matched. Unknown, not false.
+    const opaque = policy({
+      idleLock: false,
+      rules: [
+        { criteria: { flapState: 0 }, action: { lock: true } },
+        { criteria: {}, action: { lock: false } },
+      ],
+    });
+    assert.equal(reported(opaque), null);
+  });
+
+  it('is still confident when the unevaluable rule sits below the match', () => {
+    // Order matters: a rule we cannot read only threatens the answer if it comes first.
+    const below = policy({
+      idleLock: false,
+      rules: [
+        { criteria: { timeRange: '00:00-23:59' }, action: { lock: true } },
+        { criteria: { motionSensorState: 2 }, action: { lock: false } },
+      ],
+    });
+    assert.equal(reported(below), true);
+  });
+
+  it('ignores rules that need event data, because nothing is happening at idle', () => {
+    // A rule keyed on a chip code genuinely cannot match when no cat is at the flap. That is a
+    // correct non-match, not a missing input, so it must not cost us confidence.
+    const perCat = policy({
+      idleLock: true,
+      rules: [{ criteria: { rfidCode: '944000000021805' }, action: { lock: false } }],
+    });
+    assert.equal(reported(perCat), true);
+  });
+
+  it('offers a condition card for it', () => {
+    const manifest = require('../app.json');
+    const ids = (manifest.flow.conditions ?? []).map((c: any) => c.id);
+    assert.ok(ids.includes('flap_is_locked'));
   });
 });

@@ -1108,6 +1108,25 @@
       ]
     },
     {
+      "id": "flap_is_locked",
+      "title": {
+        "en": "The flap !{{is|is not}} locked",
+        "sv": "Luckan !{{är|är inte}} låst",
+        "de": "Die Klappe !{{ist|ist nicht}} gesperrt",
+        "nl": "Het luik !{{is|is niet}} vergrendeld",
+        "no": "Luken !{{er|er ikke}} låst",
+        "da": "Lemmen !{{er|er ikke}} låst"
+      },
+      "hint": {
+        "en": "Whether the door policy currently leaves the flap locked. If the policy uses rules that depend on the flap's own sensors, the app cannot tell and this card stops the Flow rather than guessing.",
+        "sv": "Om dörregeln just nu lämnar luckan låst. Om regeln använder villkor som bygger på luckans egna sensorer kan appen inte avgöra det, och kortet stoppar flödet i stället för att gissa.",
+        "de": "Ob die Türregel die Klappe derzeit gesperrt lässt. Nutzt die Regel Kriterien, die von den Sensoren der Klappe abhängen, kann die App es nicht feststellen und die Karte stoppt den Flow, statt zu raten.",
+        "nl": "Of het deurbeleid het luik nu vergrendeld laat. Gebruikt het beleid regels die afhangen van de sensoren van het luik, dan kan de app het niet bepalen en stopt deze kaart de Flow in plaats van te gokken.",
+        "no": "Om dørregelen akkurat nå lar luken være låst. Bruker regelen kriterier som avhenger av lukens egne sensorer, kan ikke appen avgjøre det, og kortet stopper flyten i stedet for å gjette.",
+        "da": "Om dørreglen lige nu lader lemmen være låst. Bruger reglen kriterier, der afhænger af lemmens egne sensorer, kan appen ikke afgøre det, og kortet stopper flowet i stedet for at gætte."
+      }
+    },
+    {
       "id": "policy_is",
       "title": {
         "en": "The door policy !{{is|is not}}",

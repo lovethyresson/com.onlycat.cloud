@@ -89,16 +89,24 @@ prints "three policies, Night is active, two rules the app cannot evaluate", not
 
 - **`app.json` is generated.** Sources are `.homeycompose/`. Run `homey app build`; never
   hand-edit it. It is committed because the CLI refuses to run without it.
-- **There is no `locked` capability, and there must not be one.** The API defines `LockState`
-  only inside `FrameMetadata` — per-frame data captured during an event — and no socket message
-  or endpoint delivers it. `Device`, `DeviceEvent` and `EventSummary` carry no lock field. A
-  `locked` capability could therefore only be a client-side simulation of the door policy,
-  presented as a live fact, with no way to signal that rules depending on the flap's own sensors
-  were skipped. It shipped that way once and was removed. `class` is `sensor` accordingly —
-  `lock` implied a state this device cannot report.
-- **`lib/policy.ts` still exists, for the refusal reason only.** That is defensible where a lock
-  readout was not: it is anchored to a `DENY` the flap actually sent, so it explains a fact
-  rather than asserting a state, and it reports `confident: false` rather than guessing.
+- **`locked` is reported only when the simulation is confident, and `null` otherwise.** The API
+  defines `LockState` but only inside `FrameMetadata` — per-frame data captured during an event —
+  and no socket message or endpoint delivers it; `Device`, `DeviceEvent` and `EventSummary` carry
+  no lock field. So the value comes from re-running the owner's door policy at idle. That is
+  legitimate **only** because `PolicyOutcome.confident` gates it: when a rule keyed on `flapState`
+  or `motionSensorState` sits above the match, the flap may have stopped there instead, and the
+  capability goes to `null` — unknown, not unlocked. Never assert a lock state that flag does not
+  support. The `flap_is_locked` condition card throws on `null` rather than silently taking the
+  "not locked" branch.
+- **`lib/policy.ts` serves both the lock state and the refusal reason**, and both honour
+  `confident` the same way. The reason has the extra justification that it is anchored to a `DENY`
+  the flap actually sent.
+- **A minute timer re-evaluates the lock state.** Time-range rules turn over on the clock, not on
+  an event: a curfew starting at 22:00 must show up without waiting for the next cat.
+- **`locked` is read-only** — OnlyCat has no "lock now", only policy activation and a one-shot
+  unlock — and carries `uiQuickAction: false` so the policy picker keeps the tile's one slot.
+  `button.unlock` is **not** a maintenance action; it is the only manual control the flap has and
+  belongs on the tile. `button.reboot` is, and is also a Flow action.
 - **Cats are runtime capability instances**, `cat_home_ONLYCAT.c<chip>`. Only the *type* is declared
   in compose. Two consequences: `addCapability()` does not apply per-instance options, so
   `setCapabilityOptions()` must be pushed explicitly or every cat is titled "Cat"; and an Insights
@@ -109,10 +117,22 @@ prints "three policies, Night is active, two rules the app cannot evaluate", not
 - **Clips are `createVideoHLS()` + `setCameraVideo()`**, sharing one id with `setCameraImage()`
   so the still becomes the video's poster frame. Wrapped in try/catch the way Athom's own example
   is: videos need Homey 12.7.0, and an older hub should lose clips rather than the whole app.
+- **The camera is attached by `showEvent()`, not at init.** A camera row titled "Last event" that
+  renders nothing is worse than no row, so it is registered once there is an event behind it and
+  titled after that event and its local time. The still and the clip share one id, which makes the
+  still the clip's poster frame.
+- **The last event is backfilled on connect**, adopted as already-settled so no Flow card fires.
+  Without it a freshly started app shows an empty camera until the next cat, which can be hours;
+  with it, nobody gets a prey alert about last Tuesday because their Homey rebooted.
 - **Six languages at parity** — `en`, `sv`, `de`, `nl`, `no`, `da`. A test enforces it.
-- **`this.homey.setTimeout`, never the global**, and no module-level state. Neither is required
-  today (`platforms: ["local"]`), both are required for Homey Cloud, and honouring them now keeps
-  that a one-line change.
+- **`platforms: ["local", "cloud"]`.** The app talks to nothing but OnlyCat's API, so it needs no
+  local network, no discovery, no app settings page and no permissions — the Homey Cloud
+  constraints were honoured from the first commit and `validate --level publish` passes for both.
+  **Untested on Cloud**, because Homey Cloud runs only App Store builds: there is no CLI install
+  and no `homey app run` to try it with. Publishing for Cloud also needs a Homey Verified
+  Developer subscription.
+- **`this.homey.setTimeout`/`setInterval`, never the globals**, and no module-level state — the
+  gateway registry hangs off the App instance. Both are Homey Cloud requirements.
 
 ## Releasing
 

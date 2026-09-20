@@ -47,7 +47,8 @@
     "unknown_policy": "Dat deurbeleid bestaat niet meer op dit luik",
     "unknown_cat": "Die kat wordt op dit luik niet gevolgd",
     "clip_not_ready": "De clip wordt nog verwerkt",
-    "no_clip": "Geen clip voor deze gebeurtenis"
+    "no_clip": "Geen clip voor deze gebeurtenis",
+    "lock_unknown": "De app kan niet bepalen of het luik vergrendeld is: dit deurbeleid gebruikt regels die afhangen van de sensoren van het luik."
   },
   "pair": {
     "title": "Verbinden met OnlyCat",

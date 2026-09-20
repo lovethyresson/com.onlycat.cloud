@@ -3,7 +3,7 @@ import {
   CAT_CAPABILITY, TrackedCat, capabilityForCat, capabilitySyncPlan, initialLocation, rfidFromCapability,
 } from '../../lib/cats';
 import {
-  EventStore, clipUrl, imageUrl, isEventConcluded,
+  EventStore, clipUrl, imageUrl, isEventConcluded, usableSubevents,
 } from '../../lib/event-store';
 import { SubEventKind, kindOf, locationAfter } from '../../lib/events';
 import { Gateway, GATEWAY_URL, OnlyCatAuthError } from '../../lib/gateway';
@@ -25,6 +25,9 @@ function describeSubevents(subevents: OnlyCatSubEvent[] | undefined): string {
 
 /** How long to wait for a final summary before settling on what we have. */
 const SUMMARY_GRACE_MS = 45000;
+/** How often to re-evaluate the idle lock state, so a curfew boundary is noticed. */
+const LOCK_TICK_MS = 60000;
+
 /** One id shared by the still and the clip, so the still becomes the clip's poster frame. */
 const CAMERA_ID = 'event';
 /** A HEAD request to find out whether the clip has finished processing. */
@@ -69,6 +72,12 @@ module.exports = class CatFlapDevice extends Homey.Device {
     private available: boolean | null = null;
 
     private refreshing = false;
+
+    private lockTimer: ReturnType<typeof setInterval> | null = null;
+
+    private clipVideo: any = null;
+
+    private cameraTitle = '';
 
     get deviceId(): string {
       return this.getData().id as string;
@@ -117,6 +126,13 @@ module.exports = class CatFlapDevice extends Homey.Device {
         .catch((error) => this.logger.error('setCameraImage failed:', error?.message ?? error));
 
       await this.registerClips();
+
+      // Time-range rules change on the clock, not on an event: a curfew starting at 22:00 must
+      // show up without waiting for the next cat. A minute's granularity is plenty and costs
+      // nothing; computing exact boundaries across wrapping ranges would not buy anything.
+      this.lockTimer = this.homey.setInterval(() => {
+        void this.updateLockState().catch((e) => this.logger.error('lock tick:', e?.message ?? e));
+      }, LOCK_TICK_MS);
 
       await this.connect();
     }
@@ -189,6 +205,8 @@ module.exports = class CatFlapDevice extends Homey.Device {
     }
 
     private teardown(): void {
+      if (this.lockTimer) this.homey.clearInterval(this.lockTimer);
+      this.lockTimer = null;
       if (this.summaryTimer) this.homey.clearTimeout(this.summaryTimer);
       if (this.motionTimer) this.homey.clearTimeout(this.motionTimer);
       this.summaryTimer = null;
@@ -311,6 +329,8 @@ module.exports = class CatFlapDevice extends Homey.Device {
         const stages: [string, () => Promise<void>][] = [
           ['device', () => this.refreshDevice()],
           ['policies', () => this.refreshPolicies()],
+          ['lock', () => this.updateLockState()],
+          ['history', () => this.backfillLatestEvent()],
           ['cats', () => this.refreshCatLocations()],
         ];
 
@@ -410,6 +430,79 @@ module.exports = class CatFlapDevice extends Homey.Device {
       return this.policies.find((p) => p.deviceTransitPolicyId === this.activePolicyId) ?? null;
     }
 
+    /**
+     * The lock state the active door policy leaves the flap in when nothing is happening.
+     *
+     * Reported **only when the simulation can stand behind it.** If the policy contains a rule
+     * whose criteria depend on the flap's own sensors — `flapState`, `motionSensorState`, neither
+     * of which the API exposes — that rule might have pre-empted the one we matched, and the
+     * answer would be a guess dressed as a fact. In that case the capability is set to `null`,
+     * which Homey renders as "unknown" rather than as "unlocked".
+     *
+     * This is the same `confident` flag the refusal reason uses, for the same reason. What the
+     * app must never do is assert a lock state it cannot justify; saying nothing is allowed.
+     */
+    private async updateLockState(): Promise<void> {
+      const policy = this.activePolicy();
+      if (!policy) return;
+
+      // No event context on purpose: this is the IDLE state. Rules keyed on a chip code or an
+      // event classification genuinely cannot match when nothing is happening, so leaving those
+      // inputs empty is the correct question to ask, not a missing input.
+      const outcome = evaluatePolicy(policy, { minutesOfDay: minutesOfDayIn(this.timeZone) });
+      const value = outcome.confident ? outcome.locked : null;
+
+      if (value !== this.getCapabilityValue('locked')) {
+        const state = value === null ? 'unknown' : ['unlocked', 'locked'][Number(value)];
+        this.logger.info(`lock state: ${state}`
+          + ` (rule ${outcome.ruleIndex ?? 'none, idle state'}`
+          + `${outcome.confident ? '' : ', cannot be sure — policy uses the flap\'s own sensors'})`);
+      }
+
+      await this.setCapabilityValue('locked', value).catch(() => {});
+    }
+
+    /**
+     * Load the most recent event so the camera and the event line are not blank.
+     *
+     * Without this a freshly started app shows an empty camera and no history until the next cat
+     * goes through, which can be hours. The event is adopted as already-settled, so no Flow card
+     * fires — nobody wants a prey alert about last Tuesday because their Homey rebooted.
+     */
+    private async backfillLatestEvent(): Promise<void> {
+      const events = await this.gateway.getDeviceEvents(this.deviceId, false);
+      const usable = events.filter((event) => event.eventId != null && !event.deletedAt);
+      if (!usable.length) {
+        this.logger.debug('history: no past events to show');
+        return;
+      }
+
+      const latest = usable.reduce((a, b) => (b.eventId > a.eventId ? b : a));
+      this.store.adopt(latest);
+      await this.showEvent(latest);
+
+      let label = '';
+      if (latest.accessToken) {
+        try {
+          const summary = await this.gateway.getEventSummary(
+            this.deviceId, latest.eventId, latest.accessToken, false,
+          );
+          if (summary) {
+            this.store.applySummary(summary);
+            const subevents = usableSubevents(summary);
+            const last = subevents[subevents.length - 1];
+            const kind = last ? kindOf(last) : null;
+            if (kind) label = this.t(`event.${kind.key}`, { name: this.nameFor(last.rfidCode) });
+          }
+        } catch (error: any) {
+          this.logger.debug(`history: no summary for ${latest.eventId}: ${error?.message ?? error}`);
+        }
+      }
+
+      if (label) await this.setCapabilityValue('last_event_ONLYCAT', label).catch(() => {});
+      this.logger.debug(`history: showing event ${latest.eventId}${label ? ` — ${label}` : ''}`);
+    }
+
     private async refreshCatLocations(): Promise<void> {
       if (!this.cats.length) return;
       try {
@@ -460,6 +553,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
         }
         await this.gateway.activateDeviceTransitPolicy(this.deviceId, policyId);
         this.activePolicyId = policyId;
+        await this.updateLockState();
       });
 
       this.registerCapabilityListener('button.unlock', async () => {
@@ -574,15 +668,51 @@ module.exports = class CatFlapDevice extends Homey.Device {
         classification === EventClassification.HumanActivity).catch(() => {});
     }
 
+    /**
+     * Point the camera at an event: the still, and a title that says what it is.
+     *
+     * The title matters. Registering everything as "Last event" gives a picker full of identical
+     * rows that say nothing — naming it after the event and its time makes the one row useful.
+     */
+    private async showEvent(event: OnlyCatEvent, label?: string): Promise<void> {
+      this.currentImageUrl = imageUrl(GATEWAY_URL, event);
+      await this.lastImage?.update().catch(() => {});
+
+      const when = this.formatTime(event.timestamp);
+      const title = [label, when].filter(Boolean).join(' · ') || this.t('camera.last_event');
+      if (title === this.cameraTitle) return;
+      this.cameraTitle = title;
+
+      if (this.lastImage) {
+        await this.setCameraImage(CAMERA_ID, title, this.lastImage)
+          .catch((error) => this.logger.error('setCameraImage failed:', error?.message ?? error));
+      }
+      if (this.clipVideo) {
+        await this.setCameraVideo(CAMERA_ID, title, this.clipVideo)
+          .catch((error) => this.logger.error('setCameraVideo failed:', error?.message ?? error));
+      }
+    }
+
+    /** Short local time in the FLAP's zone, which is where the cat was. */
+    private formatTime(timestamp: string | null | undefined): string {
+      if (!timestamp) return '';
+      try {
+        return new Intl.DateTimeFormat(this.homey.i18n.getLanguage() ?? 'en', {
+          timeZone: this.timeZone ?? undefined,
+          hour: '2-digit',
+          minute: '2-digit',
+        }).format(new Date(timestamp));
+      } catch {
+        return '';
+      }
+    }
+
     /** Fire everything this event earns. Called exactly once per event. */
     private async commit(subevents: OnlyCatSubEvent[]): Promise<void> {
       const { tracked } = this.store;
       if (!tracked) return;
 
       const { event } = tracked;
-      this.currentImageUrl = imageUrl(GATEWAY_URL, event);
-      await this.lastImage?.update().catch(() => {});
-
       const classification = effectiveClassification(event);
 
       if (classification === EventClassification.Contraband) {
@@ -616,6 +746,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
 
       this.logger.info(actionLabel);
       await this.setCapabilityValue('last_event_ONLYCAT', actionLabel).catch(() => {});
+      await this.showEvent(event, actionLabel);
 
       // Presence, but only for cats we actually track. An untracked chip has no capability.
       if (tracked) {
@@ -724,6 +855,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
       await this.gateway.activateDeviceTransitPolicy(this.deviceId, policyId);
       this.activePolicyId = policyId;
       await this.setCapabilityValue('policy_ONLYCAT', String(policyId)).catch(() => {});
+      await this.updateLockState();
     }
 
     /** Called by the driver after a Repair that changed the key or the tracked cats. */

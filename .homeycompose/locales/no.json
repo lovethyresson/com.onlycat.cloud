@@ -47,7 +47,8 @@
     "unknown_policy": "Den dørregelen finnes ikke lenger på luken",
     "unknown_cat": "Den katten følges ikke på denne luken",
     "clip_not_ready": "Klippet behandles fortsatt",
-    "no_clip": "Ingen klipp for denne hendelsen"
+    "no_clip": "Ingen klipp for denne hendelsen",
+    "lock_unknown": "Appen kan ikke avgjøre om luken er låst: denne dørregelen bruker kriterier som avhenger av lukens egne sensorer."
   },
   "pair": {
     "title": "Koble til OnlyCat",

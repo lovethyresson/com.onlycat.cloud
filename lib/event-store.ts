@@ -95,6 +95,23 @@ export class EventStore {
       return this.current == null || eventId >= this.current.eventId;
     }
 
+    /**
+     * Seed the store from history, already settled.
+     *
+     * Used at startup so the camera and the "last event" line have something in them before the
+     * next cat walks past. Marked settled on purpose: this event happened, possibly days ago, and
+     * firing Flow cards for it would send someone a prey alert about last Tuesday.
+     */
+    adopt(event: OnlyCatEvent): void {
+      this.current = {
+        deviceId: event.deviceId,
+        eventId: event.eventId,
+        event: { ...event },
+        summary: null,
+        settled: true,
+      };
+    }
+
     /** A new event started. Returns false when the push was stale and should be ignored. */
     begin(deviceId: string, eventId: number, accessToken: string | null): boolean {
       if (!this.accepts(eventId)) return false;

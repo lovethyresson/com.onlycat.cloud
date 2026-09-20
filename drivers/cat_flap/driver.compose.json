@@ -7,8 +7,9 @@
     "no": "Katteluke",
     "da": "Kattelem"
   },
-  "class": "sensor",
+  "class": "lock",
   "capabilities": [
+    "locked",
     "policy_ONLYCAT",
     "alarm_motion",
     "alarm_prey_ONLYCAT",
@@ -38,8 +39,7 @@
         "nl": "Nu ontgrendelen",
         "no": "Lås opp nå",
         "da": "Lås op nu"
-      },
-      "maintenanceAction": true
+      }
     },
     "button.reboot": {
       "title": {
@@ -51,10 +51,16 @@
         "da": "Genstart lemmen"
       },
       "maintenanceAction": true
+    },
+    "locked": {
+      "setable": false,
+      "getable": true,
+      "uiQuickAction": false
     }
   },
   "platforms": [
-    "local"
+    "local",
+    "cloud"
   ],
   "connectivity": [
     "cloud"

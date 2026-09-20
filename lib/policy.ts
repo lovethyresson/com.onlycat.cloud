@@ -1,14 +1,18 @@
 /**
  * The flap's own rule engine, re-implemented.
  *
- * NOT for reporting lock state. An earlier version drove a `locked` capability from this, which
- * was an unhedged live claim built on a simulation with known blind spots — and OnlyCat's own app
- * does not make that claim, because the API cannot tell it one. The capability is gone.
+ * The API defines lock state — `LockState`, with Locked, Unlocked and LongTermUnlocked — but only
+ * inside `FrameMetadata`, the per-frame data captured during an event. No socket message and no
+ * endpoint delivers it; `Device`, `DeviceEvent` and `EventSummary` carry no lock field. So a lock
+ * readout can only come from re-running the owner's own door policy, which is what this does.
  *
- * What is left is legitimate because it is anchored to something that definitely happened: when a
- * DENY subevent arrives, the flap really did refuse, and this works out which of the owner's own
- * rules most likely did it — reporting `confident: false` when it cannot be sure. Explaining a
- * fact, rather than asserting a state.
+ * `confident` is what makes that legitimate rather than a guess. It is false when a rule we cannot
+ * evaluate — one keyed on `flapState` or `motionSensorState`, live sensor data the API does not
+ * expose — sits above the rule we matched, because the flap may have stopped there instead. Both
+ * callers honour it: the `locked` capability goes to `null` rather than asserting, and the refusal
+ * reason says it cannot tell rather than naming a cause.
+ *
+ * Neither caller may present an un-confident result as fact. That is the whole contract.
  *
  * OnlyCat does not report lock state. `LockState` exists in their models but only inside
  * `FrameMetadata`, the per-frame device state, and no socket event delivers it. The flap

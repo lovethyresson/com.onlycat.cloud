@@ -47,7 +47,8 @@
     "unknown_policy": "That door policy no longer exists on this flap",
     "unknown_cat": "That cat is not tracked on this flap",
     "clip_not_ready": "The clip is still being processed",
-    "no_clip": "No clip for this event"
+    "no_clip": "No clip for this event",
+    "lock_unknown": "The app cannot tell whether the flap is locked: this door policy uses rules that depend on the flap's own sensors."
   },
   "pair": {
     "title": "Connect to OnlyCat",

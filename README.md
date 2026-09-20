@@ -41,8 +41,11 @@ tile and as a Flow action, so "curfew at sunset" is one Flow.
 
 ## Installing
 
-Not on the Homey App Store yet. To run it you need the
-[Homey CLI](https://apps.developer.homey.app/the-basics/getting-started) and a Homey Pro:
+Not on the Homey App Store yet, so for now it installs from source with the
+[Homey CLI](https://apps.developer.homey.app/the-basics/getting-started), which needs a Homey Pro
+— Homey Cloud only runs apps from the store. The app itself declares
+`platforms: ["local", "cloud"]` and talks to nothing but OnlyCat's API, so it is built to run on
+both once published.
 
 ```bash
 git clone https://github.com/lovethyresson/com.onlycat.cloud.git
@@ -174,8 +177,7 @@ Built against [OnlyCat's public models](https://github.com/OnlyCatAI/onlycat-sha
 their [Home Assistant integration](https://github.com/OnlyCatAI/onlycat-home-assistant), which is
 the best documentation this API has.
 
-**Not affiliated with, endorsed by, or supported by OnlyCat or Athom.** OnlyCat is a trademark of
-VirtualV Trading Ltd.
+**Not affiliated with, endorsed by, or supported by OnlyCat.**
 
 ## Licence
 

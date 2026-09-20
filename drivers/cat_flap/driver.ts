@@ -110,6 +110,17 @@ module.exports = class CatFlapDriver extends Homey.Driver {
       });
       isHome.registerArgumentAutocompleteListener('cat', this.catAutocomplete);
 
+      this.homey.flow.getConditionCard('flap_is_locked')
+        .registerRunListener(async (args: any) => {
+          const locked = args.device.getCapabilityValue('locked');
+          if (locked === null || locked === undefined) {
+          // Unknown is not false. Silently taking the "unlocked" branch would be a wrong answer
+          // dressed as a confident one; stopping the Flow with a reason is the honest failure.
+            throw new Error(this.homey.__('error.lock_unknown') ?? 'error.lock_unknown');
+          }
+          return locked === true;
+        });
+
       const policyIs = this.homey.flow.getConditionCard('policy_is');
       policyIs.registerRunListener(async (args: any) => {
         const device = args.device as CatFlapDevice;

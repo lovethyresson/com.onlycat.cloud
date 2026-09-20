@@ -47,7 +47,8 @@
     "unknown_policy": "Den dørregel findes ikke længere på lemmen",
     "unknown_cat": "Den kat følges ikke på denne lem",
     "clip_not_ready": "Klippet behandles stadig",
-    "no_clip": "Intet klip for denne hændelse"
+    "no_clip": "Intet klip for denne hændelse",
+    "lock_unknown": "Appen kan ikke afgøre, om lemmen er låst: denne dørregel bruger kriterier, der afhænger af lemmens egne sensorer."
   },
   "pair": {
     "title": "Forbind til OnlyCat",

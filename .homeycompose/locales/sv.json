@@ -47,7 +47,8 @@
     "unknown_policy": "Den dörregeln finns inte längre på luckan",
     "unknown_cat": "Den katten följs inte på den här luckan",
     "clip_not_ready": "Klippet bearbetas fortfarande",
-    "no_clip": "Inget klipp för den här händelsen"
+    "no_clip": "Inget klipp för den här händelsen",
+    "lock_unknown": "Appen kan inte avgöra om luckan är låst: dörregeln använder villkor som bygger på luckans egna sensorer."
   },
   "pair": {
     "title": "Anslut till OnlyCat",

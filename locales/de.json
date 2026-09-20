@@ -47,7 +47,8 @@
     "unknown_policy": "Diese Türregel gibt es auf dieser Klappe nicht mehr",
     "unknown_cat": "Diese Katze wird an dieser Klappe nicht verfolgt",
     "clip_not_ready": "Der Clip wird noch verarbeitet",
-    "no_clip": "Kein Clip für dieses Ereignis"
+    "no_clip": "Kein Clip für dieses Ereignis",
+    "lock_unknown": "Die App kann nicht feststellen, ob die Klappe gesperrt ist: diese Türregel nutzt Kriterien, die von den Sensoren der Klappe abhängen."
   },
   "pair": {
     "title": "Mit OnlyCat verbinden",
