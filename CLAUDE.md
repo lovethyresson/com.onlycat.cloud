@@ -143,6 +143,7 @@ prints "three policies, Night is active, two rules the app cannot evaluate", not
 - **The last event is backfilled on connect**, adopted as already-settled so no Flow card fires.
   Without it a freshly started app shows an empty camera until the next cat, which can be hours;
   with it, nobody gets a prey alert about last Tuesday because their Homey rebooted.
+- **Homey substitutes `__name__`, not `{{name}}`.** The Mustache spelling is not an error: `homey.__()` does not recognise it and hands back the string untouched, so the tile and every push notification read "{{name}} was turned away" for months without a single failure anywhere. Tests now reject `{{` in any locale and require every language to carry the same placeholders, since a translation that drops one silently loses the cat's name.
 - **Six languages at parity** — `en`, `sv`, `de`, `nl`, `no`, `da`. A test enforces it.
 - **`platforms: ["local", "cloud"]`.** The app talks to nothing but OnlyCat's API, so it needs no
   local network, no discovery, no app settings page and no permissions — the Homey Cloud

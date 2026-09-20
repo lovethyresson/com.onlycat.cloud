@@ -1,41 +1,41 @@
 {
   "event": {
     "transit": {
-      "inward": "{{name}} kom ind",
-      "outward": "{{name}} gik ud"
+      "inward": "__name__ kom ind",
+      "outward": "__name__ gik ud"
     },
     "breach": {
-      "inward": "{{name}} pressede sig ind gennem lemmen",
-      "outward": "{{name}} pressede sig ud gennem lemmen"
+      "inward": "__name__ pressede sig ind gennem lemmen",
+      "outward": "__name__ pressede sig ud gennem lemmen"
     },
     "peek": {
-      "inward": "{{name}} kiggede ind, men blev ude",
-      "outward": "{{name}} kiggede ud, men blev inde"
+      "inward": "__name__ kiggede ind, men blev ude",
+      "outward": "__name__ kiggede ud, men blev inde"
     },
     "deny": {
-      "inward": "{{name}} blev afvist på vej ind",
-      "outward": "{{name}} blev afvist på vej ud"
+      "inward": "__name__ blev afvist på vej ind",
+      "outward": "__name__ blev afvist på vej ud"
     },
     "unknown_cat": "En ukendt kat",
     "a_cat": "En kat"
   },
   "reason": {
     "prey": "Afvist — bar på noget",
-    "prey_named": "{{name}} blev afvist — hun bar på noget",
+    "prey_named": "__name__ blev afvist — hun bar på noget",
     "human": "Afvist — lemmen så et menneske, ikke en kat",
-    "curfew": "Afvist — udgangsforbuddet låser lemmen mellem {{range}}",
-    "curfew_named": "{{name}} blev afvist — udgangsforbuddet låser lemmen mellem {{range}}",
+    "curfew": "Afvist — udgangsforbuddet låser lemmen mellem __range__",
+    "curfew_named": "__name__ blev afvist — udgangsforbuddet låser lemmen mellem __range__",
     "not_allowed": "Afvist — må ikke passere lige nu",
-    "not_allowed_named": "{{name}} blev afvist — hun må ikke passere lige nu",
+    "not_allowed_named": "__name__ blev afvist — hun må ikke passere lige nu",
     "idle": "Afvist — lemmen er låst, når ingen regel gælder",
-    "idle_named": "{{name}} blev afvist — lemmen er låst, når ingen regel gælder",
+    "idle_named": "__name__ blev afvist — lemmen er låst, når ingen regel gælder",
     "rule": "Afvist af en regel i dørreglen",
-    "rule_named": "{{name}} blev afvist af en regel i dørreglen",
+    "rule_named": "__name__ blev afvist af en regel i dørreglen",
     "unknown": "Afvist — lemmens regler bruger dens egne sensorer, så appen kan ikke sige hvilken der afviste",
-    "unknown_named": "{{name}} blev afvist — lemmens regler bruger dens egne sensorer, så appen kan ikke sige hvilken der afviste hende"
+    "unknown_named": "__name__ blev afvist — lemmens regler bruger dens egne sensorer, så appen kan ikke sige hvilken der afviste hende"
   },
   "policy": {
-    "unnamed": "Regel {{id}}",
+    "unnamed": "Regel __id__",
     "unknown": "Ukendt"
   },
   "flow": {

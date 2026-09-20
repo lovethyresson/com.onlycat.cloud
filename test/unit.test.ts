@@ -495,6 +495,39 @@ describe('i18n', () => {
     }
   });
 
+  /**
+   * Homey substitutes `__name__`, not `{{name}}`. Everything shipped with the Mustache spelling
+   * for months and rendered the placeholder verbatim — "{{name}} was turned away coming in" — on
+   * the tile and in every push notification, because `homey.__()` simply does not recognise it
+   * and returns the string untouched. Nothing failed; it just quietly said the wrong thing.
+   */
+  it('uses Homey\'s __tag__ placeholder syntax, never {{tag}}', () => {
+    for (const locale of locales) {
+      const raw = JSON.stringify(require(`../.homeycompose/locales/${locale}.json`));
+      assert.ok(!raw.includes('{{'), `${locale} uses {{tag}}, which Homey never substitutes`);
+    }
+  });
+
+  /**
+   * A translation that drops a placeholder loses the cat's name with no error anywhere.
+   */
+  it('keeps the same placeholders in every language', () => {
+    const tags = (value: string) => (value.match(/__[a-z_]+__/g) ?? []).sort().join(',');
+    const walk = (object: any, prefix = ''): Record<string, string> => Object.entries(object)
+      .reduce((all, [key, value]) => (value && typeof value === 'object'
+        ? { ...all, ...walk(value, `${prefix}${key}.`) }
+        : { ...all, [`${prefix}${key}`]: tags(String(value)) }), {});
+
+    const base = walk(require('../.homeycompose/locales/en.json'));
+    for (const locale of locales.filter((l) => l !== 'en')) {
+      const other = walk(require(`../.homeycompose/locales/${locale}.json`));
+      for (const [key, expected] of Object.entries(base)) {
+        assert.equal(other[key], expected,
+          `${locale} ${key} has placeholders "${other[key]}", en has "${expected}"`);
+      }
+    }
+  });
+
   it('has a string for every branch the reason can take', () => {
     for (const locale of locales) {
       const strings = require(`../.homeycompose/locales/${locale}.json`).reason;

@@ -1,41 +1,41 @@
 {
   "event": {
     "transit": {
-      "inward": "{{name}} kom inn",
-      "outward": "{{name}} gikk ut"
+      "inward": "__name__ kom inn",
+      "outward": "__name__ gikk ut"
     },
     "breach": {
-      "inward": "{{name}} tvang seg inn gjennom luken",
-      "outward": "{{name}} tvang seg ut gjennom luken"
+      "inward": "__name__ tvang seg inn gjennom luken",
+      "outward": "__name__ tvang seg ut gjennom luken"
     },
     "peek": {
-      "inward": "{{name}} kikket inn, men ble ute",
-      "outward": "{{name}} kikket ut, men ble inne"
+      "inward": "__name__ kikket inn, men ble ute",
+      "outward": "__name__ kikket ut, men ble inne"
     },
     "deny": {
-      "inward": "{{name}} ble avvist på vei inn",
-      "outward": "{{name}} ble avvist på vei ut"
+      "inward": "__name__ ble avvist på vei inn",
+      "outward": "__name__ ble avvist på vei ut"
     },
     "unknown_cat": "En ukjent katt",
     "a_cat": "En katt"
   },
   "reason": {
     "prey": "Avvist — bar på noe",
-    "prey_named": "{{name}} ble avvist — hun bar på noe",
+    "prey_named": "__name__ ble avvist — hun bar på noe",
     "human": "Avvist — luken så et menneske, ikke en katt",
-    "curfew": "Avvist — portforbudet låser luken mellom {{range}}",
-    "curfew_named": "{{name}} ble avvist — portforbudet låser luken mellom {{range}}",
+    "curfew": "Avvist — portforbudet låser luken mellom __range__",
+    "curfew_named": "__name__ ble avvist — portforbudet låser luken mellom __range__",
     "not_allowed": "Avvist — får ikke passere akkurat nå",
-    "not_allowed_named": "{{name}} ble avvist — hun får ikke passere akkurat nå",
+    "not_allowed_named": "__name__ ble avvist — hun får ikke passere akkurat nå",
     "idle": "Avvist — luken er låst når ingen regel gjelder",
-    "idle_named": "{{name}} ble avvist — luken er låst når ingen regel gjelder",
+    "idle_named": "__name__ ble avvist — luken er låst når ingen regel gjelder",
     "rule": "Avvist av en regel i dørregelen",
-    "rule_named": "{{name}} ble avvist av en regel i dørregelen",
+    "rule_named": "__name__ ble avvist av en regel i dørregelen",
     "unknown": "Avvist — lukens regler bruker dens egne sensorer, så appen kan ikke si hvilken som avviste",
-    "unknown_named": "{{name}} ble avvist — lukens regler bruker dens egne sensorer, så appen kan ikke si hvilken som avviste henne"
+    "unknown_named": "__name__ ble avvist — lukens regler bruker dens egne sensorer, så appen kan ikke si hvilken som avviste henne"
   },
   "policy": {
-    "unnamed": "Regel {{id}}",
+    "unnamed": "Regel __id__",
     "unknown": "Ukjent"
   },
   "flow": {

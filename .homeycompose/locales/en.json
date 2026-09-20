@@ -1,41 +1,41 @@
 {
   "event": {
     "transit": {
-      "inward": "{{name}} came in",
-      "outward": "{{name}} went out"
+      "inward": "__name__ came in",
+      "outward": "__name__ went out"
     },
     "breach": {
-      "inward": "{{name}} forced the flap coming in",
-      "outward": "{{name}} forced the flap going out"
+      "inward": "__name__ forced the flap coming in",
+      "outward": "__name__ forced the flap going out"
     },
     "peek": {
-      "inward": "{{name}} looked in but stayed out",
-      "outward": "{{name}} looked out but stayed in"
+      "inward": "__name__ looked in but stayed out",
+      "outward": "__name__ looked out but stayed in"
     },
     "deny": {
-      "inward": "{{name}} was turned away coming in",
-      "outward": "{{name}} was turned away going out"
+      "inward": "__name__ was turned away coming in",
+      "outward": "__name__ was turned away going out"
     },
     "unknown_cat": "An unknown cat",
     "a_cat": "A cat"
   },
   "reason": {
     "prey": "Turned away — carrying something",
-    "prey_named": "{{name}} was turned away — she was carrying something",
+    "prey_named": "__name__ was turned away — she was carrying something",
     "human": "Turned away — the flap saw a person, not a cat",
-    "curfew": "Turned away — the curfew locks the flap between {{range}}",
-    "curfew_named": "{{name}} was turned away — the curfew locks the flap between {{range}}",
+    "curfew": "Turned away — the curfew locks the flap between __range__",
+    "curfew_named": "__name__ was turned away — the curfew locks the flap between __range__",
     "not_allowed": "Turned away — not allowed through at the moment",
-    "not_allowed_named": "{{name}} was turned away — she is not allowed through at the moment",
+    "not_allowed_named": "__name__ was turned away — she is not allowed through at the moment",
     "idle": "Turned away — the flap is locked when no rule applies",
-    "idle_named": "{{name}} was turned away — the flap is locked when no rule applies",
+    "idle_named": "__name__ was turned away — the flap is locked when no rule applies",
     "rule": "Turned away by a door policy rule",
-    "rule_named": "{{name}} was turned away by a door policy rule",
+    "rule_named": "__name__ was turned away by a door policy rule",
     "unknown": "Turned away — this flap's rules depend on its own sensors, so the app cannot tell which one refused",
-    "unknown_named": "{{name}} was turned away — this flap's rules depend on its own sensors, so the app cannot tell which one refused her"
+    "unknown_named": "__name__ was turned away — this flap's rules depend on its own sensors, so the app cannot tell which one refused her"
   },
   "policy": {
-    "unnamed": "Policy {{id}}",
+    "unnamed": "Policy __id__",
     "unknown": "Unknown"
   },
   "flow": {

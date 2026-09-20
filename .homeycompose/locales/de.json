@@ -1,41 +1,41 @@
 {
   "event": {
     "transit": {
-      "inward": "{{name}} kam herein",
-      "outward": "{{name}} ging hinaus"
+      "inward": "__name__ kam herein",
+      "outward": "__name__ ging hinaus"
     },
     "breach": {
-      "inward": "{{name}} drückte sich herein",
-      "outward": "{{name}} drückte sich hinaus"
+      "inward": "__name__ drückte sich herein",
+      "outward": "__name__ drückte sich hinaus"
     },
     "peek": {
-      "inward": "{{name}} schaute herein, blieb aber draußen",
-      "outward": "{{name}} schaute hinaus, blieb aber drinnen"
+      "inward": "__name__ schaute herein, blieb aber draußen",
+      "outward": "__name__ schaute hinaus, blieb aber drinnen"
     },
     "deny": {
-      "inward": "{{name}} wurde beim Hereinkommen abgewiesen",
-      "outward": "{{name}} wurde beim Hinausgehen abgewiesen"
+      "inward": "__name__ wurde beim Hereinkommen abgewiesen",
+      "outward": "__name__ wurde beim Hinausgehen abgewiesen"
     },
     "unknown_cat": "Eine unbekannte Katze",
     "a_cat": "Eine Katze"
   },
   "reason": {
     "prey": "Abgewiesen — trug etwas bei sich",
-    "prey_named": "{{name}} wurde abgewiesen — sie trug etwas bei sich",
+    "prey_named": "__name__ wurde abgewiesen — sie trug etwas bei sich",
     "human": "Abgewiesen — die Klappe sah einen Menschen, keine Katze",
-    "curfew": "Abgewiesen — die Ausgangssperre sperrt die Klappe zwischen {{range}}",
-    "curfew_named": "{{name}} wurde abgewiesen — die Ausgangssperre sperrt die Klappe zwischen {{range}}",
+    "curfew": "Abgewiesen — die Ausgangssperre sperrt die Klappe zwischen __range__",
+    "curfew_named": "__name__ wurde abgewiesen — die Ausgangssperre sperrt die Klappe zwischen __range__",
     "not_allowed": "Abgewiesen — darf derzeit nicht durch",
-    "not_allowed_named": "{{name}} wurde abgewiesen — sie darf derzeit nicht durch",
+    "not_allowed_named": "__name__ wurde abgewiesen — sie darf derzeit nicht durch",
     "idle": "Abgewiesen — die Klappe ist gesperrt, wenn keine Regel greift",
-    "idle_named": "{{name}} wurde abgewiesen — die Klappe ist gesperrt, wenn keine Regel greift",
+    "idle_named": "__name__ wurde abgewiesen — die Klappe ist gesperrt, wenn keine Regel greift",
     "rule": "Von einer Regel der Türregel abgewiesen",
-    "rule_named": "{{name}} wurde von einer Regel der Türregel abgewiesen",
+    "rule_named": "__name__ wurde von einer Regel der Türregel abgewiesen",
     "unknown": "Abgewiesen — die Regeln dieser Klappe nutzen ihre eigenen Sensoren, die App kann nicht sagen, welche abgewiesen hat",
-    "unknown_named": "{{name}} wurde abgewiesen — die Regeln dieser Klappe nutzen ihre eigenen Sensoren, die App kann nicht sagen, welche sie abgewiesen hat"
+    "unknown_named": "__name__ wurde abgewiesen — die Regeln dieser Klappe nutzen ihre eigenen Sensoren, die App kann nicht sagen, welche sie abgewiesen hat"
   },
   "policy": {
-    "unnamed": "Regel {{id}}",
+    "unnamed": "Regel __id__",
     "unknown": "Unbekannt"
   },
   "flow": {

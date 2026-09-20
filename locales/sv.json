@@ -1,41 +1,41 @@
 {
   "event": {
     "transit": {
-      "inward": "{{name}} kom in",
-      "outward": "{{name}} gick ut"
+      "inward": "__name__ kom in",
+      "outward": "__name__ gick ut"
     },
     "breach": {
-      "inward": "{{name}} tvingade sig in genom luckan",
-      "outward": "{{name}} tvingade sig ut genom luckan"
+      "inward": "__name__ tvingade sig in genom luckan",
+      "outward": "__name__ tvingade sig ut genom luckan"
     },
     "peek": {
-      "inward": "{{name}} tittade in men stannade ute",
-      "outward": "{{name}} tittade ut men stannade inne"
+      "inward": "__name__ tittade in men stannade ute",
+      "outward": "__name__ tittade ut men stannade inne"
     },
     "deny": {
-      "inward": "{{name}} nekades att komma in",
-      "outward": "{{name}} nekades att gå ut"
+      "inward": "__name__ nekades att komma in",
+      "outward": "__name__ nekades att gå ut"
     },
     "unknown_cat": "En okänd katt",
     "a_cat": "En katt"
   },
   "reason": {
     "prey": "Nekades — bar på något",
-    "prey_named": "{{name}} nekades — hon bar på något",
+    "prey_named": "__name__ nekades — hon bar på något",
     "human": "Nekades — luckan såg en människa, inte en katt",
-    "curfew": "Nekades — utegångsregeln låser luckan mellan {{range}}",
-    "curfew_named": "{{name}} nekades — utegångsregeln låser luckan mellan {{range}}",
+    "curfew": "Nekades — utegångsregeln låser luckan mellan __range__",
+    "curfew_named": "__name__ nekades — utegångsregeln låser luckan mellan __range__",
     "not_allowed": "Nekades — får inte passera just nu",
-    "not_allowed_named": "{{name}} nekades — hon får inte passera just nu",
+    "not_allowed_named": "__name__ nekades — hon får inte passera just nu",
     "idle": "Nekades — luckan är låst när ingen regel gäller",
-    "idle_named": "{{name}} nekades — luckan är låst när ingen regel gäller",
+    "idle_named": "__name__ nekades — luckan är låst när ingen regel gäller",
     "rule": "Nekades av en regel i dörregeln",
-    "rule_named": "{{name}} nekades av en regel i dörregeln",
+    "rule_named": "__name__ nekades av en regel i dörregeln",
     "unknown": "Nekades — luckans regler bygger på dess egna sensorer, så appen kan inte avgöra vilken som nekade",
-    "unknown_named": "{{name}} nekades — luckans regler bygger på dess egna sensorer, så appen kan inte avgöra vilken som nekade henne"
+    "unknown_named": "__name__ nekades — luckans regler bygger på dess egna sensorer, så appen kan inte avgöra vilken som nekade henne"
   },
   "policy": {
-    "unnamed": "Regel {{id}}",
+    "unnamed": "Regel __id__",
     "unknown": "Okänd"
   },
   "flow": {
