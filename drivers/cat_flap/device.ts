@@ -55,7 +55,17 @@ const MANUAL_UNLOCK_MS = 120000;
 const LOCK_TICK_MS = 60000;
 
 /** One id shared by the still and the clip, so the still becomes the clip's poster frame. */
-const CAMERA_ID = 'event';
+/**
+ * Two camera entries, two ids.
+ *
+ * They shared the id `event` for as long as this app has existed, on the strength of an Athom
+ * doc line saying a matching image becomes the video's poster frame. That poster frame has never
+ * once been observed. What HAS been observed, across four builds, is a picker with two rows that
+ * do not play. Whatever the coupling does, it is not earning the confusion, and every published
+ * app that exposes both registers them separately.
+ */
+const CAMERA_STILL = 'still';
+const CAMERA_CLIP = 'clip';
 
 /**
  * What a buffer actually is, by magic number — the same question Homey's own `_validateBuffer`
@@ -194,9 +204,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
       });
       this.lastImage = image;
 
-      // Same id for the image and the video on purpose: Homey uses a matching image as the
-      // poster frame behind a video while it loads, which is exactly the right still to show.
-      await this.setCameraImage(CAMERA_ID, this.t('camera.last_still'), image)
+      await this.setCameraImage(CAMERA_STILL, this.t('camera.last_still'), image)
         .catch((error) => this.logger.error('setCameraImage failed:', error?.message ?? error));
 
       await this.registerClips();
@@ -246,7 +254,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
 
         video.registerVideoUrlListener(async () => ({ url: await this.currentClipUrl() }));
 
-        await this.setCameraVideo(CAMERA_ID, this.t('camera.last_clip'), video);
+        await this.setCameraVideo(CAMERA_CLIP, this.t('camera.last_clip'), video);
         this.logger.debug('clips registered');
       } catch (error: any) {
         // Not an error worth alarming anyone about — it is what an older Homey looks like.
@@ -963,12 +971,11 @@ module.exports = class CatFlapDevice extends Homey.Device {
      *    new one is silently ignored, so a title carrying the event time could never have worked
      *    — it would freeze on whichever event happened to be first. The time lives on
      *    `last_event_ONLYCAT`, which is a capability and can change freely.
-     * 3. **An image and a video are separate entries**, even under one id. That is what "two
+     * 3. **An image and a video are separate entries** whatever ids they use. That is what "two
      *    rows" was the whole time: a pair, not a duplicate.
      *
      * Fact 3 is not worth fighting, so the two rows say which is which — "Last still image" is
-     * there the moment an event lands; "Last clip" waits for OnlyCat to finish processing. They
-     * keep a shared id so the still serves as the clip's poster frame.
+     * there the moment an event lands; "Last clip" waits for OnlyCat to finish processing.
      *
      * **A stored title cannot be changed and an entry cannot be removed.** `Device` has no
      * `unsetCameraImage`, and `unregisterImage`/`unregisterVideo` take a resource instance

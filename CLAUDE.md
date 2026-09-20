@@ -121,8 +121,11 @@ prints "three policies, Night is active, two rules the app cannot evaluate", not
   renamed in the OnlyCat app keeps its old name in Insights forever. Accepted and documented.
 - **The `c` prefix on the chip code is deliberate** — 15-digit chip codes start with a digit, which
   is exactly what broke the reference implementation's entity ids.
-- **Clips are `createVideoHLS()` + `setCameraVideo()`**, sharing one id with `setCameraImage()`
-  so the still becomes the video's poster frame. Video landed in Homey **12.7.0**, and
+- **The still and the clip are separate camera ids**, `still` and `clip`. They shared `event` for
+  four builds, on an Athom doc line promising a matching image becomes the video's poster frame.
+  That poster frame was never once observed; two rows that refused to play were. Do not re-couple
+  them to chase a behaviour nobody has seen.
+- **Clips are `createVideoHLS()` + `setCameraVideo()`**. Video landed in Homey **12.7.0**, and
   `compatibility` is `>=12.7.0` rather than degrading on older firmware: this app's whole job is
   showing you what happened at the door. The try/catch stays anyway — `validate` cannot prove
   `homey.videos` exists on **Homey Cloud**, which we have no way to test, and losing clips there
