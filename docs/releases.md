@@ -30,11 +30,18 @@ so a deploy on their side would have left every flap dark, looking merely unavai
 was restarted by hand. `scheduleReconnect()` in `lib/gateway.ts` is the fix. This is the single
 strongest argument for the in-process fake gateway existing at all: no unit test would have reached it.
 
-**Unverified against hardware at time of writing.** Everything below needs a real flap and is
-tracked in [../tasks/todo.md](../tasks/todo.md):
+**Verified against hardware since.** Run on a real flap (`OC-0CBFB4903101`) on 2026-09-20:
+
+- `Device#setCameraImage` and `setCameraVideo` both exist and work. An image and a video are *separate* entries even under one id, and while they shared the id `event` the still was never requested at all. Split into `still` and `clip`, both serve — `still JPEG, 30387 bytes`. An id that stops being registered leaves no orphan behind, contrary to what this repo claimed for several days.
+- The frame-image endpoint needs no authentication: `GET /events/<device>/<event>/<frame>` returns `200 image/jpeg` with and without `?t=<accessToken>`. `posterFrameIndex` really can be `0`, so the `!= null` guard in `posterFrame()` is load-bearing.
+- The policy picker does **not** hold the quick-action slot. `locked` does, with `setable: true` and `uiQuickAction: true` — unlocking is the tile's one-tap action and the policy picker is reached from the device page. This reverses the original design note.
+- `homey.__()` substitutes `__name__` and ignores `{{name}}`. Every templated string shipped with the wrong spelling and rendered the placeholder verbatim, through every gate, until a debug log showed it.
+
+**Still unverified:**
 
 - whether a Homey capability sub-id starting with a digit works (we prefix `c` to avoid finding out)
-- whether the policy picker actually takes the tile's quick-action slot
-- whether a Zone "lock all locks" Flow skips a device whose `locked` is `setable: false`
-- whether `Device#setCameraImage` exists in SDK 3 and what it does to the tile
-- whether the frame-image endpoint really needs no authentication
+- whether a Zone "lock all locks" Flow reaches this device now that `locked` is setable
+
+**Not shipped for Homey Cloud.** `platforms` is `["local"]`. Nothing technical prevents Cloud — no local network, no discovery, no settings page, no permissions, and it validated for both platforms for its whole life — but publishing there needs an organization with Verified Developer status, which individuals cannot get. The Cloud-safe discipline stays in the code (`this.homey.setTimeout` over the globals, gateway registry hung off the App instance), so re-enabling is adding `"cloud"` back to two arrays.
+
+**A process gap, recorded rather than papered over.** `dev/check-models.mjs` is named as a release step in [../CLAUDE.md](../CLAUDE.md) and in the plan, and was never written. For 0.1.0 the check was done by hand: upstream `OnlyCatAI/onlycat-shared-models` HEAD is `aecefd5`, which is exactly the commit vendored in `lib/onlycat/models.ts`, so there is no drift. The script still needs writing before a release where that is not trivially true.
