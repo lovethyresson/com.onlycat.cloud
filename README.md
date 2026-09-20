@@ -5,6 +5,11 @@
 A [Homey](https://homey.app/) app for the [OnlyCat](https://www.onlycat.com/) smart cat flap. One
 Homey device per flap, with every cat on it, and a snapshot on every Flow card.
 
+> **Status: 0.1.0, a test version.** It talks to a real account and a real flap, and the parts
+> that can be tested without hardware are covered by 78 tests — but it has not been through the
+> Homey App Store, and only one household has run it. Expect rough edges and please
+> [open an issue](https://github.com/lovethyresson/com.onlycat.cloud/issues).
+
 ---
 
 ## What it does
@@ -24,7 +29,7 @@ policy's rules did it and says so in words:
 > Misan was turned away — the curfew locks the flap between 22:00 and 07:00.
 
 **And admits when it can't tell.** Some rules depend on sensors inside the flap that the API does
-not expose. If one of those could have fired first, the app says that instead of guessing:
+not expose. If one of those could have fired first, the app says so rather than guessing:
 
 > Misan was turned away. This flap's rules depend on its own sensors, so the app can't tell you
 > which one refused her.
@@ -32,22 +37,34 @@ not expose. If one of those could have fired first, the app says that instead of
 **Switches door policies.** The policies you built in the OnlyCat app appear as a picker on the
 tile and as a Flow action, so "curfew at sunset" is one Flow.
 
-## Getting started
+## Installing
 
-You need an **OnlyCat API key**:
+Not on the Homey App Store yet. To run it you need the
+[Homey CLI](https://apps.developer.homey.app/the-basics/getting-started) and a Homey Pro:
+
+```bash
+git clone https://github.com/lovethyresson/com.onlycat.cloud.git
+cd com.onlycat.cloud
+npm install
+npx homey login
+npx homey app install
+```
+
+Then add the device: **Devices → + → OnlyCat → Cat flap**.
+
+### Getting an API key
 
 1. Open the OnlyCat app on your phone.
 2. Go to **Account** and turn on **Developer Mode**.
 3. Open **API Keys** and create one for Homey.
-4. Copy it — it is only shown once — and paste it when Homey asks.
+4. Copy it — it is only shown once — and paste it into the **API key** field when Homey asks.
 
 > **An OnlyCat API key has full access to your OnlyCat account, and there is no way to limit it.**
 > Make a key just for Homey so you can revoke that one on its own later.
 
-Then add the device: **Devices → + → OnlyCat → Cat flap**. Homey lists the flaps on the account and
-pre-selects the cats OnlyCat knows about, skipping any you have hidden as neighbours' cats.
-
-To change the key later, or pick up a cat you have added since, use the device's **Repair**.
+Homey lists the flaps on the account and picks up the cats OnlyCat knows about, skipping any you
+have hidden as neighbours' cats. To change the key later, or pick up a cat you have added since,
+use the device's **Repair**.
 
 ## Flow cards
 
@@ -57,8 +74,8 @@ To change the key later, or pick up a cat you have added since, use the device's
 | **And** | A cat is home · The flap is locked · The door policy is… |
 | **Then** | Unlock the flap · Switch the door policy · Mark a cat as home or out · Restart the flap |
 
-Every "when" card carries a **Snapshot** tag. Drop it into a push notification and the photo comes
-with it. "A cat was turned away" also carries a **Reason** tag.
+Every "when" card carries a **Snapshot** tag — drop it into a push notification and the photo
+comes with it. "A cat was turned away" also carries a **Reason** tag.
 
 The per-cat cards take **Any cat** or a specific one, so you write one Flow rather than one per pet.
 
@@ -68,8 +85,8 @@ it is drifts. It corrects Homey only; it does not tell OnlyCat.
 ## Good to know
 
 **This app needs the internet, and so does the flap.** OnlyCat has no local API — the flap talks
-only to OnlyCat's own cloud, and so do we. There is no way around this from the outside; OnlyCat
-have said a local API is planned, but it does not exist yet.
+only to OnlyCat's own cloud, and so do we. OnlyCat have said a local API is planned, but as of
+September 2026 it does not exist.
 
 **Your cats are fine during an outage; Homey just goes quiet.** The flap enforces its door policy
 on the device itself, so it keeps letting the right cats in with no internet at all. What stops is
@@ -77,69 +94,74 @@ Homey knowing about it — no events, no Flows, and the device shows as unavaila
 connection comes back.
 
 **Lock state is worked out, not read.** OnlyCat does not report whether the flap is locked, so the
-app runs your door policy's rules itself. Rules that depend on the flap's own sensors — flap
-position, its motion detectors — cannot be evaluated from outside, which is the same limit behind
-the "can't tell you which one" message above.
+app runs your door policy's rules itself. Rules that depend on the flap's own sensors cannot be
+evaluated from outside, which is the same limit behind the "can't tell you which one" message.
 
 **Refusal alerts arrive a few seconds late, on purpose.** OnlyCat revises an event while it is
 happening: a cat that starts coming through and turns back changes from a transit to a peek. Homey
-cannot un-fire a Flow, so the app waits for the final version rather than sending you a correct
-notification's wrong first draft. The activity sensor on the tile still reacts immediately.
+cannot un-fire a Flow, so the app waits for the final version. The activity sensor on the tile
+still reacts immediately.
 
-**Subscription flaps need connectivity for more than notifications** — OnlyCat's own subscription
-tier checks its subscription online, and individual events can be gated.
-
-## Which flaps
-
-Any OnlyCat flap on your account. The app reads the account, so a second flap is just a second
-device.
-
-## Development
-
-```bash
-npm install
-npm test           # unit tests + the in-process fake gateway
-npm run typecheck  # the app, and separately the test suite
-npm run lint
-npx homey app validate --level publish
-```
-
-`dev/probe-account.mjs` checks a key and describes what Homey would find, without involving Homey:
-
-```bash
-node dev/probe-account.mjs oc_live_...
-```
-
-`dev/watch-events.mjs` tails a flap and decodes events into English — the way to check behaviour
-against a real cat going through a real door:
-
-```bash
-node dev/watch-events.mjs oc_live_...
-```
-
-Neither script is part of the app bundle.
+**Subscription flaps need connectivity for more than notifications** — OnlyCat's subscription tier
+checks its subscription online, and individual events can be gated.
 
 ## Troubleshooting
 
 The device's **Advanced** settings have a **Debug logging** switch. It is off by default, because
 on it writes a line for every gateway message and every cat that walks past. Turn it on, reproduce
-whatever went wrong, then send the log from **Settings → Apps → OnlyCat**. Errors and connection
-changes are logged either way; the switch only adds the per-event detail.
-
-Pairing always logs, because that is the one moment when there is no device yet on which to tick
-the box.
+whatever went wrong, then send the log from **Settings → Apps → OnlyCat**. Errors, connection
+changes and availability transitions are logged either way.
 
 `dev/probe-account.mjs` checks a key and describes what Homey would find, without involving Homey
-at all — the fastest way to tell an account problem from an app problem.
+at all — the fastest way to tell an account problem from an app problem:
+
+```bash
+node dev/probe-account.mjs oc_live_...
+```
+
+`dev/watch-events.mjs` tails a flap and decodes events into English, which is how you check
+behaviour against a real cat going through a real door.
+
+Neither script is part of the app bundle, and neither sends your key anywhere but OnlyCat.
+
+## Development
+
+```bash
+npm test           # unit tests, plus an in-process fake gateway
+npm run typecheck  # the app, and separately the test suite
+npm run lint
+npx homey app validate --level publish
+```
+
+CI runs all four on every push.
+
+The interesting parts:
+
+| | |
+|---|---|
+| [`lib/onlycat/models.ts`](lib/onlycat/models.ts) | The vendored OnlyCat contract — enums and pure functions copied from [their public models](https://github.com/OnlyCatAI/onlycat-shared-models) rather than re-derived. The only file allowed to restate their schema. |
+| [`lib/events.ts`](lib/events.ts) | The subevent vocabulary. Flow cards, wording, presence and i18n all resolve through this one table. |
+| [`lib/policy.ts`](lib/policy.ts) | The flap's rule engine, re-implemented, returning *which* rule matched and whether we can stand behind it. |
+| [`lib/reason.ts`](lib/reason.ts) | That rule rendered as one sentence — or an admission that we cannot tell. |
+| [`test/fake-gateway.ts`](test/fake-gateway.ts) | A real Socket.IO server on loopback, so reconnection, 401s and out-of-order events are testable without an API key. |
+
+[`CLAUDE.md`](CLAUDE.md) documents the sharp edges of this API — the ones that cost something to
+learn are all written down there. [`docs/`](docs/) has the asset provenance and the release notes.
 
 ## Credits
 
 The cat-head mark and the brand colour are OnlyCat's own, taken from
-[their published logo](https://www.onlycat.com/wp-content/uploads/2024/07/Horizontal.svg). See
-[docs/assets.md](docs/assets.md) for provenance and the trademark position.
+[their published logo](https://www.onlycat.com/wp-content/uploads/2024/07/Horizontal.svg); the
+photography is theirs too. See [docs/assets.md](docs/assets.md) for provenance and the trademark
+position.
 
 Built against [OnlyCat's public models](https://github.com/OnlyCatAI/onlycat-shared-models) and
 their [Home Assistant integration](https://github.com/OnlyCatAI/onlycat-home-assistant), which is
-the best documentation this API has. **Not affiliated with or endorsed by OnlyCat.**
+the best documentation this API has.
 
-MIT licensed.
+**Not affiliated with, endorsed by, or supported by OnlyCat or Athom.** OnlyCat is a trademark of
+VirtualV Trading Ltd.
+
+## Licence
+
+[MIT](LICENSE) © 2026 Love Thyresson.
