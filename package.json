@@ -1,6 +1,17 @@
 {
   "name": "com.onlycat.cloud",
   "version": "0.1.0",
+  "description": "Homey app for the OnlyCat smart cat flap",
+  "license": "MIT",
+  "author": "Love Thyresson",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lovethyresson/com.onlycat.cloud.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lovethyresson/com.onlycat.cloud/issues"
+  },
+  "homepage": "https://github.com/lovethyresson/com.onlycat.cloud#readme",
   "main": "app.ts",
   "scripts": {
     "build": "tsc",
