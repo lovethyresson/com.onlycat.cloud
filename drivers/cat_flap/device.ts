@@ -58,6 +58,11 @@ module.exports = class CatFlapDevice extends Homey.Device {
     /** Scoped per flap, so a two-flap household's logs can be told apart. */
     private logger!: Logger;
 
+    /** Null until the first decision, so the first transition is always logged. */
+    private available: boolean | null = null;
+
+    private refreshing = false;
+
     get deviceId(): string {
       return this.getData().id as string;
     }
@@ -135,7 +140,8 @@ module.exports = class CatFlapDevice extends Homey.Device {
     private async connect(): Promise<void> {
       const apiKey = this.getStoreValue('apiKey') as string | undefined;
       if (!apiKey) {
-        await this.setUnavailable(this.homey.__('error.unauthorized'));
+        this.logger.error('no API key in the device store — re-pair, or use Repair');
+        await this.markUnavailable(this.homey.__('error.unauthorized'));
         return;
       }
 
@@ -156,6 +162,14 @@ module.exports = class CatFlapDevice extends Homey.Device {
       this.gateway.on('eventUpdate', this.onEventUpdate);
       this.gateway.on('eventSummaryUpdate', this.onEventSummaryUpdate);
       this.gateway.connect();
+
+      // The gateway is shared per API key. A second flap attaching to one that is already up
+      // would never see `ready` — that fires on connect, which already happened — and would sit
+      // in "No response" forever with a perfectly healthy socket underneath it.
+      if (this.gateway.connected) {
+        this.logger.debug('gateway was already up; refreshing without waiting for ready');
+        void this.refresh().catch((e) => this.logger.error('refresh failed:', e?.message ?? e));
+      }
     }
 
     // Bound fields rather than methods: they are handed to the shared gateway and have to be
@@ -166,14 +180,13 @@ module.exports = class CatFlapDevice extends Homey.Device {
     };
 
     private onDown = (reason: string): void => {
-      this.logger.info(`connection down (${reason})`);
-      void this.setUnavailable(`${this.homey.__('error.no_connection')} (${reason})`).catch(() => {});
+      void this.markUnavailable(`${this.homey.__('error.no_connection')} (${reason})`);
       void this.setCapabilityValue('alarm_connectivity', true).catch(() => {});
     };
 
     private onUnauthorized = (): void => {
       this.logger.error('the API key was rejected — open Repair and paste a new one');
-      void this.setUnavailable(this.homey.__('error.unauthorized')).catch(() => {});
+      void this.markUnavailable(this.homey.__('error.unauthorized'));
     };
 
     private onDeviceUpdate = (deviceId: string): void => {
@@ -188,23 +201,85 @@ module.exports = class CatFlapDevice extends Homey.Device {
     // State
     // ------------------------------------------------------------------------------------------
 
+    /** Marks the device available and says so once, not on every repeat call. */
+    private async markAvailable(): Promise<void> {
+      if (this.available === true) return;
+      this.available = true;
+      this.logger.info('available');
+      await this.setAvailable()
+        .catch((error) => this.logger.error('setAvailable failed:', error?.message ?? error));
+    }
+
+    private async markUnavailable(reason: string): Promise<void> {
+      if (this.available === false) return;
+      this.available = false;
+      this.logger.info(`unavailable: ${reason}`);
+      await this.setUnavailable(reason)
+        .catch((error) => this.logger.error('setUnavailable failed:', error?.message ?? error));
+    }
+
+    /**
+     * Bring the device up to date after a (re)connect.
+     *
+     * Each stage runs independently on purpose. `getDeviceTransitPolicies` and friends are
+     * documented to hang, and when the stages were chained with `await` one hung call left the
+     * device sitting in "No response" with nothing in the log — the socket was fine, the refresh
+     * simply never finished. Availability is decided by the first stage; nothing later can hold
+     * it hostage, and every stage says how long it took.
+     */
     private async refresh(): Promise<void> {
-      await this.setAvailable();
-      await this.setCapabilityValue('alarm_connectivity', false).catch(() => {});
-      await this.refreshDevice();
-      await this.refreshPolicies();
-      await this.refreshCatLocations();
+      if (this.refreshing) {
+        // `connect` and `userUpdate` both trigger resubscription, so `ready` arrives twice per
+        // connection. Running the whole refresh twice raced two setSettings calls for no gain.
+        this.logger.debug('refresh already running, skipping the duplicate');
+        return;
+      }
+      this.refreshing = true;
+
+      try {
+        await this.setCapabilityValue('alarm_connectivity', false).catch(() => {});
+
+        const stages: [string, () => Promise<void>][] = [
+          ['device', () => this.refreshDevice()],
+          ['policies', () => this.refreshPolicies()],
+          ['cats', () => this.refreshCatLocations()],
+        ];
+
+        for (const [name, run] of stages) {
+          const started = Date.now();
+          try {
+            await run();
+            this.logger.debug(`refresh: ${name} in ${Date.now() - started}ms`);
+          } catch (error: any) {
+            this.logger.error(`refresh: ${name} failed after ${Date.now() - started}ms:`,
+              error?.message ?? error);
+          }
+        }
+        this.logger.info('refresh complete');
+      } finally {
+        this.refreshing = false;
+      }
     }
 
     private async refreshDevice(): Promise<void> {
       const device = await this.gateway.getDevice(this.deviceId);
+      if (!device || !device.deviceId) {
+        // The gateway answering with nothing for a device we are subscribed to is not a state
+        // worth guessing about, and treating it as connected would be worse.
+        throw new Error(`getDevice returned nothing for ${this.deviceId}`);
+      }
+
       this.timeZone = device.timeZone ?? null;
       this.activePolicyId = device.deviceTransitPolicyId ?? null;
 
       const connected = device.connectivity?.connected !== false;
+      this.logger.debug(`device: flap is ${connected ? 'online' : 'OFFLINE'}`
+        + `${device.connectivity?.disconnectReason ? ` (${device.connectivity.disconnectReason})` : ''}`
+        + `, zone ${device.timeZone ?? 'unset'}, policy ${device.deviceTransitPolicyId ?? 'none'}`);
+
       await this.setCapabilityValue('alarm_connectivity', !connected).catch(() => {});
-      if (connected) await this.setAvailable();
-      else await this.setUnavailable(this.homey.__('error.no_connection'));
+      if (connected) await this.markAvailable();
+      else await this.markUnavailable(this.homey.__('error.no_connection'));
 
       await this.setSettings({
         device_id: this.deviceId,

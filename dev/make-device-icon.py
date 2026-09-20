@@ -32,20 +32,20 @@ import zlib
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CANVAS = 960
-STROKE = 38
+STROKE = 44
 
 # How far back, and how far up, the rear of the housing sits. One vector for the whole drawing:
 # using a single depth keeps the top and side faces consistent, which is what makes it read as
 # one solid object rather than three shapes that happen to touch.
-DEPTH = (-74, -52)
+DEPTH = (-87, -61)
 
 # Front face, as (x, y, w, h, radius). Placed so the WHOLE drawing — front face plus the depth
 # the back is raked by — is centred on the canvas. Centring the front face alone leaves the icon
 # sitting low and off to one side, because the volume only extends up and to the left.
-FRONT = (191, 207, 652, 598, 66)
-APERTURE = (297, 337, 440, 330, 58)
-SENSOR = (427, 257, 180, 44, 22)
-CATCH = (477, 691, 557, 691)
+FRONT = (139, 158, 770, 706, 78)
+APERTURE = (264, 311, 519, 389, 68)
+SENSOR = (418, 217, 212, 52, 26)
+CATCH = (476, 729, 571, 729)
 
 
 def shifted(point):

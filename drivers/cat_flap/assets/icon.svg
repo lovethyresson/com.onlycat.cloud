@@ -3,12 +3,12 @@
      catch, plus the top and right faces raked back so the housing has volume. Strokes on
      the 960x960 canvas Homey specifies. Regenerate with dev/make-device-icon.py. -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 960" width="960" height="960">
-  <g fill="none" stroke="#000000" stroke-width="38" stroke-linejoin="round" stroke-linecap="round">
-  <polyline points="777,207 703,155 183,155 117,221 117,687 191,739"/>
-  <polyline points="191,273 117,221"/>
-  <rect x="191" y="207" width="652" height="598" rx="66" ry="66"/>
-  <rect x="297" y="337" width="440" height="330" rx="58" ry="58"/>
-  <rect x="427" y="257" width="180" height="44" rx="22" ry="22"/>
-  <line x1="477" y1="691" x2="557" y2="691"/>
+  <g fill="none" stroke="#000000" stroke-width="44" stroke-linejoin="round" stroke-linecap="round">
+  <polyline points="831,158 744,97 130,97 52,175 52,725 139,786"/>
+  <polyline points="139,236 52,175"/>
+  <rect x="139" y="158" width="770" height="706" rx="78" ry="78"/>
+  <rect x="264" y="311" width="519" height="389" rx="68" ry="68"/>
+  <rect x="418" y="217" width="212" height="52" rx="26" ry="26"/>
+  <line x1="476" y1="729" x2="571" y2="729"/>
   </g>
 </svg>
