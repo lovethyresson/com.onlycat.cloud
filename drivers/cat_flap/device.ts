@@ -243,10 +243,9 @@ module.exports = class CatFlapDevice extends Homey.Device {
      * OnlyCat serves a per-event HLS playlist, not a live feed — so this is "the clip of the last
      * thing that happened", not a camera you can watch. The title says so.
      *
-     * The app requires Homey 12.7.0, which is the release that added video, so this should
-     * always succeed on a Pro. The try/catch stays for **Homey Cloud**, where we cannot verify
-     * that `homey.videos` exists and have no way to test: losing clips there beats throwing out
-     * of `onInit` and losing the device.
+     * The app requires Homey 12.7.0, the release that added video, so this should always
+     * succeed. The try/catch is not a compatibility shim but a blast radius: it runs inside
+     * `onInit`, where a throw costs the entire device rather than one camera row.
      */
     private async registerClips(): Promise<void> {
       try {

@@ -46,11 +46,13 @@ action; restarting the flap is a Flow action, since it is not something you reac
 
 ## Installing
 
-Not on the Homey App Store yet, so for now it installs from source with the
-[Homey CLI](https://apps.developer.homey.app/the-basics/getting-started), which needs a Homey Pro
-— Homey Cloud only runs apps from the store. The app itself declares
-`platforms: ["local", "cloud"]` and talks to nothing but OnlyCat's API, so it is built to run on
-both once published.
+**Homey Pro only.** Not on the Homey App Store yet either, so for now it installs from source
+with the [Homey CLI](https://apps.developer.homey.app/the-basics/getting-started).
+
+Nothing technical rules out Homey Cloud — the app talks to nothing but OnlyCat's API and needs no
+local network, discovery or permissions. Publishing for Homey Cloud just requires an organization
+with [Verified Developer](https://apps.developer.homey.app/app-store/verified-developer) status,
+which individuals cannot get, so claiming the platform would be a promise this app cannot keep.
 
 ```bash
 git clone https://github.com/lovethyresson/com.onlycat.cloud.git

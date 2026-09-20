@@ -83,9 +83,11 @@ export class Gateway {
     // Registry — kept off module scope on purpose.
     //
     // Nibe keeps its connections in a module-level Map. Athom's Homey Cloud guidance is explicit
-    // that a cloud app is multi-tenant and must not use globals, and honouring that here costs
-    // nothing while keeping the `platforms: ["cloud"]` door open. So the registry hangs off the
-    // App instance and is passed in.
+    // that a cloud app is multi-tenant and must not use globals. This app ships Pro-only — Homey
+    // Cloud needs a Verified Developer organization, which an individual cannot have — but the
+    // discipline is worth keeping regardless: it makes the lifetime of a connection explicit
+    // rather than ambient, and it is most of what a move to Cloud would need. So the registry
+    // hangs off the App instance and is passed in.
     // -----------------------------------------------------------------------------------------
 
     static registry(host: { _onlycatGateways?: Map<string, Gateway> }): Map<string, Gateway> {

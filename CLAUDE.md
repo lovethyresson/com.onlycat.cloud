@@ -127,9 +127,9 @@ prints "three policies, Night is active, two rules the app cannot evaluate", not
   them to chase a behaviour nobody has seen.
 - **Clips are `createVideoHLS()` + `setCameraVideo()`**. Video landed in Homey **12.7.0**, and
   `compatibility` is `>=12.7.0` rather than degrading on older firmware: this app's whole job is
-  showing you what happened at the door. The try/catch stays anyway — `validate` cannot prove
-  `homey.videos` exists on **Homey Cloud**, which we have no way to test, and losing clips there
-  beats losing the app.
+  showing you what happened at the door. The try/catch stays anyway: it sits in `onInit`, and a
+  throw there costs the whole device rather than one camera row. Cheap insurance, not a
+  compatibility shim.
 - **A camera entry is keyed by its `id`, and its title is fixed at first registration.** Passing
   a new title for an id already registered is silently ignored, which is why two entries sharing
   the id `event` both read "Last event" however they were relabelled. **Never put changing text in
@@ -153,14 +153,18 @@ prints "three policies, Night is active, two rules the app cannot evaluate", not
   with it, nobody gets a prey alert about last Tuesday because their Homey rebooted.
 - **Homey substitutes `__name__`, not `{{name}}`.** The Mustache spelling is not an error: `homey.__()` does not recognise it and hands back the string untouched, so the tile and every push notification read "{{name}} was turned away" for months without a single failure anywhere. Tests now reject `{{` in any locale and require every language to carry the same placeholders, since a translation that drops one silently loses the cat's name.
 - **Six languages at parity** — `en`, `sv`, `de`, `nl`, `no`, `da`. A test enforces it.
-- **`platforms: ["local", "cloud"]`.** The app talks to nothing but OnlyCat's API, so it needs no
-  local network, no discovery, no app settings page and no permissions — the Homey Cloud
-  constraints were honoured from the first commit and `validate --level publish` passes for both.
-  **Untested on Cloud**, because Homey Cloud runs only App Store builds: there is no CLI install
-  and no `homey app run` to try it with. Publishing for Cloud also needs a Homey Verified
-  Developer subscription.
-- **`this.homey.setTimeout`/`setInterval`, never the globals**, and no module-level state — the
-  gateway registry hangs off the App instance. Both are Homey Cloud requirements.
+- **`platforms: ["local"]`.** Homey Pro only. Nothing technical stops this app running on Homey
+  Cloud — it talks to nothing but OnlyCat's API, so it needs no local network, no discovery, no
+  app settings page and no permissions, and it passed `validate --level publish` for both
+  platforms for its whole life. The blocker is commercial: **publishing for Homey Cloud requires
+  an organization with Verified Developer status, and individuals are not eligible.** Declaring a
+  platform that cannot be shipped only misleads.
+  `connectivity: ["cloud"]` on the driver is unrelated and stays — that describes the *flap*
+  reaching OnlyCat's cloud, not the app running on Homey Cloud.
+- **The Cloud-shaped discipline stays even so**: `this.homey.setTimeout`/`setInterval` rather than
+  the globals, and no module-level state — the gateway registry hangs off the App instance. Both
+  are good hygiene on Pro as well, both cost nothing, and together they are most of what a move to
+  Cloud would need if an organization ever exists. Do not undo them.
 
 ## Releasing
 
