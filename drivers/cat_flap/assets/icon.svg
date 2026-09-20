@@ -1,24 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- OnlyCat cat-head mark, from the official Horizontal.svg published at
-     https://www.onlycat.com/wp-content/uploads/2024/07/Horizontal.svg
-     The wordmark and registered-trademark symbol are deliberately omitted.
-     Canvas is 960x960 with a transparent background, per Homey's icon guidance. -->
+<!-- The OnlyCat flap as a device icon: front face with the aperture, sensor strip and
+     catch, plus the top and right faces raked back so the housing has volume. Strokes on
+     the 960x960 canvas Homey specifies. Regenerate with dev/make-device-icon.py. -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 960" width="960" height="960">
-  <g fill="#000000">
-  <polygon points="809.01,441.71 855.89,569.83 785.23,619.10 809.01,441.71"/>
-  <polygon points="673.15,272.85 793.65,406.10 736.53,480.40 673.15,272.85"/>
-  <polygon points="492.57,233.37 615.23,76.80 644.02,234.39 551.06,304.26 492.57,233.37"/>
-  <polygon points="478.01,246.45 531.83,311.65 358.53,361.95 478.01,246.45"/>
-  <polygon points="337.26,391.87 512.37,341.12 436.93,445.35 337.26,391.87"/>
-  <polygon points="562.89,317.12 648.80,252.49 714.68,468.34 562.89,317.12"/>
-  <polygon points="466.18,446.38 545.60,336.57 610.11,606.25 466.18,446.38"/>
-  <polygon points="644.25,628.77 792.06,436.70 766.46,628.77 644.25,628.77"/>
-  <polygon points="565.28,343.97 721.51,499.86 630.82,617.74 565.28,343.97"/>
-  <polygon points="312.22,553.33 453.54,458.32 601.35,622.52 312.22,553.33"/>
-  <polygon points="286.28,398.24 388.57,453.09 254.42,543.21 286.28,398.24"/>
-  <polygon points="300.84,571.43 601.35,643.34 468.56,883.20 300.84,571.43"/>
-  <polygon points="269.44,277.97 238.83,351.48 308.70,334.52 269.44,277.97"/>
-  <polygon points="181.94,336.57 132.56,419.30 218.80,443.53 181.94,336.57"/>
-  <polygon points="108.55,238.94 104.11,284.35 160.89,280.70 108.55,238.94"/>
+  <g fill="none" stroke="#000000" stroke-width="38" stroke-linejoin="round" stroke-linecap="round">
+  <polyline points="777,207 703,155 183,155 117,221 117,687 191,739"/>
+  <polyline points="191,273 117,221"/>
+  <rect x="191" y="207" width="652" height="598" rx="66" ry="66"/>
+  <rect x="297" y="337" width="440" height="330" rx="58" ry="58"/>
+  <rect x="427" y="257" width="180" height="44" rx="22" ry="22"/>
+  <line x1="477" y1="691" x2="557" y2="691"/>
   </g>
 </svg>

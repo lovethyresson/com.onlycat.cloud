@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { existsSync, readFileSync, statSync } from 'node:fs';
 import { describe, it } from 'node:test';
 import {
   capabilityForCat, capabilitySyncPlan, initialLocation, offerableCats, rfidFromCapability,
@@ -471,7 +472,7 @@ describe('i18n', () => {
 });
 
 describe('logging', () => {
-  const sink = () => {
+  const sink = (): { lines: string[]; host: { log: (...a: any[]) => void; error: (...a: any[]) => void } } => {
     const lines: string[] = [];
     return {
       lines,
@@ -500,7 +501,9 @@ describe('logging', () => {
     const { lines, host } = sink();
     const logger = new Logger(host, 'test');
     logger.debug('quiet');
-    assert.deepEqual(lines, [], 'debug logged while disabled');
+    // Not deepEqual against []: that narrows `lines` to never[] for the rest of the test, and
+    // every later .includes() stops type-checking.
+    assert.equal(lines.length, 0, 'debug logged while disabled');
 
     logger.setDebug(true);
     logger.debug('loud');
@@ -549,5 +552,87 @@ describe('logging', () => {
     assert.equal(toggle.type, 'checkbox');
     assert.equal(toggle.value, false, 'debug logging must default to off');
     assert.ok(toggle.hint?.en, 'the setting needs a hint saying what it does and how to send the log');
+  });
+});
+
+describe('pairing', () => {
+  const manifest = require('../app.json');
+  const driver = manifest.drivers.find((d: any) => d.id === 'cat_flap');
+
+  it('uses Homey\'s own credentials view rather than a hand-rolled one', () => {
+    // Two bugs came out of a custom view: one where nothing called the script, and one where
+    // declaring `navigation.next` made Homey draw a Next button that skipped verification
+    // entirely and reached the device list with no key. The native template cannot be bypassed —
+    // Homey wires its Login button straight to the `login` handler.
+    const first = driver.pair[0];
+    assert.equal(first.template, 'login_credentials');
+    assert.equal(first.navigation, undefined,
+      'navigation on the credentials view would let the user walk past the login handler');
+  });
+
+  it('labels both fields for a product that has no username', () => {
+    const { options } = driver.pair[0];
+    assert.ok(options.passwordLabel?.en?.includes('API key'), 'the key field is not labelled');
+    assert.ok(options.usernameLabel?.en, 'the other field needs a purpose, not a blank prompt');
+    assert.ok(options.passwordPlaceholder?.en?.startsWith('oc_live'),
+      'the placeholder should show what an OnlyCat key looks like');
+  });
+
+  it('chains to the device list and then adds', () => {
+    assert.equal(driver.pair[1].template, 'list_devices');
+    assert.equal(driver.pair[1].navigation?.next, 'add_devices');
+    assert.equal(driver.pair[2].template, 'add_devices');
+  });
+
+  it('gives repair the same view and nothing after it', () => {
+    assert.equal(driver.repair.length, 1);
+    assert.equal(driver.repair[0].template, 'login_credentials');
+    assert.equal(driver.repair[0].navigation, undefined);
+  });
+
+  it('ships no hand-rolled pairing HTML', () => {
+    // If a custom view ever comes back it should be a decision, not a leftover.
+    assert.equal(existsSync('drivers/cat_flap/pair'), false, 'a custom pair view has reappeared');
+    assert.equal(existsSync('drivers/cat_flap/repair'), false, 'a custom repair view has reappeared');
+  });
+
+  it('records which key a flap is using', () => {
+    // An account-wide key that gets rotated is otherwise impossible to trace back to a device.
+    const flap = driver.settings.find((g: any) => g.label?.en === 'Flap');
+    assert.ok(flap.children.some((c: any) => c.id === 'key_name'), 'no key_name label setting');
+  });
+});
+
+describe('assets', () => {
+  const read = (p: string) => readFileSync(p, 'utf8');
+
+  it('gives the app, the device and the driver three different things', () => {
+    // The app icon is OnlyCat's brand mark; the device icon is a drawing of the flap; the driver
+    // images are photographs. v0.1.0 used the brand mark for all three, which made the device
+    // tile read as a sticker among Homey's outlined device icons.
+    const appIcon = read('assets/icon.svg');
+    const deviceIcon = read('drivers/cat_flap/assets/icon.svg');
+    assert.notEqual(appIcon, deviceIcon, 'the app and device icons are the same file');
+    assert.ok(appIcon.includes('<polygon'), 'the app icon should be the brand mark');
+    assert.ok(deviceIcon.includes('stroke='), 'the device icon should be line art, not a filled mark');
+    assert.ok(!deviceIcon.includes('<polygon'), 'the device icon is still the brand mark');
+  });
+
+  it('draws the device icon on the canvas Homey specifies', () => {
+    const deviceIcon = read('drivers/cat_flap/assets/icon.svg');
+    assert.ok(deviceIcon.includes('viewBox="0 0 960 960"'), 'not a 960x960 canvas');
+    assert.ok(deviceIcon.includes('fill="none"'),
+      'Homey rejects filled illustrations as icons — they read as a solid shape when small');
+  });
+
+  it('uses photographs for the driver images', () => {
+    // A flat two-colour render compresses to a few KB; a photograph does not. This is a crude
+    // check and that is the point — it catches the brand mark being pasted back in.
+    for (const name of ['small', 'large', 'xlarge']) {
+      const { size } = statSync(`drivers/cat_flap/assets/images/${name}.png`);
+      if (name !== 'small') {
+        assert.ok(size > 40_000, `${name}.png is ${size}B — too flat to be a photo`);
+      }
+    }
   });
 });

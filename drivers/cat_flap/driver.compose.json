@@ -72,9 +72,50 @@
   },
   "pair": [
     {
-      "id": "api_key",
-      "navigation": {
-        "next": "list_devices"
+      "id": "login_credentials",
+      "template": "login_credentials",
+      "options": {
+        "logo": "/assets/images/small.png",
+        "title": {
+          "en": "Connect to OnlyCat",
+          "sv": "Anslut till OnlyCat",
+          "de": "Mit OnlyCat verbinden",
+          "nl": "Verbinden met OnlyCat",
+          "no": "Koble til OnlyCat",
+          "da": "Forbind til OnlyCat"
+        },
+        "usernameLabel": {
+          "en": "Key name",
+          "sv": "Nyckelns namn",
+          "de": "Schlüsselname",
+          "nl": "Sleutelnaam",
+          "no": "Nøkkelnavn",
+          "da": "Nøglenavn"
+        },
+        "usernamePlaceholder": {
+          "en": "Homey",
+          "sv": "Homey",
+          "de": "Homey",
+          "nl": "Homey",
+          "no": "Homey",
+          "da": "Homey"
+        },
+        "passwordLabel": {
+          "en": "API key",
+          "sv": "API-nyckel",
+          "de": "API-Schlüssel",
+          "nl": "API-sleutel",
+          "no": "API-nøkkel",
+          "da": "API-nøgle"
+        },
+        "passwordPlaceholder": {
+          "en": "oc_live_…",
+          "sv": "oc_live_…",
+          "de": "oc_live_…",
+          "nl": "oc_live_…",
+          "no": "oc_live_…",
+          "da": "oc_live_…"
+        }
       }
     },
     {
@@ -91,7 +132,51 @@
   ],
   "repair": [
     {
-      "id": "api_key"
+      "id": "login_credentials",
+      "template": "login_credentials",
+      "options": {
+        "logo": "/assets/images/small.png",
+        "title": {
+          "en": "Connect to OnlyCat",
+          "sv": "Anslut till OnlyCat",
+          "de": "Mit OnlyCat verbinden",
+          "nl": "Verbinden met OnlyCat",
+          "no": "Koble til OnlyCat",
+          "da": "Forbind til OnlyCat"
+        },
+        "usernameLabel": {
+          "en": "Key name",
+          "sv": "Nyckelns namn",
+          "de": "Schlüsselname",
+          "nl": "Sleutelnaam",
+          "no": "Nøkkelnavn",
+          "da": "Nøglenavn"
+        },
+        "usernamePlaceholder": {
+          "en": "Homey",
+          "sv": "Homey",
+          "de": "Homey",
+          "nl": "Homey",
+          "no": "Homey",
+          "da": "Homey"
+        },
+        "passwordLabel": {
+          "en": "API key",
+          "sv": "API-nyckel",
+          "de": "API-Schlüssel",
+          "nl": "API-sleutel",
+          "no": "API-nøkkel",
+          "da": "API-nøgle"
+        },
+        "passwordPlaceholder": {
+          "en": "oc_live_…",
+          "sv": "oc_live_…",
+          "de": "oc_live_…",
+          "nl": "oc_live_…",
+          "no": "oc_live_…",
+          "da": "oc_live_…"
+        }
+      }
     }
   ],
   "settings": [
@@ -155,6 +240,19 @@
             "nl": "Firmwarekanaal",
             "no": "Fastvarekanal",
             "da": "Firmwarekanal"
+          },
+          "value": ""
+        },
+        {
+          "id": "key_name",
+          "type": "label",
+          "label": {
+            "en": "API key",
+            "sv": "API-nyckel",
+            "de": "API-Schlüssel",
+            "nl": "API-sleutel",
+            "no": "API-nøkkel",
+            "da": "API-nøgle"
           },
           "value": ""
         }

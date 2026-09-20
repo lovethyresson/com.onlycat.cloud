@@ -1,6 +1,47 @@
 # Assets
 
-## Where the artwork comes from
+## Three assets, three different things
+
+They get conflated, so to be explicit:
+
+| Asset | What it is | Source |
+|---|---|---|
+| `assets/icon.svg` | The **app** icon | OnlyCat's brand mark |
+| `assets/images/*.png` | The **app store** images (250×175, 500×350, 1000×700) | Lifestyle photograph |
+| `drivers/cat_flap/assets/icon.svg` | The **device** icon, on the tile | Line drawing of the flap, three-quarter view, `dev/make-device-icon.py` |
+| `drivers/cat_flap/assets/images/*.png` | The **driver** images (75×75, 500×500, 1000×1000) | Lifestyle photograph, cropped on the product |
+
+v0.1.0 used the brand mark for all four, which is wrong twice over: a logo on a device tile reads
+as a sticker among Homey's outlined hardware icons, and a flat logo is not a driver image at all.
+The device icon then went through a flat front elevation before landing on the three-quarter view
+Homey's own device icons use — front face plus the top and one side, so the thing has volume.
+
+Regenerate the device icon, with a PNG preview to actually look at:
+
+```bash
+python3 dev/make-device-icon.py /tmp/preview.png
+```
+
+The preview exists because there is no SVG renderer on this machine, and an icon nobody looks at
+is how both earlier asset mistakes shipped.
+
+### The photographs
+
+Both sets of images are crops of OnlyCat's own `hero-3000.webp`
+(`https://www.onlycat.com/wp-content/themes/onlycat/assets/home/hero-3000.webp`, 3000×1751 —
+the flap on a dark door at dusk, with a cat asleep in a bed beside it). Driver images take a
+1300×1300 square centred on the flap; app images take a 2501×1751 landscape crop that keeps both
+the flap and the cat in frame.
+
+```bash
+sips --cropToHeightWidth 1300 1300 --cropOffset 304 1228 hero-3000.png --out drv.png
+sips --cropToHeightWidth 1751 2501 --cropOffset 0 628   hero-3000.png --out app.png
+```
+
+Athom encourage exactly this: *"Use brand images if this is possible… Lifestyle images and brand
+images are great examples and are strongly encouraged."*
+
+## Where the brand mark comes from
 
 Everything visual in this app is derived from **OnlyCat's own published artwork**, not redrawn or
 approximated.

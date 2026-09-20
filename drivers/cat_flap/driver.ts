@@ -153,7 +153,7 @@ module.exports = class CatFlapDriver extends Homey.Driver {
      * Hidden chips are the platform's own neighbour-cat mechanism, so a household that has
      * already said "not my cat" is not asked again here.
      */
-    private async discover(apiKey: string): Promise<DiscoveredFlap[]> {
+    private async discover(apiKey: string, keyName = ''): Promise<DiscoveredFlap[]> {
       const gateway = new Gateway(
         apiKey,
         (...a) => this.logger.debug('discover:', ...a),
@@ -205,6 +205,7 @@ module.exports = class CatFlapDriver extends Homey.Driver {
               time_zone: device.timeZone ?? '—',
               firmware_channel: device.firmwareChannel ?? '—',
               tracked_cats: cats.map((cat) => cat.name).join(', ') || '—',
+              key_name: keyName || '—',
             },
           });
         }
@@ -216,54 +217,75 @@ module.exports = class CatFlapDriver extends Homey.Driver {
     }
 
     /**
-     * The key accepted during the current pairing session.
+     * The key accepted during the current pairing session, and the name the owner gave it.
      *
-     * Deliberately on the DRIVER, not in an `onPair` closure. v0.1.0 kept it in the closure and
-     * pairing died with "No API key yet" at the device list: the key was accepted, the view
-     * advanced, and the `list_devices` handler then read an empty string. The handler that sets
-     * this and the handler that reads it are invoked from different views, so the state has to
-     * outlive any one closure. A driver is a singleton and only one person pairs at a time, which
-     * makes this the right lifetime — and it is cleared on disconnect, so a key never outlives the
-     * session that supplied it.
+     * On the DRIVER, not in an `onPair` closure. v0.1.0 kept it in the closure and pairing died
+     * with "No API key yet" at the device list: the handler that sets it and the handler that
+     * reads it run from different views, so the state has to outlive any one closure. A driver is
+     * a singleton and only one person pairs at a time, which makes this the right lifetime. It is
+     * cleared on disconnect, so a key never outlives the session that supplied it.
      */
     private pendingApiKey = '';
 
+    private pendingKeyName = '';
+
     async onPair(session: PairSession): Promise<void> {
       this.pendingApiKey = '';
+      this.pendingKeyName = '';
       this.logger.info('pair: session started');
 
-      session.setHandler('get_mode', async () => ({ mode: 'pair' }));
+      session.setHandler('disconnect', async () => {
+        this.logger.info('pair: session ended');
+        this.pendingApiKey = '';
+        this.pendingKeyName = '';
+      });
 
-      session.setHandler('verify_key', async (key: string) => {
-        const trimmed = (key ?? '').trim();
-        this.logger.info(`pair: verify_key received (${trimmed.length} chars, ${redactKey(trimmed)})`);
-        if (!trimmed) throw new Error('Paste your OnlyCat API key first.');
+      /*
+       * `login` is Homey's own handler for the login_credentials template.
+       *
+       * Using the native view rather than a hand-rolled one is what makes this reliable: Homey
+       * wires its Login button straight to this handler, so there is no way for the user to
+       * navigate past it. A custom view here shipped two bugs in a row — one where nothing called
+       * the script, and one where declaring `navigation.next` made Homey draw its own Next button
+       * that jumped to the device list without ever running verification.
+       */
+      session.setHandler('login', async ({ username, password }: { username: string; password: string }) => {
+        const key = (password ?? '').trim();
+        const name = (username ?? '').trim();
+        this.logger.info(`pair: login attempt, key name "${name || '(unnamed)'}", ${redactKey(key)}`);
+
+        if (!key) throw new Error('Paste your OnlyCat API key into the API key field.');
 
         // Report the ACTUAL failure. "Something went wrong" makes a rejected key and a missing
         // internet connection look identical, and they need opposite responses.
         try {
-          const devices = await verifyApiKey(trimmed, (...a) => this.logger.debug('verify:', ...a));
-          this.pendingApiKey = trimmed;
+          const devices = await verifyApiKey(key, (...a) => this.logger.debug('verify:', ...a));
+          if (!devices.length) {
+            this.logger.info('pair: key is valid but the account has no flaps');
+            throw new Error('That key works, but there are no cat flaps on the account.');
+          }
+          this.pendingApiKey = key;
+          this.pendingKeyName = name;
           this.logger.info(`pair: key accepted, ${devices.length} flap(s) on the account`);
-          return { count: devices.length };
+          return true;
         } catch (error: any) {
           if (error instanceof OnlyCatAuthError) {
             this.logger.info('pair: key REJECTED by OnlyCat');
             throw new Error('OnlyCat rejected that key. Check you copied all of it, and that it has not been revoked.');
           }
-          this.logger.error('pair: could not reach OnlyCat:', error?.message ?? error);
-          throw new Error(error?.message ?? 'Could not reach OnlyCat.');
+          this.logger.error('pair: login failed:', error?.message ?? error);
+          throw error;
         }
       });
 
       session.setHandler('list_devices', async () => {
-        this.logger.info(`pair: list_devices called, holding key ${redactKey(this.pendingApiKey)}`);
+        this.logger.info(`pair: list_devices called, holding ${redactKey(this.pendingApiKey)}`);
         if (!this.pendingApiKey) {
-          this.logger.error('pair: list_devices ran with no verified key — verify_key never completed');
+          this.logger.error('pair: list_devices ran with no verified key — login never completed');
           throw new Error('The API key did not carry over. Go back and enter it again.');
         }
         try {
-          const found = await this.discover(this.pendingApiKey);
+          const found = await this.discover(this.pendingApiKey, this.pendingKeyName);
           this.logger.info(`pair: offering ${found.length} flap(s)${
             found.length ? `: ${found.map((f) => f.data.id).join(', ')}` : ''}`);
           return found;
@@ -272,40 +294,33 @@ module.exports = class CatFlapDriver extends Homey.Driver {
           throw error;
         }
       });
-
-      session.setHandler('disconnect', async () => {
-        this.logger.info('pair: session ended');
-        this.pendingApiKey = '';
-      });
     }
 
     async onRepair(session: PairSession, device: Homey.Device): Promise<void> {
       const deviceId = device.getData().id as string;
       this.logger.info(`repair: session started for ${deviceId}`);
 
-      // Repair shows the same view with no device list behind it, so the view closes itself on
-      // success rather than advancing to a view that does not exist.
-      session.setHandler('get_mode', async () => ({ mode: 'repair' }));
-
       session.setHandler('disconnect', async () => {
         this.logger.info('repair: session ended');
       });
 
-      session.setHandler('verify_key', async (key: string) => {
-        const trimmed = (key ?? '').trim();
-        this.logger.info(`repair: verify_key received (${trimmed.length} chars, ${redactKey(trimmed)})`);
-        if (!trimmed) throw new Error('Paste your OnlyCat API key first.');
+      session.setHandler('login', async ({ username, password }: { username: string; password: string }) => {
+        const key = (password ?? '').trim();
+        const name = (username ?? '').trim();
+        this.logger.info(`repair: login attempt, key name "${name || '(unnamed)'}", ${redactKey(key)}`);
+
+        if (!key) throw new Error('Paste your OnlyCat API key into the API key field.');
 
         let flaps;
         try {
-          flaps = await verifyApiKey(trimmed, (...a) => this.logger.debug('verify:', ...a));
+          flaps = await verifyApiKey(key, (...a) => this.logger.debug('verify:', ...a));
         } catch (error: any) {
           if (error instanceof OnlyCatAuthError) {
             this.logger.info('repair: key REJECTED by OnlyCat');
             throw new Error('OnlyCat rejected that key. Check you copied all of it, and that it has not been revoked.');
           }
           this.logger.error('repair: could not reach OnlyCat:', error?.message ?? error);
-          throw new Error(error?.message ?? 'Could not reach OnlyCat.');
+          throw error;
         }
 
         if (!flaps.some((flap) => flap.deviceId === deviceId)) {
@@ -316,7 +331,7 @@ module.exports = class CatFlapDriver extends Homey.Driver {
         // Re-read the cats too: Repair is also how a new cat gets picked up, and asking the owner
         // to re-pair the whole flap for that would be absurd.
         const gateway = new Gateway(
-          trimmed,
+          key,
           (...a) => this.logger.debug('repair:', ...a),
           (...a) => this.logger.error('repair:', ...a),
           GATEWAY_URL,
@@ -335,12 +350,12 @@ module.exports = class CatFlapDriver extends Homey.Driver {
           const refreshed: TrackedCat[] = [];
           for (const rfidCode of codes) {
             const existing = cats.find((cat) => cat.rfidCode === rfidCode);
-            let name = existing?.name ?? rfidCode;
+            let catName = existing?.name ?? rfidCode;
             try {
               const profile = await gateway.getRfidProfile(deviceId, rfidCode);
-              if (profile?.label) name = profile.label;
+              if (profile?.label) catName = profile.label;
             } catch { /* keep the name we have */ }
-            refreshed.push({ rfidCode, name });
+            refreshed.push({ rfidCode, name: catName });
           }
           if (refreshed.length) cats = refreshed;
           this.logger.info(`repair: ${cats.length} cat(s) — ${cats.map((c) => c.name).join(', ') || 'none'}`);
@@ -350,9 +365,10 @@ module.exports = class CatFlapDriver extends Homey.Driver {
           gateway.destroy();
         }
 
-        await (device as CatFlapDevice).applyRepair(trimmed, cats);
+        await device.setSettings({ key_name: name || '—' }).catch(() => {});
+        await (device as CatFlapDevice).applyRepair(key, cats);
         this.logger.info('repair: applied');
-        return { count: cats.length };
+        return true;
       });
     }
 
