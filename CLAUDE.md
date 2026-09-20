@@ -168,6 +168,8 @@ prints "three policies, Night is active, two rules the app cannot evaluate", not
 
 ## Releasing
 
+**Store-facing prose is never hard-wrapped.** `README.txt`, `.homeychangelog.json` and the `description` fields are rendered on the web, so one paragraph is one line however long it runs, with blank lines between paragraphs. Breaking at a column width is a source-code habit and it renders as ragged mid-sentence breaks. Check with `awk '{print NR": ["length"] "$0}' README.txt` — every paragraph should be a single long line.
+
 1. `version` in `.homeycompose/app.json` **and** `package.json`.
 2. `homey app build` to regenerate `app.json`.
 3. An entry in `.homeychangelog.json`, English and Swedish. **2–3 sharp sentences.** Name what
