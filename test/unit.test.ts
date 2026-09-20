@@ -640,3 +640,56 @@ describe('assets', () => {
     }
   });
 });
+
+describe('the app manifest', () => {
+  const manifest = require('../app.json');
+
+  it('has the properties the App Store needs', () => {
+    for (const key of ['id', 'version', 'compatibility', 'sdk', 'platforms', 'name',
+      'description', 'category', 'brandColor', 'images', 'author', 'source', 'bugs', 'license']) {
+      assert.ok(manifest[key], `manifest is missing ${key}`);
+    }
+  });
+
+  it('gives users somewhere to ask for help', () => {
+    // Athom require a support URL to publish, and it has to be reachable — the abandoned
+    // community app pointed its bug tracker at a repository that does not exist.
+    assert.ok(manifest.support, 'no support URL');
+    assert.match(manifest.support, /^(https:\/\/|mailto:)/, 'support must be https:// or mailto:');
+    assert.match(manifest.bugs.url, /^https:\/\/github\.com\/lovethyresson\//, 'bugs URL is not ours');
+    assert.match(manifest.homepage, /^https:\/\/github\.com\/lovethyresson\//);
+  });
+
+  it('is findable in the App Store', () => {
+    assert.ok(manifest.tags, 'no search tags');
+    for (const locale of ['en', 'sv', 'de', 'nl', 'no', 'da']) {
+      assert.ok(manifest.tags[locale]?.length, `no tags for ${locale}`);
+      assert.ok(manifest.tags[locale].includes('OnlyCat'),
+        `${locale} tags omit the brand name, which is what people will search for`);
+      assert.ok(manifest.description[locale], `no description for ${locale}`);
+    }
+  });
+
+  it('asks for no permissions, because it needs none', () => {
+    // This app talks to one cloud service and nothing else on the Homey. Requesting a permission
+    // it does not use is the kind of thing review asks about, and rightly.
+    assert.ok(!manifest.permissions?.length, `unexpected permissions: ${manifest.permissions}`);
+  });
+
+  it('claims a real category', () => {
+    const valid = ['lights', 'video', 'music', 'appliances', 'security', 'climate',
+      'tools', 'internet', 'localization', 'energy'];
+    for (const category of [manifest.category].flat()) {
+      assert.ok(valid.includes(category), `${category} is not a Homey category`);
+    }
+  });
+
+  it('credits the author and nobody who did not contribute', () => {
+    assert.ok(manifest.author?.name);
+    // contributors is for people who actually worked on the app. The vendor is not one of them,
+    // and listing them would imply an endorsement that does not exist.
+    for (const person of manifest.contributors?.developers ?? []) {
+      assert.ok(!/onlycat/i.test(person.name), 'do not list the vendor as a contributor');
+    }
+  });
+});

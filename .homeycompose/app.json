@@ -17,6 +17,75 @@
     "no": "Katteluken i Homey — hvem kom inn, hvem ble avvist og hvorfor",
     "da": "Din kattelem i Homey — hvem kom ind, hvem blev afvist og hvorfor"
   },
+  "tags": {
+    "en": [
+      "OnlyCat",
+      "cat flap",
+      "catflap",
+      "cat door",
+      "pet door",
+      "cat",
+      "pet",
+      "prey detection",
+      "microchip",
+      "RFID"
+    ],
+    "sv": [
+      "OnlyCat",
+      "kattlucka",
+      "kattdörr",
+      "husdjursdörr",
+      "katt",
+      "husdjur",
+      "bytesdetektering",
+      "mikrochip",
+      "RFID"
+    ],
+    "de": [
+      "OnlyCat",
+      "Katzenklappe",
+      "Katzentür",
+      "Haustierklappe",
+      "Katze",
+      "Haustier",
+      "Beuteerkennung",
+      "Mikrochip",
+      "RFID"
+    ],
+    "nl": [
+      "OnlyCat",
+      "kattenluik",
+      "kattendeur",
+      "huisdierluik",
+      "kat",
+      "huisdier",
+      "prooidetectie",
+      "microchip",
+      "RFID"
+    ],
+    "no": [
+      "OnlyCat",
+      "katteluke",
+      "kattedør",
+      "kjæledyrluke",
+      "katt",
+      "kjæledyr",
+      "byttedeteksjon",
+      "mikrochip",
+      "RFID"
+    ],
+    "da": [
+      "OnlyCat",
+      "kattelem",
+      "kattedør",
+      "kæledyrslem",
+      "kat",
+      "kæledyr",
+      "byttedetektering",
+      "mikrochip",
+      "RFID"
+    ]
+  },
   "category": [
     "security"
   ],
@@ -39,6 +108,7 @@
   },
   "homepage": "https://github.com/lovethyresson/com.onlycat.cloud",
   "source": "https://github.com/lovethyresson/com.onlycat.cloud",
+  "support": "https://github.com/lovethyresson/com.onlycat.cloud/issues",
   "bugs": {
     "url": "https://github.com/lovethyresson/com.onlycat.cloud/issues"
   },

@@ -5,10 +5,9 @@
 A [Homey](https://homey.app/) app for the [OnlyCat](https://www.onlycat.com/) smart cat flap. One
 Homey device per flap, with every cat on it, and a snapshot on every Flow card.
 
-> **Status: 0.1.0, a test version.** It talks to a real account and a real flap, and the parts
-> that can be tested without hardware are covered by 78 tests — but it has not been through the
-> Homey App Store, and only one household has run it. Expect rough edges and please
-> [open an issue](https://github.com/lovethyresson/com.onlycat.cloud/issues).
+> **0.1.0 — the first test release.** Running against a real OnlyCat account and a real flap.
+> Not on the Homey App Store yet, so install it with the CLI ([below](#installing)).
+> Found something? [Open an issue](https://github.com/lovethyresson/com.onlycat.cloud/issues).
 
 ---
 
