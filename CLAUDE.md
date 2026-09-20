@@ -130,12 +130,17 @@ prints "three policies, Night is active, two rules the app cannot evaluate", not
   showing you what happened at the door. The try/catch stays anyway — `validate` cannot prove
   `homey.videos` exists on **Homey Cloud**, which we have no way to test, and losing clips there
   beats losing the app.
-- **A camera entry is keyed by its `id`, its title is set once and never changes, and it cannot
-  be removed.** Verified against the live API, after two rounds of guessing wrong. Re-registering
-  an id upserts the resource without adding a row; a new title is silently ignored; and `Device`
-  has no `unsetCameraImage` (`unregisterImage`/`unregisterVideo` take a resource instance, not a
-  camera id). Correcting a title means re-pairing the device. **Never put changing text in a
-  camera title** — it freezes on the first value. The time goes on `last_event_ONLYCAT`.
+- **A camera entry is keyed by its `id`, and its title is fixed at first registration.** Passing
+  a new title for an id already registered is silently ignored, which is why two entries sharing
+  the id `event` both read "Last event" however they were relabelled. **Never put changing text in
+  a camera title** — it freezes on the first value. The time goes on `last_event_ONLYCAT`.
+- **An id that stops being registered leaves no orphan.** Observed on a live Homey: after moving
+  from the shared id `event` to `still` + `clip`, the picker showed exactly two rows under the new
+  names, with nothing left over. I had claimed the opposite — that entries are unremovable and a
+  re-pair is the only cure — on the strength of `Device` having no `unsetCameraImage` and
+  `unregisterImage`/`unregisterVideo` taking a resource instance rather than a camera id. Both
+  facts are true and the conclusion drawn from them was not. What the mechanism is (entries
+  rebuilt per app start? cleared by a dev run?) is still unknown, so do not assert one.
 - **An image and a video are two separate entries**, even sharing an id — that is what "two rows
   in the picker" was. Rather than fight it, both are registered and **named for what they are**:
   "Last still image" and "Last clip". Two rows called the same thing tell you nothing.
