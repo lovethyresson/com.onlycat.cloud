@@ -87,7 +87,7 @@ socket.on('connect', async () => {
         const device = devices[0];
         const deviceId = device.deviceId ?? device.id;
 
-        const events = check(await call('getEvents', { deviceId, limit: 5 }), 'getEvents');
+        const events = check(await call('getDeviceEvents', { deviceId, subscribe: false }), 'getDeviceEvents');
         const list = Array.isArray(events) ? events : (events?.body ?? []);
         if (!list.length) {
             console.log(`No events on ${deviceId} yet — walk a cat through the flap and re-run.`);
@@ -95,7 +95,8 @@ socket.on('connect', async () => {
         }
 
         const event = list.reduce((a, b) => ((b.eventId ?? 0) > (a.eventId ?? 0) ? b : a));
-        const full = check(await call('getEvent', { deviceId, eventId: event.eventId }), 'getEvent');
+        const full = check(await call('getEvent',
+            { deviceId, eventId: event.eventId, subscribe: false }), 'getEvent');
         const e = full?.body ?? full ?? event;
 
         const frameCount = e.frameCount ?? null;
