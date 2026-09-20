@@ -48,7 +48,8 @@
     "unknown_cat": "Den katten følges ikke på denne luken",
     "clip_not_ready": "Klippet behandles fortsatt",
     "no_clip": "Ingen klipp for denne hendelsen",
-    "lock_unknown": "Appen kan ikke avgjøre om luken er låst: denne dørregelen bruker kriterier som avhenger av lukens egne sensorer."
+    "lock_unknown": "Appen kan ikke avgjøre om luken er låst: denne dørregelen bruker kriterier som avhenger av lukens egne sensorer.",
+    "cannot_lock": "OnlyCat har ingen låsekommando — luken låser seg selv etter dørregelen. Bytt dørregel i stedet."
   },
   "pair": {
     "title": "Koble til OnlyCat",
@@ -64,6 +65,6 @@
     "none": "Nøkkelen virker, men det finnes ingen kateluker på kontoen."
   },
   "camera": {
-    "last_event": "Siste hendelse"
+    "last_event": "Siste hendelse · opptak"
   }
 }

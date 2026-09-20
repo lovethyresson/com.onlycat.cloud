@@ -48,7 +48,8 @@
     "unknown_cat": "Den katten följs inte på den här luckan",
     "clip_not_ready": "Klippet bearbetas fortfarande",
     "no_clip": "Inget klipp för den här händelsen",
-    "lock_unknown": "Appen kan inte avgöra om luckan är låst: dörregeln använder villkor som bygger på luckans egna sensorer."
+    "lock_unknown": "Appen kan inte avgöra om luckan är låst: dörregeln använder villkor som bygger på luckans egna sensorer.",
+    "cannot_lock": "OnlyCat har inget låskommando — luckan låser sig själv enligt dörregeln. Byt dörregel i stället."
   },
   "pair": {
     "title": "Anslut till OnlyCat",
@@ -64,6 +65,6 @@
     "none": "Nyckeln fungerar, men det finns inga kattluckor på kontot."
   },
   "camera": {
-    "last_event": "Senaste händelsen"
+    "last_event": "Senaste händelsen · inspelning"
   }
 }

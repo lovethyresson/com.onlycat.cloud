@@ -17,7 +17,6 @@
     "alarm_connectivity",
     "last_event_ONLYCAT",
     "last_blocked_ONLYCAT",
-    "button.unlock",
     "button.reboot"
   ],
   "capabilitiesOptions": {
@@ -29,16 +28,6 @@
         "nl": "Activiteit bij het luik",
         "no": "Aktivitet ved luken",
         "da": "Aktivitet ved lemmen"
-      }
-    },
-    "button.unlock": {
-      "title": {
-        "en": "Unlock now",
-        "sv": "Lås upp nu",
-        "de": "Jetzt entriegeln",
-        "nl": "Nu ontgrendelen",
-        "no": "Lås opp nå",
-        "da": "Lås op nu"
       }
     },
     "button.reboot": {
@@ -53,9 +42,9 @@
       "maintenanceAction": true
     },
     "locked": {
-      "setable": false,
+      "setable": true,
       "getable": true,
-      "uiQuickAction": false
+      "uiQuickAction": true
     }
   },
   "platforms": [

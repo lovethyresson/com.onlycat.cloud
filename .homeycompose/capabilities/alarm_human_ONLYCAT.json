@@ -1,10 +1,32 @@
 {
   "type": "boolean",
-  "title": { "en": "Human activity", "sv": "Mänsklig aktivitet", "de": "Menschliche Aktivität", "nl": "Menselijke activiteit", "no": "Menneskelig aktivitet", "da": "Menneskelig aktivitet" },
+  "title": {
+    "en": "Human activity",
+    "sv": "Mänsklig aktivitet",
+    "de": "Menschliche Aktivität",
+    "nl": "Menselijke activiteit",
+    "no": "Menneskelig aktivitet",
+    "da": "Menneskelig aktivitet"
+  },
   "uiComponent": "sensor",
   "getable": true,
   "setable": false,
   "insights": true,
-  "insightsTitleTrue": { "en": "Human activity", "sv": "Mänsklig aktivitet", "de": "Menschliche Aktivität", "nl": "Menselijke activiteit", "no": "Menneskelig aktivitet", "da": "Menneskelig aktivitet" },
-  "insightsTitleFalse": { "en": "None", "sv": "Ingen", "de": "Keine", "nl": "Geen", "no": "Ingen", "da": "Ingen" }
+  "insightsTitleTrue": {
+    "en": "Human activity",
+    "sv": "Mänsklig aktivitet",
+    "de": "Menschliche Aktivität",
+    "nl": "Menselijke activiteit",
+    "no": "Menneskelig aktivitet",
+    "da": "Menneskelig aktivitet"
+  },
+  "insightsTitleFalse": {
+    "en": "None",
+    "sv": "Ingen",
+    "de": "Keine",
+    "nl": "Geen",
+    "no": "Ingen",
+    "da": "Ingen"
+  },
+  "icon": "/assets/capabilities/alarm_human_ONLYCAT.svg"
 }

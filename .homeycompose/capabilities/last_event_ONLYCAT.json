@@ -1,8 +1,16 @@
 {
   "type": "string",
-  "title": { "en": "Last event", "sv": "Senaste händelse", "de": "Letztes Ereignis", "nl": "Laatste gebeurtenis", "no": "Siste hendelse", "da": "Seneste hændelse" },
+  "title": {
+    "en": "Last event",
+    "sv": "Senaste händelse",
+    "de": "Letztes Ereignis",
+    "nl": "Laatste gebeurtenis",
+    "no": "Siste hendelse",
+    "da": "Seneste hændelse"
+  },
   "uiComponent": "sensor",
   "getable": true,
   "setable": false,
-  "insights": false
+  "insights": false,
+  "icon": "/assets/capabilities/last_event_ONLYCAT.svg"
 }

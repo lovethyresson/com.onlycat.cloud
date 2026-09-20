@@ -25,6 +25,12 @@ function describeSubevents(subevents: OnlyCatSubEvent[] | undefined): string {
 
 /** How long to wait for a final summary before settling on what we have. */
 const SUMMARY_GRACE_MS = 45000;
+/** How far back to look for a refusal when "Last refusal" has never been filled in. */
+const REFUSAL_SCAN = 12;
+
+/** How long a remote unlock outranks the door policy's idle state on the tile. */
+const MANUAL_UNLOCK_MS = 120000;
+
 /** How often to re-evaluate the idle lock state, so a curfew boundary is noticed. */
 const LOCK_TICK_MS = 60000;
 
@@ -77,7 +83,10 @@ module.exports = class CatFlapDevice extends Homey.Device {
 
     private clipVideo: any = null;
 
-    private cameraTitle = '';
+    private cameraRegistered = false;
+
+    /** While set, the derived lock state defers to a remote unlock the owner just asked for. */
+    private manualUnlockUntil = 0;
 
     get deviceId(): string {
       return this.getData().id as string;
@@ -102,6 +111,8 @@ module.exports = class CatFlapDevice extends Homey.Device {
         `cat_flap:${this.deviceId}`,
       );
       this.logger.setDebug(this.getSetting('debug_logging') === true);
+
+      await this.seedAlarms();
 
       this.cats = (this.getStoreValue('cats') as TrackedCat[]) ?? [];
       this.logger.info(`init: ${this.cats.length} tracked cat(s)${
@@ -446,6 +457,11 @@ module.exports = class CatFlapDevice extends Homey.Device {
       const policy = this.activePolicy();
       if (!policy) return;
 
+      if (Date.now() < this.manualUnlockUntil) {
+        await this.setCapabilityValue('locked', false).catch(() => {});
+        return;
+      }
+
       // No event context on purpose: this is the IDLE state. Rules keyed on a chip code or an
       // event classification genuinely cannot match when nothing is happening, so leaving those
       // inputs empty is the correct question to ask, not a missing input.
@@ -469,6 +485,61 @@ module.exports = class CatFlapDevice extends Homey.Device {
      * goes through, which can be hours. The event is adopted as already-settled, so no Flow card
      * fires — nobody wants a prey alert about last Tuesday because their Homey rebooted.
      */
+    /**
+     * Give the alarms a value before anything has happened.
+     *
+     * Homey persists a capability's value across restarts, but only once something has written
+     * one — an untouched capability renders as "-" on the tile, which is how "Prey detected"
+     * and "Human activity" looked on a freshly paired flap. `false` is not a guess here: it
+     * means no event is in progress, which is true at startup by definition.
+     *
+     * Only ever fills a blank. A value already there is real state and is left alone.
+     */
+    private async seedAlarms(): Promise<void> {
+      for (const capability of ['alarm_motion', 'alarm_prey_ONLYCAT', 'alarm_human_ONLYCAT']) {
+        if (!this.hasCapability(capability)) continue;
+        if (this.getCapabilityValue(capability) !== null) continue;
+        await this.setCapabilityValue(capability, false).catch(() => {});
+      }
+    }
+
+    /**
+     * Fill in the last refusal from history, once.
+     *
+     * "Last refusal" would otherwise stay blank until a cat is actually turned away, which on a
+     * well-behaved household could be never. Costs one summary request per event scanned, so it
+     * runs only while the capability is empty — after that the stored value persists.
+     */
+    private async backfillLastRefusal(events: OnlyCatEvent[]): Promise<void> {
+      if (this.getCapabilityValue('last_blocked_ONLYCAT')) return;
+
+      const recent = [...events].sort((a, b) => b.eventId - a.eventId).slice(0, REFUSAL_SCAN);
+      for (const event of recent) {
+        if (!event.accessToken) continue;
+        let summary;
+        try {
+          summary = await this.gateway.getEventSummary(
+            this.deviceId, event.eventId, event.accessToken, false,
+          );
+        } catch {
+          continue;
+        }
+
+        const denied = usableSubevents(summary).find((sub) => sub.action === 'DENY');
+        if (!denied) continue;
+
+        const rfid = denied.rfidCode ?? '';
+        const tracked = rfid ? this.cats.find((cat) => cat.rfidCode === rfid) : null;
+        const reason = explainRefusal(this.refusalOutcome(event, rfid), tracked ? this.nameFor(rfid) : null);
+        const line = this.t(reason.key, reason.tags);
+
+        await this.setCapabilityValue('last_blocked_ONLYCAT', line).catch(() => {});
+        this.logger.debug(`history: last refusal was event ${event.eventId} — ${line}`);
+        return;
+      }
+      this.logger.debug(`history: no refusal in the last ${recent.length} event(s)`);
+    }
+
     private async backfillLatestEvent(): Promise<void> {
       const events = await this.gateway.getDeviceEvents(this.deviceId, false);
       const usable = events.filter((event) => event.eventId != null && !event.deletedAt);
@@ -501,6 +572,8 @@ module.exports = class CatFlapDevice extends Homey.Device {
 
       if (label) await this.setCapabilityValue('last_event_ONLYCAT', label).catch(() => {});
       this.logger.debug(`history: showing event ${latest.eventId}${label ? ` — ${label}` : ''}`);
+
+      await this.backfillLastRefusal(usable);
     }
 
     private async refreshCatLocations(): Promise<void> {
@@ -546,6 +619,26 @@ module.exports = class CatFlapDevice extends Homey.Device {
     }
 
     private registerListeners(): void {
+      /*
+       * The tile's quick action. Only one direction of this toggle has a command behind it.
+       *
+       * `false` is OnlyCat's remote unlock, which is real. There is no "lock now" — the flap
+       * locks itself according to whichever door policy is active — so `true` explains that
+       * instead of failing silently or pretending to work.
+       */
+      this.registerCapabilityListener('locked', async (value: boolean) => {
+        if (value) throw new Error(this.t('error.cannot_lock'));
+
+        await this.gateway.runDeviceCommand(this.deviceId, 'unlock');
+        this.logger.info('remote unlock sent');
+
+        // Hold the derived value off for a moment. `locked` is otherwise computed from the door
+        // policy's idle state, which would recompute to "locked" within seconds and make the
+        // toggle snap back as though the unlock had failed. It had not: the flap really is open
+        // until a cat goes through or OnlyCat relocks it.
+        this.manualUnlockUntil = Date.now() + MANUAL_UNLOCK_MS;
+      });
+
       this.registerCapabilityListener('policy_ONLYCAT', async (value: string) => {
         const policyId = Number(value);
         if (!this.policies.some((p) => p.deviceTransitPolicyId === policyId)) {
@@ -554,10 +647,6 @@ module.exports = class CatFlapDevice extends Homey.Device {
         await this.gateway.activateDeviceTransitPolicy(this.deviceId, policyId);
         this.activePolicyId = policyId;
         await this.updateLockState();
-      });
-
-      this.registerCapabilityListener('button.unlock', async () => {
-        await this.gateway.runDeviceCommand(this.deviceId, 'unlock');
       });
 
       this.registerCapabilityListener('button.reboot', async () => {
@@ -669,20 +758,23 @@ module.exports = class CatFlapDevice extends Homey.Device {
     }
 
     /**
-     * Point the camera at an event: the still, and a title that says what it is.
+     * Point the camera at an event.
      *
-     * The title matters. Registering everything as "Last event" gives a picker full of identical
-     * rows that say nothing — naming it after the event and its time makes the one row useful.
+     * Registered ONCE, under one id and one fixed title. An earlier version re-titled it per
+     * event — "Zorro came in · 11:30" — which did not rename the row, it added another: the
+     * picker filled up with one row per event, some showing the clip and some the still. What
+     * the camera shows is the latest event; which event that was belongs on the
+     * `last_event_ONLYCAT` capability, where it can change freely without spawning rows.
      */
-    private async showEvent(event: OnlyCatEvent, label?: string): Promise<void> {
+    private async showEvent(event: OnlyCatEvent): Promise<void> {
       this.currentImageUrl = imageUrl(GATEWAY_URL, event);
       await this.lastImage?.update().catch(() => {});
 
-      const when = this.formatTime(event.timestamp);
-      const title = [label, when].filter(Boolean).join(' · ') || this.t('camera.last_event');
-      if (title === this.cameraTitle) return;
-      this.cameraTitle = title;
+      if (this.cameraRegistered) return;
+      this.cameraRegistered = true;
 
+      // One id for both, so Homey uses the still as the clip's poster while it loads.
+      const title = this.t('camera.last_event');
       if (this.lastImage) {
         await this.setCameraImage(CAMERA_ID, title, this.lastImage)
           .catch((error) => this.logger.error('setCameraImage failed:', error?.message ?? error));
@@ -691,20 +783,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
         await this.setCameraVideo(CAMERA_ID, title, this.clipVideo)
           .catch((error) => this.logger.error('setCameraVideo failed:', error?.message ?? error));
       }
-    }
-
-    /** Short local time in the FLAP's zone, which is where the cat was. */
-    private formatTime(timestamp: string | null | undefined): string {
-      if (!timestamp) return '';
-      try {
-        return new Intl.DateTimeFormat(this.homey.i18n.getLanguage() ?? 'en', {
-          timeZone: this.timeZone ?? undefined,
-          hour: '2-digit',
-          minute: '2-digit',
-        }).format(new Date(timestamp));
-      } catch {
-        return '';
-      }
+      this.logger.debug(`camera registered as "${title}"`);
     }
 
     /** Fire everything this event earns. Called exactly once per event. */
@@ -746,7 +825,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
 
       this.logger.info(actionLabel);
       await this.setCapabilityValue('last_event_ONLYCAT', actionLabel).catch(() => {});
-      await this.showEvent(event, actionLabel);
+      await this.showEvent(event);
 
       // Presence, but only for cats we actually track. An untracked chip has no capability.
       if (tracked) {

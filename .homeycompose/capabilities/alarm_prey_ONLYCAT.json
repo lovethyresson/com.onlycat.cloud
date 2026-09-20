@@ -1,10 +1,32 @@
 {
   "type": "boolean",
-  "title": { "en": "Prey detected", "sv": "Byte upptäckt", "de": "Beute erkannt", "nl": "Prooi gedetecteerd", "no": "Bytte oppdaget", "da": "Bytte registreret" },
+  "title": {
+    "en": "Prey detected",
+    "sv": "Byte upptäckt",
+    "de": "Beute erkannt",
+    "nl": "Prooi gedetecteerd",
+    "no": "Bytte oppdaget",
+    "da": "Bytte registreret"
+  },
   "uiComponent": "sensor",
   "getable": true,
   "setable": false,
   "insights": true,
-  "insightsTitleTrue": { "en": "Prey detected", "sv": "Byte upptäckt", "de": "Beute erkannt", "nl": "Prooi gedetecteerd", "no": "Bytte oppdaget", "da": "Bytte registreret" },
-  "insightsTitleFalse": { "en": "No prey", "sv": "Inget byte", "de": "Keine Beute", "nl": "Geen prooi", "no": "Ingen bytte", "da": "Intet bytte" }
+  "insightsTitleTrue": {
+    "en": "Prey detected",
+    "sv": "Byte upptäckt",
+    "de": "Beute erkannt",
+    "nl": "Prooi gedetecteerd",
+    "no": "Bytte oppdaget",
+    "da": "Bytte registreret"
+  },
+  "insightsTitleFalse": {
+    "en": "No prey",
+    "sv": "Inget byte",
+    "de": "Keine Beute",
+    "nl": "Geen prooi",
+    "no": "Ingen bytte",
+    "da": "Intet bytte"
+  },
+  "icon": "/assets/capabilities/alarm_prey_ONLYCAT.svg"
 }

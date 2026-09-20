@@ -1,10 +1,32 @@
 {
   "type": "boolean",
-  "title": { "en": "Cat", "sv": "Katt", "de": "Katze", "nl": "Kat", "no": "Katt", "da": "Kat" },
+  "title": {
+    "en": "Cat",
+    "sv": "Katt",
+    "de": "Katze",
+    "nl": "Kat",
+    "no": "Katt",
+    "da": "Kat"
+  },
   "uiComponent": "sensor",
   "getable": true,
   "setable": false,
   "insights": true,
-  "insightsTitleTrue": { "en": "Home", "sv": "Hemma", "de": "Zu Hause", "nl": "Thuis", "no": "Hjemme", "da": "Hjemme" },
-  "insightsTitleFalse": { "en": "Out", "sv": "Ute", "de": "Draußen", "nl": "Buiten", "no": "Ute", "da": "Ude" }
+  "insightsTitleTrue": {
+    "en": "Home",
+    "sv": "Hemma",
+    "de": "Zu Hause",
+    "nl": "Thuis",
+    "no": "Hjemme",
+    "da": "Hjemme"
+  },
+  "insightsTitleFalse": {
+    "en": "Out",
+    "sv": "Ute",
+    "de": "Draußen",
+    "nl": "Buiten",
+    "no": "Ute",
+    "da": "Ude"
+  },
+  "icon": "/assets/capabilities/cat_home_ONLYCAT.svg"
 }

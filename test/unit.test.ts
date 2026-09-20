@@ -388,29 +388,39 @@ describe('the flow card surface', () => {
     }
   });
 
+  it('gives every custom capability an icon', () => {
+    // Without one, Homey draws a dashed placeholder square on the tile — which is what "Prey
+    // detected", "Human activity", "Last event", "Last refusal" and every cat looked like next
+    // to the official capabilities, which ship their own glyphs.
+    for (const [name, definition] of Object.entries<any>(manifest.capabilities ?? {})) {
+      assert.ok(definition.icon, `${name} has no icon and will render as a placeholder`);
+      assert.ok(existsSync(definition.icon.replace(/^\//, '')),
+        `${name} points at ${definition.icon}, which does not exist`);
+    }
+  });
+
   it('declares the cat capability type even though instances are runtime-only', () => {
     assert.ok(manifest.capabilities.cat_home_ONLYCAT, 'cat_home_ONLYCAT type not declared');
   });
 
-  it('puts unlock on the tile and reboot in maintenance', () => {
-    // Unlock is the one manual control the flap has; burying it in maintenance was wrong.
-    // Reboot genuinely is maintenance — and is a Flow action too, for anyone automating it.
-    assert.notEqual(driver.capabilitiesOptions['button.unlock'].maintenanceAction, true,
-      'unlock is a primary control, not a maintenance action');
-    assert.equal(driver.capabilitiesOptions['button.reboot'].maintenanceAction, true);
-    const actions = (manifest.flow.actions ?? []).map((a: any) => a.id);
-    assert.ok(actions.includes('reboot_flap'), 'reboot should also be automatable');
-    assert.ok(actions.includes('unlock_flap'));
+  it('has one unlock control, and it is the tile\'s quick action', () => {
+    // There were two ways to unlock — a `button.unlock` capability and the lock toggle — which
+    // is one too many on a tile. The toggle wins: it is the quick action, so unlocking is one
+    // tap from the device list.
+    assert.ok(!driver.capabilities.includes('button.unlock'),
+      'button.unlock duplicates the lock toggle');
+    assert.ok(driver.capabilities.includes('locked'));
+    assert.equal(driver.capabilitiesOptions.locked.setable, true,
+      'a quick action has to be actionable');
+    assert.equal(driver.capabilitiesOptions.locked.uiQuickAction, true);
+    assert.equal(driver.class, 'lock');
   });
 
-  it('reports lock state read-only, since there is no command to set it', () => {
-    // OnlyCat has no "lock now" — only policy activation and a one-shot unlock — so a setable
-    // `locked` would be a lie half the time. Read-only, and out of the quick-action slot so the
-    // policy picker keeps it.
-    assert.ok(driver.capabilities.includes('locked'));
-    assert.equal(driver.capabilitiesOptions.locked.setable, false);
-    assert.equal(driver.capabilitiesOptions.locked.uiQuickAction, false);
-    assert.equal(driver.class, 'lock');
+  it('keeps reboot in maintenance and both commands automatable', () => {
+    assert.equal(driver.capabilitiesOptions['button.reboot'].maintenanceAction, true);
+    const actions = (manifest.flow.actions ?? []).map((a: any) => a.id);
+    assert.ok(actions.includes('reboot_flap'));
+    assert.ok(actions.includes('unlock_flap'), 'unlock must stay automatable without the tile');
   });
 
   it('gives every arg-bearing card a titleFormatted', () => {
@@ -658,6 +668,21 @@ describe('assets', () => {
 
 describe('the app manifest', () => {
   const manifest = require('../app.json');
+
+  it('ships the App Store description file', () => {
+    // `homey app validate --level publish` does NOT check for this — only `homey app publish`
+    // does, which is a late and annoying place to find out. CI runs validate, so this test is
+    // what actually holds the line.
+    assert.ok(existsSync('README.txt'), 'README.txt is what the App Store listing shows');
+    const text = readFileSync('README.txt', 'utf8').trim();
+    assert.ok(text.length > 200, 'the store description is too short to be useful');
+    assert.ok(text.length < 1200,
+      'a store listing is a pitch, not a manual — mechanism and caveats belong in README.md');
+    assert.ok(
+      !text.includes('#') && !text.includes('```') && !text.includes(']('),
+      'README.txt is plain prose for the store, not Markdown — that is README.md',
+    );
+  });
 
   it('declares one licence, consistently', () => {
     // erdebee/onlycat-homey shipped a GPL-3.0 LICENSE file alongside "license": "MIT" in

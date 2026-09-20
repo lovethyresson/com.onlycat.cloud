@@ -1,8 +1,16 @@
 {
   "type": "enum",
-  "title": { "en": "Door policy", "sv": "Dörregel", "de": "Türregel", "nl": "Deurbeleid", "no": "Dørregel", "da": "Dørregel" },
+  "title": {
+    "en": "Door policy",
+    "sv": "Dörregel",
+    "de": "Türregel",
+    "nl": "Deurbeleid",
+    "no": "Dørregel",
+    "da": "Dørregel"
+  },
   "uiComponent": "picker",
   "getable": true,
   "setable": true,
-  "values": []
+  "values": [],
+  "icon": "/assets/capabilities/policy_ONLYCAT.svg"
 }
