@@ -65,7 +65,8 @@
     "none": "Nøkkelen virker, men det finnes ingen kateluker på kontoen."
   },
   "camera": {
-    "last_event": "Siste hendelse",
-    "outside_today": "ute i dag"
+    "outside_today": "ute i dag",
+    "last_clip": "Siste klipp",
+    "last_still": "Siste stillbilde"
   }
 }

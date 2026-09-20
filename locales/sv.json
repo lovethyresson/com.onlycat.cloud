@@ -66,6 +66,8 @@
   },
   "camera": {
     "last_event": "Senaste händelsen",
-    "outside_today": "ute idag"
+    "outside_today": "ute idag",
+    "last_clip": "Senaste klippet",
+    "last_still": "Senaste stillbilden"
   }
 }

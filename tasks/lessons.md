@@ -180,7 +180,18 @@ where I registered exactly one image and one video. That maps perfectly to "they
 entries" and not at all to "duplicates". I reached for an explanation that blamed the platform
 instead of counting what I had actually created.
 
+**And then a fourth wrong fix, from the same root.** Armed with all of the above I rewrote
+`showEvent` to "register exactly one entry, once" — and shipped it, and the owner saw two entries
+still. `showEvent` was never the only registrar: `onInit` called `setCameraImage` directly and
+`registerClips` called `setCameraVideo`, both at startup, both titled "Last event". My guard sat in
+a method that ran *after* the registrations it was supposed to be preventing. A single
+`grep -n setCamera` over the one file I was editing would have shown all three sites; it is what
+finally found them. **I had researched the platform correctly and then not read my own code.**
+
 **Rules:**
+- **Before changing how a resource is registered, grep for every call site of the registering
+  method.** "The function I am looking at is the only one that does this" is an assumption, and in
+  a 1000-line device class it is usually wrong.
 - **A second guess about platform behaviour is the signal to go and read.** Not the third. The
   first wrong theory is cheap; the second means the mental model is wrong, and more theories from
   a wrong model do not converge.

@@ -65,7 +65,8 @@
     "none": "Nøglen virker, men der er ingen kattelemme på kontoen."
   },
   "camera": {
-    "last_event": "Seneste hændelse",
-    "outside_today": "ude i dag"
+    "outside_today": "ude i dag",
+    "last_clip": "Seneste klip",
+    "last_still": "Seneste stillbillede"
   }
 }

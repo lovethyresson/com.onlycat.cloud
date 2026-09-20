@@ -103,8 +103,6 @@ module.exports = class CatFlapDevice extends Homey.Device {
 
     private clipVideo: any = null;
 
-    private cameraRegistered = false;
-
     /** While set, the derived lock state defers to a remote unlock the owner just asked for. */
     private manualUnlockUntil = 0;
 
@@ -158,7 +156,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
 
       // Same id for the image and the video on purpose: Homey uses a matching image as the
       // poster frame behind a video while it loads, which is exactly the right still to show.
-      await this.setCameraImage(CAMERA_ID, this.t('camera.last_event'), image)
+      await this.setCameraImage(CAMERA_ID, this.t('camera.last_still'), image)
         .catch((error) => this.logger.error('setCameraImage failed:', error?.message ?? error));
 
       await this.registerClips();
@@ -207,7 +205,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
 
         video.registerVideoUrlListener(async () => ({ url: await this.currentClipUrl() }));
 
-        await this.setCameraVideo(CAMERA_ID, this.t('camera.last_event'), video);
+        await this.setCameraVideo(CAMERA_ID, this.t('camera.last_clip'), video);
         this.logger.debug('clips registered');
       } catch (error: any) {
         // Not an error worth alarming anyone about — it is what an older Homey looks like.
@@ -908,52 +906,32 @@ module.exports = class CatFlapDevice extends Homey.Device {
     /**
      * Point the camera at the latest event.
      *
-     * ONE entry, registered ONCE, with a fixed title. Three facts settle this, all verified
-     * against the live API on a real Homey rather than guessed at:
+     * Registration is NOT here. It happens once in `onInit`, and re-registering would be a no-op
+     * anyway. Three facts about Homey cameras settle the shape, all read from Athom's type
+     * definitions and thirteen published apps rather than guessed at:
      *
-     * 1. **A camera entry is keyed by its `id`.** Re-registering the same id upserts the bound
-     *    resource; it does not add a row. Earlier comments here claimed the opposite. They were
-     *    wrong.
-     * 2. **The title is sticky.** It is taken from the FIRST registration of an id and is never
-     *    rewritten — passing a new one is silently ignored. So a title carrying the event time
-     *    could never have worked: it would freeze on whichever event happened to be first. The
-     *    time belongs on `last_event_ONLYCAT`, which is a capability and can change freely. The
-     *    Homey forum's advice is exactly this: a constant caption for the image, a sensor for
-     *    the timestamp.
-     * 3. **An image and a video are two separate entries**, in two separate arrays, with
-     *    independent titles — which is what "two rows" was all along, not a duplicate. Athom's
-     *    docs say a shared id makes the image the video's poster frame, and UniFi Protect and
-     *    Ring both rely on that, but neither ends up with one row.
+     * 1. **An entry is keyed by its `id`.** Re-registering upserts the bound resource; it never
+     *    adds a row.
+     * 2. **The title is taken from the first registration and never changes again.** Passing a
+     *    new one is silently ignored, so a title carrying the event time could never have worked
+     *    — it would freeze on whichever event happened to be first. The time lives on
+     *    `last_event_ONLYCAT`, which is a capability and can change freely.
+     * 3. **An image and a video are separate entries**, even under one id. That is what "two
+     *    rows" was the whole time: a pair, not a duplicate.
      *
-     * Hence: the clip if this Homey can play one, the still otherwise, and nothing else. Every
-     * mature camera app does the same — register once, behind a guard, with a static localised
-     * title. Only the content behind the entry changes.
+     * Fact 3 is not worth fighting, so the two rows say which is which — "Last still image"
+     * loads instantly and works on every hub; "Last clip" needs Homey 12.7.0 and OnlyCat to
+     * finish processing. They keep a shared id so the still serves as the clip's poster frame.
      *
-     * **A title cannot be changed afterwards, and an entry cannot be removed.** `Device` has no
-     * `unsetCameraImage`; `unregisterImage`/`unregisterVideo` take a resource instance, not a
-     * camera id. Changing `CAMERA_ID` would orphan the old row rather than replace it, so the
-     * only way to correct a title is to re-pair the device. Choose it carefully.
+     * **A stored title cannot be changed and an entry cannot be removed.** `Device` has no
+     * `unsetCameraImage`, and `unregisterImage`/`unregisterVideo` take a resource instance
+     * rather than a camera id. A device carrying titles from an older build must be re-paired.
+     *
+     * All this leaves is pointing the existing image resource at the new frame.
      */
     private async showEvent(event: OnlyCatEvent): Promise<void> {
       this.currentImageUrl = imageUrl(GATEWAY_URL, event);
       await this.lastImage?.update().catch(() => {});
-
-      if (this.cameraRegistered) return;
-      this.cameraRegistered = true;
-
-      const title = this.t('camera.last_event');
-      if (this.clipVideo) {
-        await this.setCameraVideo(CAMERA_ID, title, this.clipVideo)
-          .catch((error) => this.logger.error('setCameraVideo failed:', error?.message ?? error));
-        this.logger.debug(`camera registered as a clip, "${title}"`);
-        return;
-      }
-
-      if (this.lastImage) {
-        await this.setCameraImage(CAMERA_ID, title, this.lastImage)
-          .catch((error) => this.logger.error('setCameraImage failed:', error?.message ?? error));
-        this.logger.debug(`camera registered as a still, "${title}" (no video on this Homey)`);
-      }
     }
 
     /** Short local time in the FLAP's zone, which is where the cat was. */

@@ -115,11 +115,12 @@ The refusal reason uses that same rule engine, but it is anchored to a `DENY` th
 sent: it explains something that happened rather than asserting a state, and it says when it
 cannot be sure.
 
-**The camera is one entry, and its title cannot change.** Homey fixes a camera's title at the
-moment it is first registered and offers no way to rename or remove it afterwards, so the entry is
-called "Last event" and the *event* — which cat, and when — is on the **Last event** sensor
-instead. If yours is still titled with a time from an earlier build, re-pairing the device is the
-only way to clear it.
+**The camera has two entries, and their titles cannot change.** An image and a video are separate
+camera entries in Homey, so the picker shows **Last still image** — which loads instantly and works
+on every hub — and **Last clip**. Homey fixes a camera's title at the moment it is first registered
+and offers no way to rename or remove it afterwards, so *which cat and when* lives on the **Last
+event** sensor, where it can actually change. If your entries are still called "Last event" or
+carry a time from an earlier build, re-pairing the device is the only way to clear them.
 
 **Clips are per event, not a live feed.** OnlyCat records each event and serves it as an HLS
 playlist; there is no continuous stream to watch. The playlist also is not written the instant an
