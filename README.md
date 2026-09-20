@@ -41,7 +41,8 @@ counters, so Insights shows the trend. Plus how many cats are home right now, an
 one has been outside today.
 
 **Switches door policies.** The policies you built in the OnlyCat app appear as a picker on the
-tile and as a Flow action, so "curfew at sunset" is one Flow.
+tile and as a Flow action, so "curfew at sunset" is one Flow. Unlocking is the tile's quick
+action; restarting the flap is a Flow action, since it is not something you reach for often.
 
 ## Installing
 

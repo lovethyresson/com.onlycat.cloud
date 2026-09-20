@@ -1533,7 +1533,6 @@
         "alarm_connectivity",
         "last_event_ONLYCAT",
         "last_blocked_ONLYCAT",
-        "button.reboot",
         "cats_home_ONLYCAT",
         "trips_in_ONLYCAT",
         "trips_out_ONLYCAT",
@@ -1550,17 +1549,6 @@
             "no": "Aktivitet ved luken",
             "da": "Aktivitet ved lemmen"
           }
-        },
-        "button.reboot": {
-          "title": {
-            "en": "Restart the flap",
-            "sv": "Starta om luckan",
-            "de": "Klappe neu starten",
-            "nl": "Luik herstarten",
-            "no": "Start luken på nytt",
-            "da": "Genstart lemmen"
-          },
-          "maintenanceAction": true
         },
         "locked": {
           "setable": true,

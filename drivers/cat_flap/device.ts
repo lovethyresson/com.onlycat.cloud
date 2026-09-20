@@ -780,9 +780,6 @@ module.exports = class CatFlapDevice extends Homey.Device {
         await this.updateLockState();
       });
 
-      this.registerCapabilityListener('button.reboot', async () => {
-        await this.gateway.runDeviceCommand(this.deviceId, 'reboot');
-      });
     }
 
     // ------------------------------------------------------------------------------------------

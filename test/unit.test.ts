@@ -421,10 +421,16 @@ describe('the flow card surface', () => {
     assert.equal(driver.class, 'lock');
   });
 
-  it('keeps reboot in maintenance and both commands automatable', () => {
-    assert.equal(driver.capabilitiesOptions['button.reboot'].maintenanceAction, true);
+  it('carries no button capabilities at all', () => {
+    // Both went. Unlock is the lock toggle's quick action; reboot is rare enough that a Flow
+    // action is the right home for it, and a lone button on the tile just looked odd.
+    const buttons = driver.capabilities.filter((c: string) => c.startsWith('button'));
+    assert.deepEqual(buttons, [], `unexpected button capabilities: ${buttons}`);
+  });
+
+  it('keeps both commands automatable', () => {
     const actions = (manifest.flow.actions ?? []).map((a: any) => a.id);
-    assert.ok(actions.includes('reboot_flap'));
+    assert.ok(actions.includes('reboot_flap'), 'reboot has no other home now');
     assert.ok(actions.includes('unlock_flap'), 'unlock must stay automatable without the tile');
   });
 

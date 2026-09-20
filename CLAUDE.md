@@ -105,8 +105,9 @@ prints "three policies, Night is active, two rules the app cannot evaluate", not
   an event: a curfew starting at 22:00 must show up without waiting for the next cat.
 - **`locked` is read-only** — OnlyCat has no "lock now", only policy activation and a one-shot
   unlock — and carries `uiQuickAction: false` so the policy picker keeps the tile's one slot.
-  `button.unlock` is **not** a maintenance action; it is the only manual control the flap has and
-  belongs on the tile. `button.reboot` is, and is also a Flow action.
+  **There are no `button.*` capabilities.** Unlocking is the lock toggle's quick action, and
+  rebooting is the `reboot_flap` Flow action — a lone button on a tile full of sensors read as
+  leftover scaffolding. Both commands stay automatable.
 - **Cats are runtime capability instances**, `cat_home_ONLYCAT.c<chip>`. Only the *type* is declared
   in compose. Two consequences: `addCapability()` does not apply per-instance options, so
   `setCapabilityOptions()` must be pushed explicitly or every cat is titled "Cat"; and an Insights
