@@ -347,8 +347,12 @@ module.exports = class CatFlapDevice extends Homey.Device {
     };
 
     private onDown = (reason: string): void => {
+      // Deliberately does NOT touch `alarm_connectivity`. That capability means "OnlyCat says
+      // your flap is offline" — a power cut or a dead router, which the owner can act on and
+      // cannot learn any other way. THIS is Homey losing its own socket, which `markUnavailable`
+      // already shows on the tile. Writing both from one event made them indistinguishable, and
+      // fired an alarm Flow on every reconnect blip.
       void this.markUnavailable(`${this.t('error.no_connection')} (${reason})`);
-      void this.setCapabilityValue('alarm_connectivity', true).catch(() => {});
     };
 
     private onUnauthorized = (): void => {
@@ -404,8 +408,10 @@ module.exports = class CatFlapDevice extends Homey.Device {
       this.refreshing = true;
 
       try {
-        await this.setCapabilityValue('alarm_connectivity', false).catch(() => {});
-
+        // `refreshDevice()` is the single writer of `alarm_connectivity`, from the gateway's own
+        // `device.connectivity.connected`. Clearing it here first would assert the flap is back
+        // before anyone has asked, so an offline flap flickered off and on — two spurious Flow
+        // triggers — every time our socket reconnected.
         const stages: [string, () => Promise<void>][] = [
           ['device', () => this.refreshDevice()],
           ['policies', () => this.refreshPolicies()],

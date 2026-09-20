@@ -101,6 +101,12 @@ prints "three policies, Night is active, two rules the app cannot evaluate", not
 - **`lib/policy.ts` serves both the lock state and the refusal reason**, and both honour
   `confident` the same way. The reason has the extra justification that it is anchored to a `DENY`
   the flap actually sent.
+- **`alarm_connectivity` means the FLAP is offline, never that we are.** Its single writer is
+  `refreshDevice()`, from the gateway's own `device.connectivity.connected`. Our socket dropping
+  is `markUnavailable()` and nothing else. Both used to write it, which made them
+  indistinguishable on the tile and fired an alarm Flow on every reconnect blip — and clearing it
+  at the top of `refresh()` flickered a genuinely offline flap off and on, two spurious triggers,
+  every reconnect. One writer. Do not add a second.
 - **A minute timer re-evaluates the lock state.** Time-range rules turn over on the clock, not on
   an event: a curfew starting at 22:00 must show up without waiting for the next cat.
 - **`locked` is read-only** — OnlyCat has no "lock now", only policy activation and a one-shot

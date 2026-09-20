@@ -103,6 +103,12 @@ on the device itself, so it keeps letting the right cats in with no internet at 
 Homey knowing about it — no events, no Flows, and the device shows as unavailable until the
 connection comes back.
 
+**The connectivity alarm is about the flap, not about Homey.** It means *OnlyCat says your flap is
+offline* — a power cut, a rebooted router, a flap out of range. That is worth a notification,
+because the flap keeps working and you would otherwise just notice Homey had gone quiet. Homey
+losing its own connection to OnlyCat is a different thing and shows as the device being
+unavailable, so the two never get confused and a reconnect never fires the alarm.
+
 **There is no lock state, and that is deliberate.** The API defines one — `LockState` with
 Locked, Unlocked and LongTermUnlocked — but only inside `FrameMetadata`, the per-frame data
 captured during an event. No socket message and no endpoint delivers it: `Device`, `DeviceEvent`
