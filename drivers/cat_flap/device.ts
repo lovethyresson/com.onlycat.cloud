@@ -56,6 +56,26 @@ const LOCK_TICK_MS = 60000;
 
 /** One id shared by the still and the clip, so the still becomes the clip's poster frame. */
 const CAMERA_ID = 'event';
+
+/**
+ * What a buffer actually is, by magic number — the same question Homey's own `_validateBuffer`
+ * asks before it will show anything. A content-type header is what the server claims; this is
+ * what it sent.
+ */
+function imageKind(b: Buffer): string | null {
+  if (b.length >= 3 && b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff) return 'JPEG';
+  if (b.length >= 8 && b.toString('latin1', 0, 8) === '\x89PNG\r\n\x1a\n') return 'PNG';
+  if (b.length >= 12 && b.toString('latin1', 0, 4) === 'RIFF'
+    && b.toString('latin1', 8, 12) === 'WEBP') return 'WEBP';
+  if (b.length >= 3 && b.toString('latin1', 0, 3) === 'GIF') return 'GIF';
+  return null;
+}
+
+/** A URL safe to log: the `t=` query carries a per-event access token. */
+function redactQuery(url: string): string {
+  const cut = url.indexOf('?');
+  return cut === -1 ? url : `${url.slice(0, cut)}?…`;
+}
 /** A HEAD request to find out whether the clip has finished processing. */
 const CLIP_PROBE_MS = 4000;
 
@@ -145,11 +165,31 @@ module.exports = class CatFlapDevice extends Homey.Device {
       this.registerListeners();
 
       const image = await this.homey.images.createImage();
+
+      // Homey does not simply forward these bytes: `Image._validateBuffer` sniffs the magic
+      // number and rejects anything that is not a real image, so a 200 carrying an HTML error
+      // page breaks exactly like a 404 and looks identical from here. Everything this handler
+      // can see gets logged, because a throw from inside it surfaces as nothing but a blank
+      // tile. `dev/probe-image.mjs` is the same check from outside the app.
       image.setStream(async (stream: any) => {
-        if (!this.currentImageUrl) throw new Error('No event image yet');
-        const response = await fetch(this.currentImageUrl);
-        if (!response.ok) throw new Error(`Image request failed: ${response.status}`);
+        const url = this.currentImageUrl;
+        if (!url) {
+          this.logger.debug('still requested before any event — nothing to show yet');
+          throw new Error('No event image yet');
+        }
+        const response = await fetch(url);
+        if (!response.ok) {
+          this.logger.error(`still ${response.status} from ${redactQuery(url)}`);
+          throw new Error(`Image request failed: ${response.status}`);
+        }
         const buffer = Buffer.from(await response.arrayBuffer());
+        const kind = imageKind(buffer);
+        if (!kind) {
+          this.logger.error(`still is not an image: ${response.headers.get('content-type')
+            ?? 'no content-type'}, ${buffer.length} bytes, from ${redactQuery(url)}`);
+          throw new Error('Image request did not return an image');
+        }
+        this.logger.debug(`still ${kind}, ${buffer.length} bytes`);
         stream.end(buffer);
       });
       this.lastImage = image;
