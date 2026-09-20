@@ -103,7 +103,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
 
     private clipVideo: any = null;
 
-    private cameraTitle = '';
+    private cameraRegistered = false;
 
     /** While set, the derived lock state defers to a remote unlock the owner just asked for. */
     private manualUnlockUntil = 0;
@@ -708,7 +708,11 @@ module.exports = class CatFlapDevice extends Homey.Device {
         }
       }
 
-      if (label) await this.setCapabilityValue('last_event_ONLYCAT', label).catch(() => {});
+      if (label) {
+        const when = this.formatTime(latest.timestamp);
+        await this.setCapabilityValue('last_event_ONLYCAT', when ? `${label} · ${when}` : label)
+          .catch(() => {});
+      }
       this.logger.debug(`history: showing event ${latest.eventId}${label ? ` — ${label}` : ''}`);
 
       await this.backfillLastRefusal(usable);
@@ -902,36 +906,54 @@ module.exports = class CatFlapDevice extends Homey.Device {
     }
 
     /**
-     * Point the camera at an event, and say which one in its title.
+     * Point the camera at the latest event.
      *
-     * The picker once filled up with duplicate rows, and the cause was NOT re-titling: it was the
-     * still and the clip being registered under the same id with DIFFERENT titles, which broke
-     * the pairing and produced two rows — one showing the clip, one showing the still. They are
-     * always written together now, with the same id and the same title, so the row updates
-     * instead of multiplying.
+     * ONE entry, registered ONCE, with a fixed title. Three facts settle this, all verified
+     * against the live API on a real Homey rather than guessed at:
      *
-     * The title carries the event's local time because a row called "Last event" tells you
-     * nothing you did not already know from it being the only row.
+     * 1. **A camera entry is keyed by its `id`.** Re-registering the same id upserts the bound
+     *    resource; it does not add a row. Earlier comments here claimed the opposite. They were
+     *    wrong.
+     * 2. **The title is sticky.** It is taken from the FIRST registration of an id and is never
+     *    rewritten — passing a new one is silently ignored. So a title carrying the event time
+     *    could never have worked: it would freeze on whichever event happened to be first. The
+     *    time belongs on `last_event_ONLYCAT`, which is a capability and can change freely. The
+     *    Homey forum's advice is exactly this: a constant caption for the image, a sensor for
+     *    the timestamp.
+     * 3. **An image and a video are two separate entries**, in two separate arrays, with
+     *    independent titles — which is what "two rows" was all along, not a duplicate. Athom's
+     *    docs say a shared id makes the image the video's poster frame, and UniFi Protect and
+     *    Ring both rely on that, but neither ends up with one row.
+     *
+     * Hence: the clip if this Homey can play one, the still otherwise, and nothing else. Every
+     * mature camera app does the same — register once, behind a guard, with a static localised
+     * title. Only the content behind the entry changes.
+     *
+     * **A title cannot be changed afterwards, and an entry cannot be removed.** `Device` has no
+     * `unsetCameraImage`; `unregisterImage`/`unregisterVideo` take a resource instance, not a
+     * camera id. Changing `CAMERA_ID` would orphan the old row rather than replace it, so the
+     * only way to correct a title is to re-pair the device. Choose it carefully.
      */
-    private async showEvent(event: OnlyCatEvent, label?: string): Promise<void> {
+    private async showEvent(event: OnlyCatEvent): Promise<void> {
       this.currentImageUrl = imageUrl(GATEWAY_URL, event);
       await this.lastImage?.update().catch(() => {});
 
-      const when = this.formatTime(event.timestamp);
-      const title = [label, when].filter(Boolean).join(' · ') || this.t('camera.last_event');
-      if (title === this.cameraTitle) return;
-      this.cameraTitle = title;
+      if (this.cameraRegistered) return;
+      this.cameraRegistered = true;
 
-      // One id for both, so Homey uses the still as the clip's poster while it loads.
-      if (this.lastImage) {
-        await this.setCameraImage(CAMERA_ID, title, this.lastImage)
-          .catch((error) => this.logger.error('setCameraImage failed:', error?.message ?? error));
-      }
+      const title = this.t('camera.last_event');
       if (this.clipVideo) {
         await this.setCameraVideo(CAMERA_ID, title, this.clipVideo)
           .catch((error) => this.logger.error('setCameraVideo failed:', error?.message ?? error));
+        this.logger.debug(`camera registered as a clip, "${title}"`);
+        return;
       }
-      this.logger.debug(`camera now showing "${title}"`);
+
+      if (this.lastImage) {
+        await this.setCameraImage(CAMERA_ID, title, this.lastImage)
+          .catch((error) => this.logger.error('setCameraImage failed:', error?.message ?? error));
+        this.logger.debug(`camera registered as a still, "${title}" (no video on this Homey)`);
+      }
     }
 
     /** Short local time in the FLAP's zone, which is where the cat was. */
@@ -985,9 +1007,13 @@ module.exports = class CatFlapDevice extends Homey.Device {
       const direction = subevent.direction === 'INWARD' ? 'in' : 'out';
       const actionLabel = this.t(`event.${kind.key}`, { name });
 
-      this.logger.info(actionLabel);
-      await this.setCapabilityValue('last_event_ONLYCAT', actionLabel).catch(() => {});
-      await this.showEvent(event, actionLabel);
+      // The event's local time goes here rather than in the camera title: this capability can
+      // change as often as it likes without Homey adding a row for each value.
+      const when = this.formatTime(event.timestamp);
+      const line = when ? `${actionLabel} · ${when}` : actionLabel;
+      this.logger.info(line);
+      await this.setCapabilityValue('last_event_ONLYCAT', line).catch(() => {});
+      await this.showEvent(event);
 
       // Presence, but only for cats we actually track. An untracked chip has no capability.
       if (tracked) {

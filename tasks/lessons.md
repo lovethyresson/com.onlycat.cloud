@@ -147,3 +147,47 @@ That is a real cost, and it is smaller than three rounds of debugging a view I c
 **Rule:** when the platform ships a view, a template or a widget for roughly this job, use it and
 bend the content to fit. Reach for a custom one only when the native one cannot express the
 requirement at all — not when it merely expresses it awkwardly.
+
+## Guessing at platform behaviour twice is a decision to stop guessing
+
+**2026-09-20.** A camera picker showed two rows — one playing a clip, one showing a still. I
+explained it three times without looking anything up:
+
+1. "Stale registrations from repeated dev installs." Invented.
+2. "They had different titles, which broke the id pairing." Plausible, wrong.
+3. "A changed title adds a row rather than renaming one." Confidently wrong, and I wrote it into
+   a source comment as observed fact.
+
+The user's correction was two words: *"research this properly now. Look at other apps."* Thirty
+minutes of reading Athom's type definitions, thirteen published camera apps and a live API dump
+produced facts that none of my three theories contained:
+
+- A camera entry **is** keyed by its `id`; re-registering upserts and never adds a row.
+- Its **title is taken from the first registration and never changes again** — passing a new one
+  is silently ignored. So the timestamped title everybody wanted could never have worked.
+- An image and a video are **two separate entries**, which is what "two rows" was the whole time.
+- Nothing can remove a camera entry. `Device` has no `unsetCameraImage`, and
+  `unregisterImage`/`unregisterVideo` take a resource instance rather than a camera id.
+- Every mature camera app registers **once, behind a guard, with a static localised title**, and
+  the one Homey app that exposes per-event clips does it as a Flow token, not a camera.
+
+Each of those was public and cheap to find. The cost of not looking was three wrong fixes, three
+installs on someone's hub, and a false statement committed to the repository — which is the worst
+of it, because a confident comment is read as evidence by whoever comes next.
+
+**The tell was available from the first round.** Two rows, one image and one video, on a device
+where I registered exactly one image and one video. That maps perfectly to "they are separate
+entries" and not at all to "duplicates". I reached for an explanation that blamed the platform
+instead of counting what I had actually created.
+
+**Rules:**
+- **A second guess about platform behaviour is the signal to go and read.** Not the third. The
+  first wrong theory is cheap; the second means the mental model is wrong, and more theories from
+  a wrong model do not converge.
+- Read the vendor's **type definitions** before their prose. `lib/Device.d.ts` answers "does this
+  method exist" in seconds, and absence — no `unsetCameraImage` — is as informative as presence.
+- **Other people's shipped apps are the specification the docs are not.** Thirteen of them agreed
+  on a convention the documentation never states.
+- Never write an unverified behaviour into a comment as though observed. Say "assumed" or find
+  out. `docs/` and a test are for what was checked; a comment asserting a platform fact is a
+  claim the next reader will trust.

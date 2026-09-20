@@ -118,10 +118,17 @@ prints "three policies, Night is active, two rules the app cannot evaluate", not
 - **Clips are `createVideoHLS()` + `setCameraVideo()`**, sharing one id with `setCameraImage()`
   so the still becomes the video's poster frame. Wrapped in try/catch the way Athom's own example
   is: videos need Homey 12.7.0, and an older hub should lose clips rather than the whole app.
-- **The camera is attached by `showEvent()`, not at init.** A camera row titled "Last event" that
-  renders nothing is worse than no row, so it is registered once there is an event behind it and
-  titled after that event and its local time. The still and the clip share one id, which makes the
-  still the clip's poster frame.
+- **A camera entry is keyed by its `id`, its title is set once and never changes, and it cannot
+  be removed.** Verified against the live API, after two rounds of guessing wrong. Re-registering
+  an id upserts the resource without adding a row; a new title is silently ignored; and `Device`
+  has no `unsetCameraImage` (`unregisterImage`/`unregisterVideo` take a resource instance, not a
+  camera id). Correcting a title means re-pairing the device. **Never put changing text in a
+  camera title** — it freezes on the first value. The time goes on `last_event_ONLYCAT`.
+- **An image and a video are two separate entries**, even sharing an id — that is what "two rows
+  in the picker" was. So the app registers exactly one: the clip where Homey can play one, the
+  still otherwise, once, behind a guard, the way every mature camera app does it.
+- **The camera is attached by `showEvent()`, not at init**, so the entry appears once there is an
+  event behind it rather than as a row that renders nothing.
 - **The last event is backfilled on connect**, adopted as already-settled so no Flow card fires.
   Without it a freshly started app shows an empty camera until the next cat, which can be hours;
   with it, nobody gets a prey alert about last Tuesday because their Homey rebooted.
