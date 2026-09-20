@@ -119,10 +119,27 @@ node dev/watch-events.mjs oc_live_...
 
 Neither script is part of the app bundle.
 
+## Troubleshooting
+
+The device's **Advanced** settings have a **Debug logging** switch. It is off by default, because
+on it writes a line for every gateway message and every cat that walks past. Turn it on, reproduce
+whatever went wrong, then send the log from **Settings → Apps → OnlyCat**. Errors and connection
+changes are logged either way; the switch only adds the per-event detail.
+
+Pairing always logs, because that is the one moment when there is no device yet on which to tick
+the box.
+
+`dev/probe-account.mjs` checks a key and describes what Homey would find, without involving Homey
+at all — the fastest way to tell an account problem from an app problem.
+
 ## Credits
+
+The cat-head mark and the brand colour are OnlyCat's own, taken from
+[their published logo](https://www.onlycat.com/wp-content/uploads/2024/07/Horizontal.svg). See
+[docs/assets.md](docs/assets.md) for provenance and the trademark position.
 
 Built against [OnlyCat's public models](https://github.com/OnlyCatAI/onlycat-shared-models) and
 their [Home Assistant integration](https://github.com/OnlyCatAI/onlycat-home-assistant), which is
-the best documentation this API has. Not affiliated with or endorsed by OnlyCat.
+the best documentation this API has. **Not affiliated with or endorsed by OnlyCat.**
 
 MIT licensed.

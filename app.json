@@ -21,7 +21,7 @@
   "category": [
     "security"
   ],
-  "brandColor": "#0084FF",
+  "brandColor": "#008FD5",
   "images": {
     "small": "/assets/images/small.png",
     "large": "/assets/images/large.png",
@@ -1620,6 +1620,40 @@
                 "da": "Fulgt"
               },
               "value": ""
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Advanced",
+            "sv": "Avancerat",
+            "de": "Erweitert",
+            "nl": "Geavanceerd",
+            "no": "Avansert",
+            "da": "Avanceret"
+          },
+          "children": [
+            {
+              "id": "debug_logging",
+              "type": "checkbox",
+              "value": false,
+              "label": {
+                "en": "Debug logging",
+                "sv": "Felsökningsloggning",
+                "de": "Debug-Protokollierung",
+                "nl": "Debug-logging",
+                "no": "Feilsøkingslogg",
+                "da": "Fejlfindingslog"
+              },
+              "hint": {
+                "en": "Writes every gateway message and flap event to the app log. Leave this off: it is one line per cat, per event. Turn it on before reproducing a problem, then send the log from Settings → Apps → OnlyCat.",
+                "sv": "Skriver varje gateway-meddelande och luckhändelse till apploggen. Låt den vara av: det blir en rad per katt och händelse. Slå på den innan du återskapar ett problem och skicka sedan loggen från Inställningar → Appar → OnlyCat.",
+                "de": "Schreibt jede Gateway-Nachricht und jedes Klappen-Ereignis ins App-Protokoll. Lass es aus: es ist eine Zeile pro Katze und Ereignis. Schalte es ein, bevor du ein Problem reproduzierst, und sende dann das Protokoll aus Einstellungen → Apps → OnlyCat.",
+                "nl": "Schrijft elk gateway-bericht en elke luikgebeurtenis naar het app-logboek. Laat dit uit: het is één regel per kat, per gebeurtenis. Zet het aan voordat je een probleem reproduceert en stuur daarna het logboek via Instellingen → Apps → OnlyCat.",
+                "no": "Skriver hver gateway-melding og lukehendelse til apploggen. La den stå av: det blir én linje per katt og hendelse. Slå den på før du gjenskaper et problem, og send deretter loggen fra Innstillinger → Apper → OnlyCat.",
+                "da": "Skriver hver gateway-besked og lemhændelse til applogget. Lad den være slået fra: det er én linje pr. kat pr. hændelse. Slå den til, før du genskaber et problem, og send derefter logget fra Indstillinger → Apps → OnlyCat."
+              }
             }
           ]
         }

@@ -5,12 +5,21 @@ import {
 import { EventStore, imageUrl, isEventConcluded } from '../../lib/event-store';
 import { SubEventKind, kindOf, locationAfter } from '../../lib/events';
 import { Gateway, GATEWAY_URL, OnlyCatAuthError } from '../../lib/gateway';
+import { Logger } from '../../lib/log';
 import {
   EventClassification, EventTriggerSource, OnlyCatDeviceTransitPolicy, OnlyCatEvent,
   OnlyCatEventSummary, OnlyCatSubEvent, effectiveClassification, macAddress,
 } from '../../lib/onlycat/models';
 import { PolicyOutcome, evaluatePolicy, minutesOfDayIn } from '../../lib/policy';
 import { explainRefusal } from '../../lib/reason';
+
+/** One-line rendering of a summary's subevents, for the debug log. */
+function describeSubevents(subevents: OnlyCatSubEvent[] | undefined): string {
+  if (!subevents?.length) return 'no subevents';
+  return subevents
+    .map((sub) => `${sub.rfidCode ?? 'unknown'} ${sub.action}/${sub.direction}`)
+    .join('; ');
+}
 
 /** How long to wait for a final summary before settling on what we have. */
 const SUMMARY_GRACE_MS = 45000;
@@ -46,6 +55,9 @@ module.exports = class CatFlapDevice extends Homey.Device {
     private summaryTimer: ReturnType<typeof setTimeout> | null = null;
     private motionTimer: ReturnType<typeof setTimeout> | null = null;
 
+    /** Scoped per flap, so a two-flap household's logs can be told apart. */
+    private logger!: Logger;
+
     get deviceId(): string {
       return this.getData().id as string;
     }
@@ -55,7 +67,15 @@ module.exports = class CatFlapDevice extends Homey.Device {
     // ------------------------------------------------------------------------------------------
 
     async onInit(): Promise<void> {
+      this.logger = new Logger(
+        { log: (...a: any[]) => this.log(...a), error: (...a: any[]) => this.error(...a) },
+        `cat_flap:${this.deviceId}`,
+      );
+      this.logger.setDebug(this.getSetting('debug_logging') === true);
+
       this.cats = (this.getStoreValue('cats') as TrackedCat[]) ?? [];
+      this.logger.info(`init: ${this.cats.length} tracked cat(s)${
+        this.cats.length ? ` — ${this.cats.map((c) => c.name).join(', ')}` : ''}`);
 
       await this.syncCapabilities();
       this.registerListeners();
@@ -71,6 +91,19 @@ module.exports = class CatFlapDevice extends Homey.Device {
       this.lastImage = image;
 
       await this.connect();
+    }
+
+    /**
+     * Homey calls this when the owner saves the device's settings. Wiring the checkbox here is
+     * what makes it a real switch rather than a stored preference nothing reads: it takes effect
+     * on the next log line, not at the next app restart.
+     */
+    async onSettings({ newSettings, changedKeys }: {
+      newSettings: Record<string, any>; changedKeys: string[];
+    }): Promise<void> {
+      if (changedKeys.includes('debug_logging')) {
+        this.logger.setDebug(newSettings.debug_logging === true);
+      }
     }
 
     async onUninit(): Promise<void> {
@@ -128,23 +161,27 @@ module.exports = class CatFlapDevice extends Homey.Device {
     // Bound fields rather than methods: they are handed to the shared gateway and have to be
     // removable by identity in teardown(), or a re-paired device leaks a listener per init.
     private onReady = (): void => {
-      void this.refresh().catch((error) => this.error('refresh failed:', error?.message ?? error));
+      this.logger.info('connected; refreshing');
+      void this.refresh().catch((error) => this.logger.error('refresh failed:', error?.message ?? error));
     };
 
     private onDown = (reason: string): void => {
+      this.logger.info(`connection down (${reason})`);
       void this.setUnavailable(`${this.homey.__('error.no_connection')} (${reason})`).catch(() => {});
       void this.setCapabilityValue('alarm_connectivity', true).catch(() => {});
     };
 
     private onUnauthorized = (): void => {
+      this.logger.error('the API key was rejected — open Repair and paste a new one');
       void this.setUnavailable(this.homey.__('error.unauthorized')).catch(() => {});
     };
 
     private onDeviceUpdate = (deviceId: string): void => {
       if (deviceId !== this.deviceId) return;
+      this.logger.debug('deviceUpdate -> re-reading the device');
       // Push payloads are invalidation signals, not data — both other clients re-fetch rather
       // than trusting the body, and the body is a Partial<Device> anyway.
-      void this.refreshDevice().catch((error) => this.error('device refresh failed:', error?.message ?? error));
+      void this.refreshDevice().catch((error) => this.logger.error('device refresh failed:', error?.message ?? error));
     };
 
     // ------------------------------------------------------------------------------------------
@@ -194,9 +231,12 @@ module.exports = class CatFlapDevice extends Homey.Device {
           }
         }
         this.policies = full;
+        const names = full.map((p) => `${this.policyName(p)}#${p.deviceTransitPolicyId}`);
+        this.logger.debug(`policies: ${names.join(', ') || 'none'};`
+          + ` active ${this.activePolicyId ?? 'none'}`);
         await this.applyPolicyCapability();
       } catch (error: any) {
-        this.error('policy refresh failed:', error?.message ?? error);
+        this.logger.error('policy refresh failed:', error?.message ?? error);
       }
     }
 
@@ -235,6 +275,8 @@ module.exports = class CatFlapDevice extends Homey.Device {
       const outcome = evaluatePolicy(this.activePolicy(), {
         minutesOfDay: minutesOfDayIn(this.timeZone),
       });
+      this.logger.debug(`lock state: ${outcome.locked ? 'locked' : 'unlocked'}`
+        + ` (rule ${outcome.ruleIndex ?? 'none, idle state'}, ${outcome.confident ? 'confident' : 'NOT confident'})`);
       await this.setCapabilityValue('locked', outcome.locked).catch(() => {});
     }
 
@@ -250,7 +292,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
           await this.setCapabilityValue(capabilityForCat(cat.rfidCode), location).catch(() => {});
         }
       } catch (error: any) {
-        this.error('cat locations refresh failed:', error?.message ?? error);
+        this.logger.error('cat locations refresh failed:', error?.message ?? error);
       }
     }
 
@@ -306,7 +348,11 @@ module.exports = class CatFlapDevice extends Homey.Device {
 
     private onDeviceEventUpdate = (deviceId: string, eventId: number, accessToken: string | null): void => {
       if (deviceId !== this.deviceId) return;
-      if (!this.store.begin(deviceId, eventId, accessToken)) return;
+      if (!this.store.begin(deviceId, eventId, accessToken)) {
+        this.logger.debug(`event ${eventId}: ignored, older than the one in hand`);
+        return;
+      }
+      this.logger.debug(`event ${eventId}: started (token ${accessToken ? 'present' : 'absent'})`);
 
       // The tile reacts on the FIRST push so the flap visibly does something the moment a cat
       // appears. The cards that claim which cat did what wait for a final summary.
@@ -319,12 +365,18 @@ module.exports = class CatFlapDevice extends Homey.Device {
     private onEventUpdate = (event: OnlyCatEvent): void => {
       if (event.deviceId !== this.deviceId) return;
       if (!this.store.applyEvent(event)) return;
+      this.logger.debug(`event ${event.eventId}: `
+        + `${event.frameCount == null ? 'in progress' : `concluded, ${event.frameCount} frames`}`
+        + `, classification ${effectiveClassification(event) ?? '?'}`);
       void this.afterUpdate().catch((error) => this.error('event update failed:', error?.message ?? error));
     };
 
     private onEventSummaryUpdate = (summary: OnlyCatEventSummary): void => {
       if (summary.deviceId !== this.deviceId) return;
       if (!this.store.applySummary(summary)) return;
+      this.logger.debug(`event ${summary.eventId}: summary, `
+        + `${summary.processedFrameCount ?? '?'} frames processed, `
+        + `${describeSubevents(summary.subevents)}`);
       void this.afterUpdate().catch((error) => this.error('summary update failed:', error?.message ?? error));
     };
 
@@ -354,6 +406,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
 
       const settled = this.store.settle();
       if (settled) {
+        this.logger.debug(`event ${tracked.eventId}: summary final, committing ${settled.length} subevent(s)`);
         if (this.summaryTimer) this.homey.clearTimeout(this.summaryTimer);
         this.summaryTimer = null;
         await this.commit(settled);
@@ -367,7 +420,11 @@ module.exports = class CatFlapDevice extends Homey.Device {
         this.summaryTimer = this.homey.setTimeout(() => {
           this.summaryTimer = null;
           const late = this.store.settleStale();
-          if (late) void this.commit(late).catch((error) => this.error('late commit:', error?.message ?? error));
+          if (late) {
+            this.logger.debug(`event ${tracked.eventId}: no final summary after `
+              + `${SUMMARY_GRACE_MS / 1000}s, committing ${late.length} subevent(s) anyway`);
+            void this.commit(late).catch((error) => this.logger.error('late commit:', error?.message ?? error));
+          }
         }, SUMMARY_GRACE_MS);
       }
     }
@@ -429,6 +486,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
       const direction = subevent.direction === 'INWARD' ? 'in' : 'out';
       const actionLabel = this.homey.__(`event.${kind.key}`, { name });
 
+      this.logger.info(actionLabel);
       await this.setCapabilityValue('last_event_ONLYCAT', actionLabel).catch(() => {});
 
       // Presence, but only for cats we actually track. An untracked chip has no capability.
@@ -454,6 +512,8 @@ module.exports = class CatFlapDevice extends Homey.Device {
         const outcome = this.refusalOutcome(event, rfid);
         const reason = explainRefusal(outcome, tracked ? name : null);
         const line = this.homey.__(reason.key, reason.tags);
+        this.logger.info(`refusal: ${line}`
+          + ` (rule ${outcome.ruleIndex ?? 'none, idle state'}, ${outcome.confident ? 'confident' : 'NOT confident'})`);
         await this.setCapabilityValue('last_blocked_ONLYCAT', line).catch(() => {});
         await this.fire('cat_denied', { ...base, reason: line }, { cat: rfid });
       } else {
@@ -489,7 +549,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
       try {
         await this.homey.flow.getDeviceTriggerCard(card).trigger(this, tokens, state);
       } catch (error: any) {
-        this.error(`trigger ${card} failed:`, error?.message ?? error);
+        this.logger.error(`trigger ${card} failed:`, error?.message ?? error);
       }
     }
 

@@ -14,6 +14,7 @@ import {
 import {
   evaluatePolicy, isEvaluable, minutesOfDayIn, parseTimeRange, timeRangeContains,
 } from '../lib/policy';
+import { Logger, redactKey } from '../lib/log';
 import { explainRefusal } from '../lib/reason';
 
 const sub = (action: any, direction: any, rfidCode: string | null = 'A'): OnlyCatSubEvent => (
@@ -466,5 +467,87 @@ describe('i18n', () => {
         assert.ok(strings?.[key], `${locale} is missing reason.${key}`);
       }
     }
+  });
+});
+
+describe('logging', () => {
+  const sink = () => {
+    const lines: string[] = [];
+    return {
+      lines,
+      host: { log: (...a: any[]) => lines.push(a.join(' ')), error: (...a: any[]) => lines.push(`ERR ${a.join(' ')}`) },
+    };
+  };
+
+  it('never prints a whole key', () => {
+    // The one rule this module exists to keep. A support log is something people paste into a
+    // public forum thread, and an OnlyCat key grants full account access.
+    const key = 'oc_live_EXAMPLE0000_NotARealKeyOnlyUsedForTestingRedaction00';
+    const shown = redactKey(key);
+    assert.ok(!shown.includes('NotARealKey'), `redactKey leaked the middle: ${shown}`);
+    assert.ok(key.indexOf(shown.split('…')[0]) === 0, 'the prefix should still identify the key');
+    assert.ok(shown.length < 24, 'too much of the key survives');
+  });
+
+  it('handles a missing or tiny key without throwing', () => {
+    assert.equal(redactKey(null), '<none>');
+    assert.equal(redactKey(''), '<none>');
+    assert.equal(redactKey(undefined), '<none>');
+    assert.ok(redactKey('short').endsWith('…'));
+  });
+
+  it('stays silent at debug until switched on', () => {
+    const { lines, host } = sink();
+    const logger = new Logger(host, 'test');
+    logger.debug('quiet');
+    assert.deepEqual(lines, [], 'debug logged while disabled');
+
+    logger.setDebug(true);
+    logger.debug('loud');
+    assert.ok(lines.some((l) => l.includes('loud')), 'debug stayed silent after being enabled');
+  });
+
+  it('always logs info and error, switch or no switch', () => {
+    // These are what someone pastes into a support thread without being told to enable anything
+    // first, so they must not be gated.
+    const { lines, host } = sink();
+    const logger = new Logger(host, 'test');
+    logger.info('important');
+    logger.error('broken');
+    assert.ok(lines.some((l) => l.includes('important')));
+    assert.ok(lines.some((l) => l.includes('ERR') && l.includes('broken')));
+  });
+
+  it('announces the switch on both edges', () => {
+    // A log that suddenly goes quiet should not look like the app died.
+    const { lines, host } = sink();
+    const logger = new Logger(host, 'test');
+    logger.setDebug(true);
+    logger.setDebug(true);
+    logger.setDebug(false);
+    const announcements = lines.filter((l) => l.includes('debug logging'));
+    assert.equal(announcements.length, 2, 'a no-op change should not be announced');
+    assert.ok(announcements[0].includes('ENABLED'));
+    assert.ok(announcements[1].includes('disabled'));
+  });
+
+  it('scopes a child to its parent and inherits the switch', () => {
+    const { lines, host } = sink();
+    const parent = new Logger(host, 'cat_flap:OC-1');
+    parent.setDebug(true);
+    parent.child('gateway').debug('hello');
+    assert.ok(lines.some((l) => l.includes('[cat_flap:OC-1:gateway]')), lines.join('\n'));
+  });
+
+  it('is switchable from the device\'s Advanced settings', () => {
+    const manifest = require('../app.json');
+    const driver = manifest.drivers.find((d: any) => d.id === 'cat_flap');
+    const advanced = (driver.settings ?? []).find((g: any) => g.label?.en === 'Advanced');
+    assert.ok(advanced, 'no Advanced settings group');
+    const toggle = advanced.children.find((c: any) => c.id === 'debug_logging');
+    assert.ok(toggle, 'no debug_logging setting');
+    assert.equal(toggle.type, 'checkbox');
+    assert.equal(toggle.value, false, 'debug logging must default to off');
+    assert.ok(toggle.hint?.en, 'the setting needs a hint saying what it does and how to send the log');
   });
 });

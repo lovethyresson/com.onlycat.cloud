@@ -73,12 +73,16 @@
   "pair": [
     {
       "id": "api_key",
-      "navigation": { "next": "list_devices" }
+      "navigation": {
+        "next": "list_devices"
+      }
     },
     {
       "id": "list_devices",
       "template": "list_devices",
-      "navigation": { "next": "add_devices" }
+      "navigation": {
+        "next": "add_devices"
+      }
     },
     {
       "id": "add_devices",
@@ -105,25 +109,53 @@
         {
           "id": "device_id",
           "type": "label",
-          "label": { "en": "Device ID", "sv": "Enhets-ID", "de": "Geräte-ID", "nl": "Apparaat-ID", "no": "Enhets-ID", "da": "Enheds-ID" },
+          "label": {
+            "en": "Device ID",
+            "sv": "Enhets-ID",
+            "de": "Geräte-ID",
+            "nl": "Apparaat-ID",
+            "no": "Enhets-ID",
+            "da": "Enheds-ID"
+          },
           "value": ""
         },
         {
           "id": "mac_address",
           "type": "label",
-          "label": { "en": "MAC address", "sv": "MAC-adress", "de": "MAC-Adresse", "nl": "MAC-adres", "no": "MAC-adresse", "da": "MAC-adresse" },
+          "label": {
+            "en": "MAC address",
+            "sv": "MAC-adress",
+            "de": "MAC-Adresse",
+            "nl": "MAC-adres",
+            "no": "MAC-adresse",
+            "da": "MAC-adresse"
+          },
           "value": ""
         },
         {
           "id": "time_zone",
           "type": "label",
-          "label": { "en": "Time zone", "sv": "Tidszon", "de": "Zeitzone", "nl": "Tijdzone", "no": "Tidssone", "da": "Tidszone" },
+          "label": {
+            "en": "Time zone",
+            "sv": "Tidszon",
+            "de": "Zeitzone",
+            "nl": "Tijdzone",
+            "no": "Tidssone",
+            "da": "Tidszone"
+          },
           "value": ""
         },
         {
           "id": "firmware_channel",
           "type": "label",
-          "label": { "en": "Firmware channel", "sv": "Firmwarekanal", "de": "Firmware-Kanal", "nl": "Firmwarekanaal", "no": "Fastvarekanal", "da": "Firmwarekanal" },
+          "label": {
+            "en": "Firmware channel",
+            "sv": "Firmwarekanal",
+            "de": "Firmware-Kanal",
+            "nl": "Firmwarekanaal",
+            "no": "Fastvarekanal",
+            "da": "Firmwarekanal"
+          },
           "value": ""
         }
       ]
@@ -142,8 +174,49 @@
         {
           "id": "tracked_cats",
           "type": "label",
-          "label": { "en": "Tracked", "sv": "Följda", "de": "Verfolgt", "nl": "Gevolgd", "no": "Fulgt", "da": "Fulgt" },
+          "label": {
+            "en": "Tracked",
+            "sv": "Följda",
+            "de": "Verfolgt",
+            "nl": "Gevolgd",
+            "no": "Fulgt",
+            "da": "Fulgt"
+          },
           "value": ""
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": {
+        "en": "Advanced",
+        "sv": "Avancerat",
+        "de": "Erweitert",
+        "nl": "Geavanceerd",
+        "no": "Avansert",
+        "da": "Avanceret"
+      },
+      "children": [
+        {
+          "id": "debug_logging",
+          "type": "checkbox",
+          "value": false,
+          "label": {
+            "en": "Debug logging",
+            "sv": "Felsökningsloggning",
+            "de": "Debug-Protokollierung",
+            "nl": "Debug-logging",
+            "no": "Feilsøkingslogg",
+            "da": "Fejlfindingslog"
+          },
+          "hint": {
+            "en": "Writes every gateway message and flap event to the app log. Leave this off: it is one line per cat, per event. Turn it on before reproducing a problem, then send the log from Settings → Apps → OnlyCat.",
+            "sv": "Skriver varje gateway-meddelande och luckhändelse till apploggen. Låt den vara av: det blir en rad per katt och händelse. Slå på den innan du återskapar ett problem och skicka sedan loggen från Inställningar → Appar → OnlyCat.",
+            "de": "Schreibt jede Gateway-Nachricht und jedes Klappen-Ereignis ins App-Protokoll. Lass es aus: es ist eine Zeile pro Katze und Ereignis. Schalte es ein, bevor du ein Problem reproduzierst, und sende dann das Protokoll aus Einstellungen → Apps → OnlyCat.",
+            "nl": "Schrijft elk gateway-bericht en elke luikgebeurtenis naar het app-logboek. Laat dit uit: het is één regel per kat, per gebeurtenis. Zet het aan voordat je een probleem reproduceert en stuur daarna het logboek via Instellingen → Apps → OnlyCat.",
+            "no": "Skriver hver gateway-melding og lukehendelse til apploggen. La den stå av: det blir én linje per katt og hendelse. Slå den på før du gjenskaper et problem, og send deretter loggen fra Innstillinger → Apper → OnlyCat.",
+            "da": "Skriver hver gateway-besked og lemhændelse til applogget. Lad den være slået fra: det er én linje pr. kat pr. hændelse. Slå den til, før du genskaber et problem, og send derefter logget fra Indstillinger → Apps → OnlyCat."
+          }
         }
       ]
     }
