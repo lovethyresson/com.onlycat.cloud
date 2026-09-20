@@ -46,5 +46,18 @@
     "unauthorized": "OnlyCat-API-nøkkelen ble avvist. Åpne Reparer og lim inn en ny.",
     "unknown_policy": "Den dørregelen finnes ikke lenger på luken",
     "unknown_cat": "Den katten følges ikke på denne luken"
+  },
+  "pair": {
+    "title": "Koble til OnlyCat",
+    "lead": "Denne appen snakker med OnlyCat-kontoen din i skyen. Den trenger en API-nøkkel.",
+    "step1": "Åpne OnlyCat-appen på telefonen.",
+    "step2": "Gå til Konto og slå på utviklermodus.",
+    "step3": "Åpne API-nøkler og lag en nøkkel for Homey.",
+    "step4": "Kopier den og lim den inn nedenfor — den vises bare én gang.",
+    "warn": "En OnlyCat-API-nøkkel gir full tilgang til hele OnlyCat-kontoen din, og kan ikke begrenses. Lag en egen nøkkel for Homey slik at du kan trekke den tilbake alene.",
+    "continue": "Fortsett",
+    "checking": "Sjekker…",
+    "empty": "Lim inn OnlyCat-API-nøkkelen din først.",
+    "none": "Nøkkelen virker, men det finnes ingen kateluker på kontoen."
   }
 }

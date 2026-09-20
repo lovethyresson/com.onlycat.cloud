@@ -46,5 +46,18 @@
     "unauthorized": "The OnlyCat API key was rejected. Open Repair and paste a new one.",
     "unknown_policy": "That door policy no longer exists on this flap",
     "unknown_cat": "That cat is not tracked on this flap"
+  },
+  "pair": {
+    "title": "Connect to OnlyCat",
+    "lead": "This app talks to your OnlyCat account in the cloud. It needs an API key.",
+    "step1": "Open the OnlyCat app on your phone.",
+    "step2": "Go to Account and turn on Developer Mode.",
+    "step3": "Open API Keys and create a key for Homey.",
+    "step4": "Copy it and paste it below — it is only shown once.",
+    "warn": "An OnlyCat API key has full access to your OnlyCat account, and there is no way to limit it. Make a key just for Homey so you can revoke it on its own later.",
+    "continue": "Continue",
+    "checking": "Checking…",
+    "empty": "Paste your OnlyCat API key first.",
+    "none": "That key works, but there are no cat flaps on the account."
   }
 }

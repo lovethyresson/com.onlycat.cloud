@@ -1,9 +1,21 @@
 {
   "event": {
-    "transit": { "inward": "{{name}} kom in", "outward": "{{name}} gick ut" },
-    "breach": { "inward": "{{name}} tvingade sig in genom luckan", "outward": "{{name}} tvingade sig ut genom luckan" },
-    "peek": { "inward": "{{name}} tittade in men stannade ute", "outward": "{{name}} tittade ut men stannade inne" },
-    "deny": { "inward": "{{name}} nekades att komma in", "outward": "{{name}} nekades att gå ut" },
+    "transit": {
+      "inward": "{{name}} kom in",
+      "outward": "{{name}} gick ut"
+    },
+    "breach": {
+      "inward": "{{name}} tvingade sig in genom luckan",
+      "outward": "{{name}} tvingade sig ut genom luckan"
+    },
+    "peek": {
+      "inward": "{{name}} tittade in men stannade ute",
+      "outward": "{{name}} tittade ut men stannade inne"
+    },
+    "deny": {
+      "inward": "{{name}} nekades att komma in",
+      "outward": "{{name}} nekades att gå ut"
+    },
     "unknown_cat": "En okänd katt",
     "a_cat": "En katt"
   },
@@ -22,12 +34,30 @@
     "unknown": "Nekades — luckans regler bygger på dess egna sensorer, så appen kan inte avgöra vilken som nekade",
     "unknown_named": "{{name}} nekades — luckans regler bygger på dess egna sensorer, så appen kan inte avgöra vilken som nekade henne"
   },
-  "policy": { "unnamed": "Regel {{id}}", "unknown": "Okänd" },
-  "flow": { "any_cat": "Vilken katt som helst" },
+  "policy": {
+    "unnamed": "Regel {{id}}",
+    "unknown": "Okänd"
+  },
+  "flow": {
+    "any_cat": "Vilken katt som helst"
+  },
   "error": {
     "no_connection": "Inte ansluten till OnlyCat",
     "unauthorized": "OnlyCat-API-nyckeln avvisades. Öppna Reparera och klistra in en ny.",
     "unknown_policy": "Den dörregeln finns inte längre på luckan",
     "unknown_cat": "Den katten följs inte på den här luckan"
+  },
+  "pair": {
+    "title": "Anslut till OnlyCat",
+    "lead": "Appen pratar med ditt OnlyCat-konto i molnet. Den behöver en API-nyckel.",
+    "step1": "Öppna OnlyCat-appen i telefonen.",
+    "step2": "Gå till Konto och slå på utvecklarläge.",
+    "step3": "Öppna API-nycklar och skapa en nyckel för Homey.",
+    "step4": "Kopiera den och klistra in nedan — den visas bara en gång.",
+    "warn": "En OnlyCat API-nyckel ger full åtkomst till hela ditt OnlyCat-konto, och det går inte att begränsa den. Skapa en egen nyckel för Homey så att du kan återkalla just den senare.",
+    "continue": "Fortsätt",
+    "checking": "Kontrollerar…",
+    "empty": "Klistra in din OnlyCat API-nyckel först.",
+    "none": "Nyckeln fungerar, men det finns inga kattluckor på kontot."
   }
 }

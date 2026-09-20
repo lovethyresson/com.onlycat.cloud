@@ -46,5 +46,18 @@
     "unauthorized": "Der OnlyCat-API-Schlüssel wurde abgelehnt. Öffne Reparieren und füge einen neuen ein.",
     "unknown_policy": "Diese Türregel gibt es auf dieser Klappe nicht mehr",
     "unknown_cat": "Diese Katze wird an dieser Klappe nicht verfolgt"
+  },
+  "pair": {
+    "title": "Mit OnlyCat verbinden",
+    "lead": "Diese App spricht mit deinem OnlyCat-Konto in der Cloud. Sie benötigt einen API-Schlüssel.",
+    "step1": "Öffne die OnlyCat-App auf deinem Telefon.",
+    "step2": "Gehe zu Konto und aktiviere den Entwicklermodus.",
+    "step3": "Öffne API-Schlüssel und erstelle einen Schlüssel für Homey.",
+    "step4": "Kopiere ihn und füge ihn unten ein — er wird nur einmal angezeigt.",
+    "warn": "Ein OnlyCat-API-Schlüssel hat vollen Zugriff auf dein OnlyCat-Konto und lässt sich nicht einschränken. Erstelle einen eigenen Schlüssel für Homey, damit du ihn separat widerrufen kannst.",
+    "continue": "Weiter",
+    "checking": "Wird geprüft…",
+    "empty": "Füge zuerst deinen OnlyCat-API-Schlüssel ein.",
+    "none": "Der Schlüssel funktioniert, aber auf dem Konto gibt es keine Katzenklappen."
   }
 }

@@ -46,5 +46,18 @@
     "unauthorized": "De OnlyCat-API-sleutel is geweigerd. Open Repareren en plak een nieuwe.",
     "unknown_policy": "Dat deurbeleid bestaat niet meer op dit luik",
     "unknown_cat": "Die kat wordt op dit luik niet gevolgd"
+  },
+  "pair": {
+    "title": "Verbinden met OnlyCat",
+    "lead": "Deze app praat met je OnlyCat-account in de cloud. Daarvoor is een API-sleutel nodig.",
+    "step1": "Open de OnlyCat-app op je telefoon.",
+    "step2": "Ga naar Account en zet Developer Mode aan.",
+    "step3": "Open API Keys en maak een sleutel voor Homey.",
+    "step4": "Kopieer hem en plak hem hieronder — hij wordt maar één keer getoond.",
+    "warn": "Een OnlyCat-API-sleutel heeft volledige toegang tot je OnlyCat-account en is niet te beperken. Maak een aparte sleutel voor Homey, zodat je die later los kunt intrekken.",
+    "continue": "Doorgaan",
+    "checking": "Controleren…",
+    "empty": "Plak eerst je OnlyCat-API-sleutel.",
+    "none": "De sleutel werkt, maar er staan geen kattenluiken op het account."
   }
 }

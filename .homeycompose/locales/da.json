@@ -1,9 +1,21 @@
 {
   "event": {
-    "transit": { "inward": "{{name}} kom ind", "outward": "{{name}} gik ud" },
-    "breach": { "inward": "{{name}} pressede sig ind gennem lemmen", "outward": "{{name}} pressede sig ud gennem lemmen" },
-    "peek": { "inward": "{{name}} kiggede ind, men blev ude", "outward": "{{name}} kiggede ud, men blev inde" },
-    "deny": { "inward": "{{name}} blev afvist på vej ind", "outward": "{{name}} blev afvist på vej ud" },
+    "transit": {
+      "inward": "{{name}} kom ind",
+      "outward": "{{name}} gik ud"
+    },
+    "breach": {
+      "inward": "{{name}} pressede sig ind gennem lemmen",
+      "outward": "{{name}} pressede sig ud gennem lemmen"
+    },
+    "peek": {
+      "inward": "{{name}} kiggede ind, men blev ude",
+      "outward": "{{name}} kiggede ud, men blev inde"
+    },
+    "deny": {
+      "inward": "{{name}} blev afvist på vej ind",
+      "outward": "{{name}} blev afvist på vej ud"
+    },
     "unknown_cat": "En ukendt kat",
     "a_cat": "En kat"
   },
@@ -22,12 +34,30 @@
     "unknown": "Afvist — lemmens regler bruger dens egne sensorer, så appen kan ikke sige hvilken der afviste",
     "unknown_named": "{{name}} blev afvist — lemmens regler bruger dens egne sensorer, så appen kan ikke sige hvilken der afviste hende"
   },
-  "policy": { "unnamed": "Regel {{id}}", "unknown": "Ukendt" },
-  "flow": { "any_cat": "Enhver kat" },
+  "policy": {
+    "unnamed": "Regel {{id}}",
+    "unknown": "Ukendt"
+  },
+  "flow": {
+    "any_cat": "Enhver kat"
+  },
   "error": {
     "no_connection": "Ikke forbundet til OnlyCat",
     "unauthorized": "OnlyCat-API-nøglen blev afvist. Åbn Reparer, og indsæt en ny.",
     "unknown_policy": "Den dørregel findes ikke længere på lemmen",
     "unknown_cat": "Den kat følges ikke på denne lem"
+  },
+  "pair": {
+    "title": "Forbind til OnlyCat",
+    "lead": "Denne app taler med din OnlyCat-konto i skyen. Den skal bruge en API-nøgle.",
+    "step1": "Åbn OnlyCat-appen på din telefon.",
+    "step2": "Gå til Konto, og slå udviklertilstand til.",
+    "step3": "Åbn API-nøgler, og opret en nøgle til Homey.",
+    "step4": "Kopiér den, og indsæt den nedenfor — den vises kun én gang.",
+    "warn": "En OnlyCat-API-nøgle har fuld adgang til hele din OnlyCat-konto og kan ikke begrænses. Opret en nøgle kun til Homey, så du kan tilbagekalde den alene.",
+    "continue": "Fortsæt",
+    "checking": "Kontrollerer…",
+    "empty": "Indsæt din OnlyCat-API-nøgle først.",
+    "none": "Nøglen virker, men der er ingen kattelemme på kontoen."
   }
 }

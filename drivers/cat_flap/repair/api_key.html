@@ -10,7 +10,6 @@
         .warn { background: #fff8e6; border: 1px solid #f0dca8; border-radius: 8px;
                 padding: 10px 12px; font-size: 12px; line-height: 1.5; color: #6b5a2a; margin: 0 0 16px; }
         .err { color: #d0021b; font-size: 13px; line-height: 1.5; margin: 10px 0 0; display: none; }
-        .ok { color: #2f9e44; font-size: 13px; margin: 10px 0 0; display: none; }
     </style>
 </head>
 <body>
@@ -30,88 +29,94 @@
 </div>
 
 <p class="err" id="error"></p>
-<p class="ok" id="ok"></p>
 
 <script type="text/javascript">
-    var T = {
-        en: {
-            lead: 'This app talks to your OnlyCat account in the cloud. It needs an API key.',
-            steps: ['Open the OnlyCat app on your phone.',
-                    'Go to Account and turn on Developer Mode.',
-                    'Open API Keys and create a key for Homey.',
-                    'Copy it and paste it below — it is only shown once.'],
-            warn: 'An OnlyCat API key has full access to your OnlyCat account, and there is no way to limit it. Make a key just for Homey so you can revoke it on its own later.',
-            submit: 'Continue',
-            checking: 'Checking…',
-            none: 'That key works, but there are no cat flaps on the account.',
-            found: 'Key accepted.'
-        },
-        sv: {
-            lead: 'Appen pratar med ditt OnlyCat-konto i molnet. Den behöver en API-nyckel.',
-            steps: ['Öppna OnlyCat-appen i telefonen.',
-                    'Gå till Konto och slå på utvecklarläge.',
-                    'Öppna API-nycklar och skapa en nyckel för Homey.',
-                    'Kopiera den och klistra in nedan — den visas bara en gång.'],
-            warn: 'En OnlyCat API-nyckel ger full åtkomst till hela ditt OnlyCat-konto, och det går inte att begränsa den. Skapa en egen nyckel för Homey så att du kan återkalla just den senare.',
-            submit: 'Fortsätt',
-            checking: 'Kontrollerar…',
-            none: 'Nyckeln fungerar, men det finns inga kattluckor på kontot.',
-            found: 'Nyckeln godkänd.'
-        }
-    };
+    /* global Homey */
 
-    function onHomeyReady(Homey) {
-        var t = T[(Homey.__('language') || 'en')] || T[navigator.language.slice(0, 2)] || T.en;
+    /*
+     * A PAIR view is not a settings page.
+     *
+     * A settings page is handed `Homey` through a global `onHomeyReady(Homey)` callback and must
+     * answer with `Homey.ready()`. A pair view is not: `Homey` is already a global when this
+     * script runs, nothing ever calls `onHomeyReady`, and there is no `ready()` to call.
+     *
+     * v0.1.0 shipped this file wrapped in `function onHomeyReady(Homey) { ... }`. Nothing called
+     * it, so the page rendered with every string still empty, no click listener was ever attached,
+     * and `verify_key` never reached the driver — visible from the other side as an API key that
+     * OnlyCat still reported as "Never used". Keep this top-level.
+     */
 
-        document.getElementById('lead').textContent = t.lead;
-        document.getElementById('warn').textContent = t.warn;
-        document.getElementById('submit').textContent = t.submit;
-        var steps = document.getElementById('steps');
-        t.steps.forEach(function (step) {
-            var li = document.createElement('li');
-            li.textContent = step;
-            steps.appendChild(li);
-        });
+    Homey.setTitle(Homey.__('pair.title'));
 
-        var input = document.getElementById('key');
-        var button = document.getElementById('submit');
-        var error = document.getElementById('error');
-        var ok = document.getElementById('ok');
+    // Pair and repair share this file byte for byte, and Homey requires a repair view to live
+    // under repair/ — so the copies must stay identical. What differs is only where to go on
+    // success: pairing has a next view (the device list), repair does not and must close itself.
+    // The driver tells us which session we are in rather than the view guessing.
+    var mode = 'pair';
+    Homey.emit('get_mode', null)
+        .then(function (result) { if (result && result.mode) mode = result.mode; })
+        .catch(function () { /* an older driver means pair; that is the safe default */ });
 
-        function submit() {
-            error.style.display = 'none';
-            ok.style.display = 'none';
-            button.disabled = true;
-            button.textContent = t.checking;
+    document.getElementById('lead').textContent = Homey.__('pair.lead');
+    document.getElementById('warn').textContent = Homey.__('pair.warn');
+    document.getElementById('submit').textContent = Homey.__('pair.continue');
 
-            Homey.emit('verify_key', input.value, function (err, result) {
-                button.disabled = false;
-                button.textContent = t.submit;
+    var steps = document.getElementById('steps');
+    ['pair.step1', 'pair.step2', 'pair.step3', 'pair.step4'].forEach(function (key) {
+        var li = document.createElement('li');
+        li.textContent = Homey.__(key);
+        steps.appendChild(li);
+    });
 
-                if (err) {
-                    error.textContent = (err && err.message) ? err.message : String(err);
-                    error.style.display = 'block';
-                    return;
-                }
+    var input = document.getElementById('key');
+    var button = document.getElementById('submit');
+    var error = document.getElementById('error');
 
-                if (!result || result.count === 0) {
-                    error.textContent = t.none;
-                    error.style.display = 'block';
-                    return;
-                }
-
-                ok.textContent = t.found;
-                ok.style.display = 'block';
-                Homey.nextView();
-            });
-        }
-
-        button.addEventListener('click', submit);
-        input.addEventListener('keydown', function (e) { if (e.key === 'Enter') submit(); });
-        input.focus();
-
-        Homey.ready();
+    function fail(message) {
+        error.textContent = message;
+        error.style.display = 'block';
     }
+
+    function submit() {
+        error.style.display = 'none';
+
+        var key = input.value.trim();
+        if (!key) {
+            fail(Homey.__('pair.empty'));
+            return;
+        }
+
+        button.disabled = true;
+        button.textContent = Homey.__('pair.checking');
+
+        function done() {
+            button.disabled = false;
+            button.textContent = Homey.__('pair.continue');
+        }
+
+        // Homey.emit(event, data) returns a Promise in a pair view. The callback form is what a
+        // settings page uses; passing one here is silently ignored.
+        Homey.emit('verify_key', key)
+            .then(function (result) {
+                done();
+                if (!result || !result.count) {
+                    fail(Homey.__('pair.none'));
+                    return;
+                }
+                if (mode === 'repair') Homey.done();
+                else Homey.nextView();
+            })
+            .catch(function (err) {
+                done();
+                fail((err && err.message) ? err.message : String(err));
+            });
+    }
+
+    button.addEventListener('click', submit);
+    input.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') submit();
+    });
+    input.focus();
 </script>
 </body>
 </html>
