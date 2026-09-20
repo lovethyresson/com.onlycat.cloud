@@ -1,0 +1,17 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Cats home",
+    "sv": "Katter hemma",
+    "de": "Katzen zu Hause",
+    "nl": "Katten thuis",
+    "no": "Katter hjemme",
+    "da": "Katte hjemme"
+  },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "decimals": 0,
+  "icon": "/assets/capabilities/cat_home_ONLYCAT.svg"
+}

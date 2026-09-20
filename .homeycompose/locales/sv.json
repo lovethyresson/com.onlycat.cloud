@@ -65,6 +65,7 @@
     "none": "Nyckeln fungerar, men det finns inga kattluckor på kontot."
   },
   "camera": {
-    "last_event": "Senaste händelsen · inspelning"
+    "last_event": "Senaste händelsen",
+    "outside_today": "ute idag"
   }
 }

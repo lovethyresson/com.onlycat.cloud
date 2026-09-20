@@ -65,6 +65,7 @@
     "none": "That key works, but there are no cat flaps on the account."
   },
   "camera": {
-    "last_event": "Last event · recording"
+    "last_event": "Last event",
+    "outside_today": "outside today"
   }
 }

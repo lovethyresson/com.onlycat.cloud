@@ -17,7 +17,12 @@
     "alarm_connectivity",
     "last_event_ONLYCAT",
     "last_blocked_ONLYCAT",
-    "button.reboot"
+    "button.reboot",
+    "cats_home_ONLYCAT",
+    "trips_in_ONLYCAT",
+    "trips_out_ONLYCAT",
+    "refusals_ONLYCAT",
+    "prey_attempts_ONLYCAT"
   ],
   "capabilitiesOptions": {
     "alarm_motion": {

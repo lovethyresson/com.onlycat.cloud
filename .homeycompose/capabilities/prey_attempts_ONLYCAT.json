@@ -1,0 +1,17 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Prey attempts",
+    "sv": "Bytesförsök",
+    "de": "Beuteversuche",
+    "nl": "Prooipogingen",
+    "no": "Bytteforsøk",
+    "da": "Bytteforsøg"
+  },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "decimals": 0,
+  "icon": "/assets/capabilities/alarm_prey_ONLYCAT.svg"
+}

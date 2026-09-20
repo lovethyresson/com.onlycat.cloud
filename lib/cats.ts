@@ -30,6 +30,13 @@ export function capabilityForCat(rfidCode: string): string {
   return `${CAT_CAPABILITY}.c${rfidCode.replace(/[^A-Za-z0-9]/g, '')}`;
 }
 
+export const OUTSIDE_CAPABILITY = 'time_outside_ONLYCAT';
+
+/** Same `c` prefix as the presence capability, for the same leading-digit reason. */
+export function outsideCapabilityForCat(rfidCode: string): string {
+  return `${OUTSIDE_CAPABILITY}.c${rfidCode.replace(/[^A-Za-z0-9]/g, '')}`;
+}
+
 export function rfidFromCapability(capabilityId: string): string | null {
   const match = new RegExp(`^${CAT_CAPABILITY}\\.c(.+)$`).exec(capabilityId);
   return match ? match[1] : null;
@@ -67,8 +74,13 @@ export interface CapabilityPlan {
  * so it can be tested without a Homey.
  */
 export function capabilitySyncPlan(current: string[], wanted: TrackedCat[]): CapabilityPlan {
-  const wantedIds = new Set(wanted.map((cat) => capabilityForCat(cat.rfidCode)));
-  const currentCatIds = current.filter((id) => id.startsWith(`${CAT_CAPABILITY}.`));
+  // Each cat brings two instances: where it is, and how long it has been there today.
+  const wantedIds = new Set(wanted.flatMap((cat) => [
+    capabilityForCat(cat.rfidCode),
+    outsideCapabilityForCat(cat.rfidCode),
+  ]));
+  const currentCatIds = current.filter((id) => id.startsWith(`${CAT_CAPABILITY}.`)
+    || id.startsWith(`${OUTSIDE_CAPABILITY}.`));
 
   return {
     add: [...wantedIds].filter((id) => !current.includes(id)),

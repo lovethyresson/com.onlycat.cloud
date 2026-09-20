@@ -1,6 +1,7 @@
 import Homey from 'homey';
 import {
-  CAT_CAPABILITY, TrackedCat, capabilityForCat, capabilitySyncPlan, initialLocation, rfidFromCapability,
+  CAT_CAPABILITY, TrackedCat, capabilityForCat, capabilitySyncPlan, initialLocation,
+  outsideCapabilityForCat, rfidFromCapability,
 } from '../../lib/cats';
 import {
   EventStore, clipUrl, imageUrl, isEventConcluded, usableSubevents,
@@ -12,6 +13,9 @@ import {
   EventClassification, EventTriggerSource, OnlyCatDeviceTransitPolicy, OnlyCatEvent,
   OnlyCatEventSummary, OnlyCatSubEvent, effectiveClassification, macAddress,
 } from '../../lib/onlycat/models';
+import {
+  OutsideState, applyLocation, emptyState, hoursToday, localDay, rollOver,
+} from '../../lib/outside';
 import { PolicyOutcome, evaluatePolicy, minutesOfDayIn } from '../../lib/policy';
 import { explainRefusal } from '../../lib/reason';
 
@@ -27,6 +31,22 @@ function describeSubevents(subevents: OnlyCatSubEvent[] | undefined): string {
 const SUMMARY_GRACE_MS = 45000;
 /** How far back to look for a refusal when "Last refusal" has never been filled in. */
 const REFUSAL_SCAN = 12;
+
+/**
+ * Counters that only ever go up.
+ *
+ * Monotonic on purpose. A counter that resets nightly looks tidier on the tile but ruins the
+ * Insights chart — you get a sawtooth instead of a trend, and `com.nibe.local`'s notes are blunt
+ * about what a resetting counter does to Homey's engine. Homey derives the per-day rate from a
+ * rising line perfectly well, so the chart answers "is Zorro slowing down?" while the tile still
+ * answers "how many times, ever?".
+ */
+const COUNTERS = [
+  'trips_in_ONLYCAT',
+  'trips_out_ONLYCAT',
+  'refusals_ONLYCAT',
+  'prey_attempts_ONLYCAT',
+];
 
 /** How long a remote unlock outranks the door policy's idle state on the tile. */
 const MANUAL_UNLOCK_MS = 120000;
@@ -83,10 +103,13 @@ module.exports = class CatFlapDevice extends Homey.Device {
 
     private clipVideo: any = null;
 
-    private cameraRegistered = false;
+    private cameraTitle = '';
 
     /** While set, the derived lock state defers to a remote unlock the owner just asked for. */
     private manualUnlockUntil = 0;
+
+    /** Per chip code. Persisted, so a restart does not lose how long a cat has been out. */
+    private outside: Record<string, OutsideState> = {};
 
     get deviceId(): string {
       return this.getData().id as string;
@@ -111,6 +134,8 @@ module.exports = class CatFlapDevice extends Homey.Device {
         `cat_flap:${this.deviceId}`,
       );
       this.logger.setDebug(this.getSetting('debug_logging') === true);
+
+      this.outside = (this.getStoreValue('outside') as Record<string, OutsideState>) ?? {};
 
       await this.seedAlarms();
 
@@ -143,6 +168,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
       // nothing; computing exact boundaries across wrapping ranges would not buy anything.
       this.lockTimer = this.homey.setInterval(() => {
         void this.updateLockState().catch((e) => this.logger.error('lock tick:', e?.message ?? e));
+        void this.updateOutside().catch((e) => this.logger.error('outside tick:', e?.message ?? e));
       }, LOCK_TICK_MS);
 
       await this.connect();
@@ -501,6 +527,102 @@ module.exports = class CatFlapDevice extends Homey.Device {
         if (this.getCapabilityValue(capability) !== null) continue;
         await this.setCapabilityValue(capability, false).catch(() => {});
       }
+
+      // Counters start at zero rather than blank, so Insights has a baseline to draw from
+      // instead of starting wherever the first event happens to put it.
+      for (const capability of [...COUNTERS, 'cats_home_ONLYCAT']) {
+        if (!this.hasCapability(capability)) continue;
+        if (this.getCapabilityValue(capability) !== null) continue;
+        await this.setCapabilityValue(capability, 0).catch(() => {});
+      }
+    }
+
+    /**
+     * Record where a cat is, and keep its "outside today" clock honest.
+     *
+     * The single funnel for every source of truth about a cat's location — a flap transit, the
+     * backfill at startup, and the owner's manual override — so none of them can update the
+     * presence capability while forgetting the clock.
+     */
+    private async setCatState(rfid: string, home: boolean | null, at = Date.now()): Promise<void> {
+      const capability = capabilityForCat(rfid);
+      if (this.hasCapability(capability)) {
+        await this.setCapabilityValue(capability, home).catch(() => {});
+      }
+
+      const day = localDay(this.timeZone, new Date(at));
+      const current = this.outside[rfid] ?? emptyState(day);
+      const outside = home === null ? null : !home;
+      this.outside[rfid] = applyLocation(
+        rollOver(current, day, at, this.localMidnight(at)),
+        outside,
+        at,
+      );
+
+      await this.setStoreValue('outside', this.outside).catch(() => {});
+      await this.publishOutside(rfid, at);
+      await this.updateCatsHome();
+    }
+
+    /** Epoch ms of the most recent local midnight in the flap's zone. */
+    private localMidnight(at: number): number {
+      const minutes = minutesOfDayIn(this.timeZone, new Date(at));
+      return minutes === null ? at : at - minutes * 60000;
+    }
+
+    private async publishOutside(rfid: string, at: number): Promise<void> {
+      const capability = outsideCapabilityForCat(rfid);
+      if (!this.hasCapability(capability)) return;
+      const state = this.outside[rfid];
+      if (!state) return;
+      await this.setCapabilityValue(capability, hoursToday(state, at)).catch(() => {});
+    }
+
+    /**
+     * Tick every tracked cat's clock, and turn the day over at local midnight.
+     *
+     * The value is recomputed from `since` rather than accumulated a minute at a time, so a
+     * missed tick, a restart or a Homey reboot costs nothing.
+     */
+    private async updateOutside(): Promise<void> {
+      const at = Date.now();
+      const day = localDay(this.timeZone, new Date(at));
+      const midnight = this.localMidnight(at);
+      let rolled = false;
+
+      for (const cat of this.cats) {
+        const current = this.outside[cat.rfidCode] ?? emptyState(day);
+        const next = rollOver(current, day, at, midnight);
+        if (next !== current) rolled = true;
+        this.outside[cat.rfidCode] = next;
+        await this.publishOutside(cat.rfidCode, at);
+      }
+
+      if (rolled) {
+        this.logger.info(`a new day started (${day}); outside timers reset`);
+        await this.setStoreValue('outside', this.outside).catch(() => {});
+      }
+    }
+
+    /** Add to a counter, reading its persisted value rather than keeping one in memory. */
+    private async bump(capability: string, by = 1): Promise<void> {
+      if (!this.hasCapability(capability)) return;
+      const current = Number(this.getCapabilityValue(capability) ?? 0);
+      const next = current + by;
+      await this.setCapabilityValue(capability, next).catch(() => {});
+      this.logger.debug(`${capability}: ${current} -> ${next}`);
+    }
+
+    /**
+     * How many tracked cats are inside.
+     *
+     * Counts only cats whose state is actually known: `null` means "not seen yet", which is not
+     * the same as "out" and must not quietly become one.
+     */
+    private async updateCatsHome(): Promise<void> {
+      if (!this.hasCapability('cats_home_ONLYCAT')) return;
+      const home = this.cats.filter((cat) => this.isCatHome(cat.rfidCode) === true).length;
+      await this.setCapabilityValue('cats_home_ONLYCAT', home).catch(() => {});
     }
 
     /**
@@ -585,7 +707,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
           if (!entry) continue;
           const location = initialLocation(entry);
           if (location === null) continue;
-          await this.setCapabilityValue(capabilityForCat(cat.rfidCode), location).catch(() => {});
+          await this.setCatState(cat.rfidCode, location);
         }
       } catch (error: any) {
         this.logger.error('cat locations refresh failed:', error?.message ?? error);
@@ -605,6 +727,15 @@ module.exports = class CatFlapDevice extends Homey.Device {
       }
 
       for (const cat of this.cats) {
+        const outsideCapability = outsideCapabilityForCat(cat.rfidCode);
+        if (plan.add.includes(outsideCapability)) {
+          await this.addCapability(outsideCapability)
+            .catch((error) => this.error(`add ${outsideCapability}:`, error?.message));
+        }
+        await this.setCapabilityOptions(outsideCapability,
+          { title: `${cat.name} — ${this.t('camera.outside_today')}` })
+          .catch((error) => this.error(`options ${outsideCapability}:`, error?.message));
+
         const capability = capabilityForCat(cat.rfidCode);
         if (plan.add.includes(capability)) {
           await this.addCapability(capability).catch((error) => this.error(`add ${capability}:`, error?.message));
@@ -758,23 +889,27 @@ module.exports = class CatFlapDevice extends Homey.Device {
     }
 
     /**
-     * Point the camera at an event.
+     * Point the camera at an event, and say which one in its title.
      *
-     * Registered ONCE, under one id and one fixed title. An earlier version re-titled it per
-     * event — "Zorro came in · 11:30" — which did not rename the row, it added another: the
-     * picker filled up with one row per event, some showing the clip and some the still. What
-     * the camera shows is the latest event; which event that was belongs on the
-     * `last_event_ONLYCAT` capability, where it can change freely without spawning rows.
+     * The picker once filled up with duplicate rows, and the cause was NOT re-titling: it was the
+     * still and the clip being registered under the same id with DIFFERENT titles, which broke
+     * the pairing and produced two rows — one showing the clip, one showing the still. They are
+     * always written together now, with the same id and the same title, so the row updates
+     * instead of multiplying.
+     *
+     * The title carries the event's local time because a row called "Last event" tells you
+     * nothing you did not already know from it being the only row.
      */
-    private async showEvent(event: OnlyCatEvent): Promise<void> {
+    private async showEvent(event: OnlyCatEvent, label?: string): Promise<void> {
       this.currentImageUrl = imageUrl(GATEWAY_URL, event);
       await this.lastImage?.update().catch(() => {});
 
-      if (this.cameraRegistered) return;
-      this.cameraRegistered = true;
+      const when = this.formatTime(event.timestamp);
+      const title = [label, when].filter(Boolean).join(' · ') || this.t('camera.last_event');
+      if (title === this.cameraTitle) return;
+      this.cameraTitle = title;
 
       // One id for both, so Homey uses the still as the clip's poster while it loads.
-      const title = this.t('camera.last_event');
       if (this.lastImage) {
         await this.setCameraImage(CAMERA_ID, title, this.lastImage)
           .catch((error) => this.logger.error('setCameraImage failed:', error?.message ?? error));
@@ -783,7 +918,21 @@ module.exports = class CatFlapDevice extends Homey.Device {
         await this.setCameraVideo(CAMERA_ID, title, this.clipVideo)
           .catch((error) => this.logger.error('setCameraVideo failed:', error?.message ?? error));
       }
-      this.logger.debug(`camera registered as "${title}"`);
+      this.logger.debug(`camera now showing "${title}"`);
+    }
+
+    /** Short local time in the FLAP's zone, which is where the cat was. */
+    private formatTime(timestamp: string | null | undefined): string {
+      if (!timestamp) return '';
+      try {
+        return new Intl.DateTimeFormat(this.homey.i18n.getLanguage() ?? 'en', {
+          timeZone: this.timeZone ?? undefined,
+          hour: '2-digit',
+          minute: '2-digit',
+        }).format(new Date(timestamp));
+      } catch {
+        return '';
+      }
     }
 
     /** Fire everything this event earns. Called exactly once per event. */
@@ -825,13 +974,13 @@ module.exports = class CatFlapDevice extends Homey.Device {
 
       this.logger.info(actionLabel);
       await this.setCapabilityValue('last_event_ONLYCAT', actionLabel).catch(() => {});
-      await this.showEvent(event);
+      await this.showEvent(event, actionLabel);
 
       // Presence, but only for cats we actually track. An untracked chip has no capability.
       if (tracked) {
         const location = locationAfter(subevent);
         if (location !== null) {
-          await this.setCapabilityValue(capabilityForCat(rfid), location === 'inside').catch(() => {});
+          await this.setCatState(rfid, location === 'inside');
         }
       }
 
@@ -845,6 +994,13 @@ module.exports = class CatFlapDevice extends Homey.Device {
           ? (TRIGGER_SOURCE_NAMES[event.eventTriggerSource] ?? 'unknown') : '',
         image: this.lastImage,
       };
+
+      if (kind.action === 'TRANSIT' || kind.action === 'BREACH') {
+        // A breach counts as a trip: the cat did get through, just not with permission.
+        await this.bump(kind.direction === 'INWARD' ? 'trips_in_ONLYCAT' : 'trips_out_ONLYCAT');
+      } else if (kind.action === 'DENY') {
+        await this.bump('refusals_ONLYCAT');
+      }
 
       if (kind.trigger === 'cat_denied') {
         const outcome = this.refusalOutcome(event, rfid);
@@ -919,7 +1075,11 @@ module.exports = class CatFlapDevice extends Homey.Device {
     async setCatLocation(rfid: string, home: boolean): Promise<void> {
       const capability = capabilityForCat(rfid);
       if (!this.hasCapability(capability)) throw new Error(this.t('error.unknown_cat'));
-      await this.setCapabilityValue(capability, home);
+      // Treated exactly like a flap transit, because it is better evidence: somebody looked at
+      // the cat. A cat let out of the front door is invisible to the flap, and this is the only
+      // way the clock learns about it.
+      await this.setCatState(rfid, home);
+      this.logger.info(`${this.nameFor(rfid)} marked ${home ? 'home' : 'out'} by hand`);
     }
 
     async unlock(): Promise<void> {

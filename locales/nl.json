@@ -65,6 +65,7 @@
     "none": "De sleutel werkt, maar er staan geen kattenluiken op het account."
   },
   "camera": {
-    "last_event": "Laatste gebeurtenis · opname"
+    "last_event": "Laatste gebeurtenis",
+    "outside_today": "vandaag buiten"
   }
 }

@@ -85,6 +85,22 @@ ICONS = {
         poly([(24.0, 14.5), (23.6, 4.5), (16.8, 9.6)]),
         circle(16, 18.5, 9.2),
     ],
+    # An arrow through a doorway, in. Paired with its mirror for "out" so the two read as a set.
+    'trips_in_ONLYCAT': [
+        rrect(19.5, 3.5, 9, 25, 2.5),
+        poly([(15.5, 9.5), (22.5, 16), (15.5, 22.5)]),
+        rrect(3.5, 14, 13, 4, 2),
+    ],
+    'trips_out_ONLYCAT': [
+        rrect(3.5, 3.5, 9, 25, 2.5),
+        poly([(16.5, 9.5), (9.5, 16), (16.5, 22.5)]),
+        rrect(15.5, 14, 13, 4, 2),
+    ],
+    # A clock, for hours spent outside.
+    'time_outside_ONLYCAT': [
+        ring(16, 16, 12, 3.0),
+        stroke([(16, 8.5), (16, 16.5), (22, 19.5)], 2.8),
+    ],
     # The door policy: a short list of rules.
     'policy_ONLYCAT': [
         rrect(5.5, 3.5, 21, 25, 3.5),

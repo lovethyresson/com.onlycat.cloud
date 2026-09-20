@@ -1533,7 +1533,12 @@
         "alarm_connectivity",
         "last_event_ONLYCAT",
         "last_blocked_ONLYCAT",
-        "button.reboot"
+        "button.reboot",
+        "cats_home_ONLYCAT",
+        "trips_in_ONLYCAT",
+        "trips_out_ONLYCAT",
+        "refusals_ONLYCAT",
+        "prey_attempts_ONLYCAT"
       ],
       "capabilitiesOptions": {
         "alarm_motion": {
@@ -1924,6 +1929,23 @@
       },
       "icon": "/assets/capabilities/cat_home_ONLYCAT.svg"
     },
+    "cats_home_ONLYCAT": {
+      "type": "number",
+      "title": {
+        "en": "Cats home",
+        "sv": "Katter hemma",
+        "de": "Katzen zu Hause",
+        "nl": "Katten thuis",
+        "no": "Katter hjemme",
+        "da": "Katte hjemme"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "decimals": 0,
+      "icon": "/assets/capabilities/cat_home_ONLYCAT.svg"
+    },
     "last_blocked_ONLYCAT": {
       "type": "string",
       "title": {
@@ -1971,6 +1993,99 @@
       "setable": true,
       "values": [],
       "icon": "/assets/capabilities/policy_ONLYCAT.svg"
+    },
+    "prey_attempts_ONLYCAT": {
+      "type": "number",
+      "title": {
+        "en": "Prey attempts",
+        "sv": "Bytesförsök",
+        "de": "Beuteversuche",
+        "nl": "Prooipogingen",
+        "no": "Bytteforsøk",
+        "da": "Bytteforsøg"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "decimals": 0,
+      "icon": "/assets/capabilities/alarm_prey_ONLYCAT.svg"
+    },
+    "refusals_ONLYCAT": {
+      "type": "number",
+      "title": {
+        "en": "Refusals",
+        "sv": "Nekanden",
+        "de": "Abweisungen",
+        "nl": "Weigeringen",
+        "no": "Avvisninger",
+        "da": "Afvisninger"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "decimals": 0,
+      "icon": "/assets/capabilities/last_blocked_ONLYCAT.svg"
+    },
+    "time_outside_ONLYCAT": {
+      "type": "number",
+      "title": {
+        "en": "Outside today",
+        "sv": "Ute idag",
+        "de": "Heute draußen",
+        "nl": "Vandaag buiten",
+        "no": "Ute i dag",
+        "da": "Ude i dag"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "decimals": 1,
+      "icon": "/assets/capabilities/time_outside_ONLYCAT.svg",
+      "units": {
+        "en": "h",
+        "sv": "h",
+        "de": "h",
+        "nl": "u",
+        "no": "t",
+        "da": "t"
+      }
+    },
+    "trips_in_ONLYCAT": {
+      "type": "number",
+      "title": {
+        "en": "Times in",
+        "sv": "Gånger in",
+        "de": "Mal hinein",
+        "nl": "Keer naar binnen",
+        "no": "Ganger inn",
+        "da": "Gange ind"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "decimals": 0,
+      "icon": "/assets/capabilities/trips_in_ONLYCAT.svg"
+    },
+    "trips_out_ONLYCAT": {
+      "type": "number",
+      "title": {
+        "en": "Times out",
+        "sv": "Gånger ut",
+        "de": "Mal hinaus",
+        "nl": "Keer naar buiten",
+        "no": "Ganger ut",
+        "da": "Gange ud"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "decimals": 0,
+      "icon": "/assets/capabilities/trips_out_ONLYCAT.svg"
     }
   }
 }

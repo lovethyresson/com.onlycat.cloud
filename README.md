@@ -36,6 +36,10 @@ not expose. If one of those could have fired first, the app says so rather than 
 **Plays the clip.** OnlyCat records a short video of every event, and Homey can play HLS — so the
 device has a camera tile showing the last event, with the still frame as its poster.
 
+**Charts what your cats actually do.** Times in, times out, refusals and prey attempts are
+counters, so Insights shows the trend. Plus how many cats are home right now, and how long each
+one has been outside today.
+
 **Switches door policies.** The policies you built in the OnlyCat app appear as a picker on the
 tile and as a Flow action, so "curfew at sunset" is one Flow.
 
@@ -119,6 +123,13 @@ that 404s. Clips need Homey 12.7.0 or newer; on anything older everything else s
 happening: a cat that starts coming through and turns back changes from a transit to a peek. Homey
 cannot un-fire a Flow, so the app waits for the final version. The activity sensor on the tile
 still reacts immediately.
+
+**"Outside today" is an estimate, and here is what it assumes.** The flap sees the flap, not the
+cat. If one leaves through a window or gets carried to the vet, the app will happily keep counting
+it as outside — so the *Mark a cat as home or out* Flow action is treated as better evidence than
+a transit, because somebody looked at the cat. A cat the app has never seen counts nothing rather
+than being guessed as in or out, and the day turns over at local midnight in the **flap's** time
+zone, not Homey's.
 
 **Subscription flaps need connectivity for more than notifications** — OnlyCat's subscription tier
 checks its subscription online, and individual events can be gated.

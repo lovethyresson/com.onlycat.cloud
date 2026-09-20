@@ -16,6 +16,9 @@ import {
   evaluatePolicy, isEvaluable, minutesOfDayIn, parseTimeRange, timeRangeContains,
 } from '../lib/policy';
 import { Logger, redactKey } from '../lib/log';
+import {
+  applyLocation, emptyState, hoursToday, localDay, rollOver,
+} from '../lib/outside';
 import { explainRefusal } from '../lib/reason';
 
 const sub = (action: any, direction: any, rfidCode: string | null = 'A'): OnlyCatSubEvent => (
@@ -317,11 +320,13 @@ describe('cats as capabilities', () => {
 
   it('plans adds and removes without touching other capabilities', () => {
     const plan = capabilitySyncPlan(
-      ['locked', 'cat_home_ONLYCAT.cA', 'cat_home_ONLYCAT.cB'],
+      ['locked', 'cat_home_ONLYCAT.cA', 'cat_home_ONLYCAT.cB', 'time_outside_ONLYCAT.cB'],
       [{ rfidCode: 'B', name: 'Misan' }, { rfidCode: 'C', name: 'Pelle' }],
     );
-    assert.deepEqual(plan.add, ['cat_home_ONLYCAT.cC']);
+    // Each cat brings two instances now: where it is, and how long it has been there today.
+    assert.deepEqual(plan.add.sort(), ['cat_home_ONLYCAT.cC', 'time_outside_ONLYCAT.cC']);
     assert.deepEqual(plan.remove, ['cat_home_ONLYCAT.cA']);
+    assert.ok(!plan.remove.includes('locked'), 'never touch capabilities that are not a cat\'s');
   });
 
   it('excludes cats OnlyCat has hidden', () => {
@@ -828,5 +833,83 @@ describe('lock state, and refusing to assert one', () => {
     const manifest = require('../app.json');
     const ids = (manifest.flow.conditions ?? []).map((c: any) => c.id);
     assert.ok(ids.includes('flap_is_locked'));
+  });
+});
+
+describe('time outside, and the assumptions under it', () => {
+  const H = 3600000;
+  const noon = Date.parse('2026-09-20T12:00:00Z');
+
+  it('counts a run that is still going', () => {
+    const state = applyLocation(emptyState('2026-09-20'), true, noon);
+    assert.equal(hoursToday(state, noon + 2 * H), 2);
+  });
+
+  it('banks a finished run and stops counting', () => {
+    let state = applyLocation(emptyState('2026-09-20'), true, noon);
+    state = applyLocation(state, false, noon + 3 * H);
+    assert.equal(hoursToday(state, noon + 9 * H), 3, 'kept counting after the cat came in');
+  });
+
+  it('adds up several trips in a day', () => {
+    let state = applyLocation(emptyState('2026-09-20'), true, noon);
+    state = applyLocation(state, false, noon + 1 * H);
+    state = applyLocation(state, true, noon + 4 * H);
+    state = applyLocation(state, false, noon + 5.5 * H);
+    assert.equal(hoursToday(state, noon + 6 * H), 2.5);
+  });
+
+  it('does not restart the clock on a second outward transit', () => {
+    // Two DENY-then-TRANSIT sequences, or a peek logged as outward, must not lose the gap
+    // between them by resetting `since`.
+    let state = applyLocation(emptyState('2026-09-20'), true, noon);
+    state = applyLocation(state, true, noon + 2 * H);
+    assert.equal(hoursToday(state, noon + 3 * H), 3);
+  });
+
+  it('stops counting when the location becomes unknown, without inventing time', () => {
+    let state = applyLocation(emptyState('2026-09-20'), true, noon);
+    state = applyLocation(state, null, noon + 1 * H);
+    assert.equal(hoursToday(state, noon + 8 * H), 1);
+  });
+
+  it('counts nothing for a cat that has never been seen', () => {
+    // Assumption 2: unknown is not "inside" and it is not "outside" either.
+    assert.equal(hoursToday(emptyState('2026-09-20'), noon), 0);
+  });
+
+  it('resets at local midnight and keeps only the new day for a cat still out', () => {
+    // A cat that went out at 23:00 must not start the new day already an hour in the red.
+    const out = applyLocation(emptyState('2026-09-20'), true, noon);
+    const midnight = noon + 12 * H;
+    const rolled = rollOver(out, '2026-09-21', midnight + H, midnight);
+    assert.equal(rolled.day, '2026-09-21');
+    assert.equal(rolled.accumulated, 0);
+    assert.equal(hoursToday(rolled, midnight + H), 1, 'carried yesterday into today');
+  });
+
+  it('leaves a state alone when the day has not turned over', () => {
+    const state = applyLocation(emptyState('2026-09-20'), true, noon);
+    assert.equal(rollOver(state, '2026-09-20', noon + H, noon - 12 * H), state);
+  });
+
+  it('turns the day over in the flap\'s zone, not Homey\'s', () => {
+    // Assumption 3. 23:30 UTC is already tomorrow in Stockholm; a flap there must roll over
+    // with its own household, not with whatever the hub is set to.
+    const late = new Date('2026-09-20T23:30:00Z');
+    assert.equal(localDay('UTC', late), '2026-09-20');
+    assert.equal(localDay('Europe/Stockholm', late), '2026-09-21');
+  });
+
+  it('falls back to the host day rather than throwing on a bad zone', () => {
+    assert.match(localDay('Not/AZone', new Date(noon)), /^\d{4}-\d{2}-\d{2}$/);
+  });
+
+  it('survives a restart by recomputing from when the cat went out', () => {
+    // Nothing is accumulated tick by tick, so a missed hour of ticks costs nothing: `since` is
+    // a fact that persists, a running total is not.
+    const before = applyLocation(emptyState('2026-09-20'), true, noon);
+    const afterRestart = JSON.parse(JSON.stringify(before));
+    assert.equal(hoursToday(afterRestart, noon + 5 * H), 5);
   });
 });

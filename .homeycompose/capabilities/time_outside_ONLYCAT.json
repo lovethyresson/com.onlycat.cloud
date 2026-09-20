@@ -1,0 +1,25 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Outside today",
+    "sv": "Ute idag",
+    "de": "Heute draußen",
+    "nl": "Vandaag buiten",
+    "no": "Ute i dag",
+    "da": "Ude i dag"
+  },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "decimals": 1,
+  "icon": "/assets/capabilities/time_outside_ONLYCAT.svg",
+  "units": {
+    "en": "h",
+    "sv": "h",
+    "de": "h",
+    "nl": "u",
+    "no": "t",
+    "da": "t"
+  }
+}

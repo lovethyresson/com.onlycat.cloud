@@ -1,0 +1,17 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Times out",
+    "sv": "Gånger ut",
+    "de": "Mal hinaus",
+    "nl": "Keer naar buiten",
+    "no": "Ganger ut",
+    "da": "Gange ud"
+  },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "decimals": 0,
+  "icon": "/assets/capabilities/trips_out_ONLYCAT.svg"
+}

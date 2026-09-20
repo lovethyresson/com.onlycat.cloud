@@ -65,6 +65,7 @@
     "none": "Der Schlüssel funktioniert, aber auf dem Konto gibt es keine Katzenklappen."
   },
   "camera": {
-    "last_event": "Letztes Ereignis · Aufnahme"
+    "last_event": "Letztes Ereignis",
+    "outside_today": "heute draußen"
   }
 }
