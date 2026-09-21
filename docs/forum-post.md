@@ -27,7 +27,7 @@ This is **0.1.0, a first test version**. It runs against a real flap and a real 
 
 **Charts what your cats do.** Times in, times out, refusals and prey attempts are counters, so Insights shows the trend — plus how many cats are home and roughly how long each has been outside today.
 
-**Switches door policies.** The policies you built in the OnlyCat app appear as a picker on the tile and as a Flow action, so "curfew at sunset" is one Flow. Unlocking is the tile's quick action.
+**Locks the flap on your terms.** The door policies you built in the OnlyCat app appear as a picker on the tile and as a Flow action, so the automations people actually want are one Flow each: curfew at sunset, keep everyone in while it is raining, lock both ways when the wind picks up. Unlocking is the tile's quick action.
 
 ### Flow cards
 
@@ -49,6 +49,8 @@ Then add the device: **Devices → + → OnlyCat → Cat flap**. Homey picks up 
 ### Worth knowing up front
 
 **This needs the internet.** OnlyCat has no local API — the flap talks only to OnlyCat's cloud, and so does this app. If your connection drops, the flap keeps enforcing its door policy on the device itself, so your cats are unaffected; what stops is Homey knowing about it.
+
+**It is built on OnlyCat's published API, not a reverse-engineered one.** OnlyCat document their gateway and publish the data models their own apps use, and this app is built against those and against their official Home Assistant integration. That does not make it unbreakable, but it does mean it is not guessing at someone's private login flow.
 
 **There is no lock state.** The API only reports lock state inside per-frame event data — no message or endpoint gives a live value. So the tile shows the **active door policy**, which is real data, rather than a simulation dressed up as a reading.
 

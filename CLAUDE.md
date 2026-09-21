@@ -152,6 +152,7 @@ prints "three policies, Night is active, two rules the app cannot evaluate", not
   Without it a freshly started app shows an empty camera until the next cat, which can be hours;
   with it, nobody gets a prey alert about last Tuesday because their Homey rebooted.
 - **Homey substitutes `__name__`, not `{{name}}`.** The Mustache spelling is not an error: `homey.__()` does not recognise it and hands back the string untouched, so the tile and every push notification read "{{name}} was turned away" for months without a single failure anywhere. Tests now reject `{{` in any locale and require every language to carry the same placeholders, since a translation that drops one silently loses the cat's name.
+- **No battery capability, and that is not an omission.** The OnlyCat flap is USB-C powered. Battery level is the single most-requested missing feature on the competing SureFlap app's tile, and it simply does not apply here — do not add `measure_battery` chasing parity.
 - **Six languages at parity** — `en`, `sv`, `de`, `nl`, `no`, `da`. A test enforces it.
 - **`platforms: ["local"]`.** Homey Pro only. Nothing technical stops this app running on Homey
   Cloud — it talks to nothing but OnlyCat's API, so it needs no local network, no discovery, no
