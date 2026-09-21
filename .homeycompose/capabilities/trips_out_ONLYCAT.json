@@ -6,7 +6,8 @@
     "de": "Mal hinaus",
     "nl": "Keer naar buiten",
     "no": "Ganger ut",
-    "da": "Gange ud"
+    "da": "Gange ud",
+    "fr": "Sorties"
   },
   "uiComponent": "sensor",
   "getable": true,

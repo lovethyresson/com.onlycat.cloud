@@ -6,7 +6,8 @@
     "de": "Letzte Abweisung",
     "nl": "Laatste weigering",
     "no": "Siste avvisning",
-    "da": "Seneste afvisning"
+    "da": "Seneste afvisning",
+    "fr": "Dernier refus"
   },
   "uiComponent": "sensor",
   "getable": true,

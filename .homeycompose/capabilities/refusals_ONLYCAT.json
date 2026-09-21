@@ -6,7 +6,8 @@
     "de": "Abweisungen",
     "nl": "Weigeringen",
     "no": "Avvisninger",
-    "da": "Afvisninger"
+    "da": "Afvisninger",
+    "fr": "Refus"
   },
   "uiComponent": "sensor",
   "getable": true,

@@ -6,7 +6,8 @@
     "de": "Katzen zu Hause",
     "nl": "Katten thuis",
     "no": "Katter hjemme",
-    "da": "Katte hjemme"
+    "da": "Katte hjemme",
+    "fr": "Chats à la maison"
   },
   "uiComponent": "sensor",
   "getable": true,

@@ -172,6 +172,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
         this.cats.length ? ` — ${this.cats.map((c) => c.name).join(', ')}` : ''}`);
 
       await this.syncCapabilities();
+      await this.dropLegacyEventText();
       this.registerListeners();
 
       const image = await this.homey.images.createImage();
@@ -594,6 +595,25 @@ module.exports = class CatFlapDevice extends Homey.Device {
     }
 
     /**
+     * Clear the sentences these two capabilities used to hold, once.
+     *
+     * Both now hold a timestamp. A device upgraded from an earlier build still has last month's
+     * prose sitting in them, and neither writer would replace it until the next event of that
+     * kind — which for "Last refusal" can be never, since `backfillLastRefusal` treats a
+     * non-empty value as "already filled" and returns. Clearing lets the backfill refill them
+     * properly on this connect.
+     */
+    private async dropLegacyEventText(): Promise<void> {
+      if (this.getStoreValue('when_only') === true) return;
+      for (const capability of ['last_event_ONLYCAT', 'last_blocked_ONLYCAT']) {
+        if (!this.hasCapability(capability)) continue;
+        await this.setCapabilityValue(capability, null).catch(() => {});
+      }
+      await this.setStoreValue('when_only', true).catch(() => {});
+      this.logger.debug('cleared the old event/refusal text; both now show a time');
+    }
+
+    /**
      * Record where a cat is, and keep its "outside today" clock honest.
      *
      * The single funnel for every source of truth about a cat's location — a flap transit, the
@@ -723,8 +743,10 @@ module.exports = class CatFlapDevice extends Homey.Device {
         const reason = explainRefusal(this.refusalOutcome(event, rfid), tracked ? this.nameFor(rfid) : null);
         const line = this.t(reason.key, reason.tags);
 
-        await this.setCapabilityValue('last_blocked_ONLYCAT', line).catch(() => {});
-        this.logger.debug(`history: last refusal was event ${event.eventId} — ${line}`);
+        const when = this.formatWhen(event.timestamp);
+        await this.setCapabilityValue('last_blocked_ONLYCAT', when || null).catch(() => {});
+        this.logger.debug(`history: last refusal was event ${event.eventId}`
+          + `${when ? ` at ${when}` : ''} — ${line}`);
         return;
       }
       this.logger.debug(`history: no refusal in the last ${recent.length} event(s)`);
@@ -760,12 +782,10 @@ module.exports = class CatFlapDevice extends Homey.Device {
         }
       }
 
-      if (label) {
-        const when = this.formatTime(latest.timestamp);
-        await this.setCapabilityValue('last_event_ONLYCAT', when ? `${label} · ${when}` : label)
-          .catch(() => {});
-      }
-      this.logger.debug(`history: showing event ${latest.eventId}${label ? ` — ${label}` : ''}`);
+      const when = this.formatWhen(latest.timestamp);
+      await this.setCapabilityValue('last_event_ONLYCAT', when || null).catch(() => {});
+      this.logger.debug(`history: showing event ${latest.eventId}`
+        + `${when ? ` from ${when}` : ''}${label ? ` — ${label}` : ''}`);
 
       await this.backfillLastRefusal(usable);
     }
@@ -1001,6 +1021,37 @@ module.exports = class CatFlapDevice extends Homey.Device {
       }
     }
 
+    /**
+     * What `last_event_ONLYCAT` and `last_blocked_ONLYCAT` hold: a moment, and nothing else.
+     *
+     * The sentence describing what happened lives in the `action` and `reason` Flow tokens,
+     * where a notification has a whole line for it. On a sensor tile it is prose squeezed into
+     * a value slot beside five numbers, and it truncates. Two capabilities that answer "when"
+     * read as a pair; two that answer "when, and here is a paragraph about it" do not.
+     *
+     * Today gets the bare time. Anything older carries its date, because a refusal from last
+     * Tuesday showing "14:32" reads as one that happened this afternoon — and "Last refusal"
+     * is precisely the capability most likely to be days old.
+     */
+    private formatWhen(timestamp: string | null | undefined): string {
+      const time = this.formatTime(timestamp);
+      if (!time) return '';
+
+      const at = new Date(timestamp as string);
+      if (localDay(this.timeZone, at) === localDay(this.timeZone)) return time;
+
+      try {
+        const date = new Intl.DateTimeFormat(this.homey.i18n.getLanguage() ?? 'en', {
+          timeZone: this.timeZone ?? undefined,
+          day: 'numeric',
+          month: 'short',
+        }).format(at);
+        return `${date} ${time}`;
+      } catch {
+        return time;
+      }
+    }
+
     /** Fire everything this event earns. Called exactly once per event. */
     private async commit(subevents: OnlyCatSubEvent[]): Promise<void> {
       const { tracked } = this.store;
@@ -1038,12 +1089,11 @@ module.exports = class CatFlapDevice extends Homey.Device {
       const direction = subevent.direction === 'INWARD' ? 'in' : 'out';
       const actionLabel = this.t(`event.${kind.key}`, { name });
 
-      // The event's local time goes here rather than in the camera title: this capability can
-      // change as often as it likes without Homey adding a row for each value.
-      const when = this.formatTime(event.timestamp);
-      const line = when ? `${actionLabel} · ${when}` : actionLabel;
-      this.logger.info(line);
-      await this.setCapabilityValue('last_event_ONLYCAT', line).catch(() => {});
+      // The time, and only the time — see `formatWhen`. It cannot go in the camera title, which
+      // freezes on first registration; a capability can change as often as it likes.
+      const when = this.formatWhen(event.timestamp);
+      this.logger.info(`${actionLabel}${when ? ` · ${when}` : ''}`);
+      await this.setCapabilityValue('last_event_ONLYCAT', when || null).catch(() => {});
       await this.showEvent(event);
 
       // Presence, but only for cats we actually track. An untracked chip has no capability.
@@ -1078,7 +1128,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
         const line = this.t(reason.key, reason.tags);
         this.logger.info(`refusal: ${line}`
           + ` (rule ${outcome.ruleIndex ?? 'none, idle state'}, ${outcome.confident ? 'confident' : 'NOT confident'})`);
-        await this.setCapabilityValue('last_blocked_ONLYCAT', line).catch(() => {});
+        await this.setCapabilityValue('last_blocked_ONLYCAT', when || null).catch(() => {});
         await this.fire('cat_denied', { ...base, reason: line }, { cat: rfid });
       } else {
         await this.fire(kind.trigger, base, { cat: rfid });

@@ -6,7 +6,8 @@
     "de": "Menschliche Aktivität",
     "nl": "Menselijke activiteit",
     "no": "Menneskelig aktivitet",
-    "da": "Menneskelig aktivitet"
+    "da": "Menneskelig aktivitet",
+    "fr": "Activité humaine"
   },
   "uiComponent": "sensor",
   "getable": true,
@@ -18,7 +19,8 @@
     "de": "Menschliche Aktivität",
     "nl": "Menselijke activiteit",
     "no": "Menneskelig aktivitet",
-    "da": "Menneskelig aktivitet"
+    "da": "Menneskelig aktivitet",
+    "fr": "Activité humaine"
   },
   "insightsTitleFalse": {
     "en": "None",
@@ -26,7 +28,8 @@
     "de": "Keine",
     "nl": "Geen",
     "no": "Ingen",
-    "da": "Ingen"
+    "da": "Ingen",
+    "fr": "Aucune"
   },
   "icon": "/assets/capabilities/alarm_human_ONLYCAT.svg"
 }

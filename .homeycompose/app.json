@@ -15,7 +15,8 @@
     "de": "Deine Katzenklappe in Homey — wer hereinkam, wer abgewiesen wurde und warum",
     "nl": "Je kattenluik in Homey — wie er binnenkwam, wie werd geweigerd en waarom",
     "no": "Katteluken i Homey — hvem kom inn, hvem ble avvist og hvorfor",
-    "da": "Din kattelem i Homey — hvem kom ind, hvem blev afvist og hvorfor"
+    "da": "Din kattelem i Homey — hvem kom ind, hvem blev afvist og hvorfor",
+    "fr": "Votre chatière dans Homey — qui est entré, qui a été refusé, et pourquoi"
   },
   "tags": {
     "en": [
@@ -83,6 +84,18 @@
       "kæledyr",
       "byttedetektering",
       "mikrochip",
+      "RFID"
+    ],
+    "fr": [
+      "OnlyCat",
+      "chatière",
+      "chatiere",
+      "porte pour chat",
+      "porte pour animaux",
+      "chat",
+      "animal de compagnie",
+      "détection de proie",
+      "puce électronique",
       "RFID"
     ]
   },

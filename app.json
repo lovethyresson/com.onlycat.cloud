@@ -16,7 +16,8 @@
     "de": "Deine Katzenklappe in Homey — wer hereinkam, wer abgewiesen wurde und warum",
     "nl": "Je kattenluik in Homey — wie er binnenkwam, wie werd geweigerd en waarom",
     "no": "Katteluken i Homey — hvem kom inn, hvem ble avvist og hvorfor",
-    "da": "Din kattelem i Homey — hvem kom ind, hvem blev afvist og hvorfor"
+    "da": "Din kattelem i Homey — hvem kom ind, hvem blev afvist og hvorfor",
+    "fr": "Votre chatière dans Homey — qui est entré, qui a été refusé, et pourquoi"
   },
   "tags": {
     "en": [
@@ -85,6 +86,18 @@
       "byttedetektering",
       "mikrochip",
       "RFID"
+    ],
+    "fr": [
+      "OnlyCat",
+      "chatière",
+      "chatiere",
+      "porte pour chat",
+      "porte pour animaux",
+      "chat",
+      "animal de compagnie",
+      "détection de proie",
+      "puce électronique",
+      "RFID"
     ]
   },
   "category": [
@@ -124,7 +137,8 @@
           "de": "Eine Katze kam herein",
           "nl": "Een kat kwam binnen",
           "no": "En katt kom inn",
-          "da": "En kat kom ind"
+          "da": "En kat kom ind",
+          "fr": "Un chat est entré"
         },
         "titleFormatted": {
           "en": "[[cat]] came in",
@@ -132,7 +146,8 @@
           "de": "[[cat]] kam herein",
           "nl": "[[cat]] kwam binnen",
           "no": "[[cat]] kom inn",
-          "da": "[[cat]] kom ind"
+          "da": "[[cat]] kom ind",
+          "fr": "[[cat]] est entré"
         },
         "hint": {
           "en": "Fires when a cat comes through the flap into the house.",
@@ -140,7 +155,8 @@
           "de": "Wird ausgelöst, wenn eine Katze durch die Klappe hereinkommt.",
           "nl": "Wordt geactiveerd wanneer een kat door het luik naar binnen komt.",
           "no": "Utløses når en katt kommer inn gjennom luken.",
-          "da": "Udløses, når en kat kommer ind gennem lemmen."
+          "da": "Udløses, når en kat kommer ind gennem lemmen.",
+          "fr": "Se déclenche quand un chat entre dans la maison par la chatière."
         },
         "args": [
           {
@@ -157,7 +173,8 @@
               "de": "Katze",
               "nl": "Kat",
               "no": "Katt",
-              "da": "Kat"
+              "da": "Kat",
+              "fr": "Chat"
             },
             "placeholder": {
               "en": "Any cat",
@@ -165,7 +182,8 @@
               "de": "Jede Katze",
               "nl": "Elke kat",
               "no": "Hvilken som helst katt",
-              "da": "Enhver kat"
+              "da": "Enhver kat",
+              "fr": "N'importe quel chat"
             }
           }
         ],
@@ -179,7 +197,8 @@
               "de": "Katze",
               "nl": "Kat",
               "no": "Katt",
-              "da": "Kat"
+              "da": "Kat",
+              "fr": "Chat"
             },
             "example": {
               "en": "Misan",
@@ -187,7 +206,8 @@
               "de": "Misan",
               "nl": "Misan",
               "no": "Misan",
-              "da": "Misan"
+              "da": "Misan",
+              "fr": "Misan"
             }
           },
           {
@@ -199,7 +219,8 @@
               "de": "Chipnummer",
               "nl": "Chipnummer",
               "no": "Chipnummer",
-              "da": "Chipnummer"
+              "da": "Chipnummer",
+              "fr": "Code de puce"
             },
             "example": {
               "en": "956000015949802",
@@ -207,7 +228,8 @@
               "de": "956000015949802",
               "nl": "956000015949802",
               "no": "956000015949802",
-              "da": "956000015949802"
+              "da": "956000015949802",
+              "fr": "956000015949802"
             }
           },
           {
@@ -219,7 +241,8 @@
               "de": "Klassifizierung",
               "nl": "Classificatie",
               "no": "Klassifisering",
-              "da": "Klassificering"
+              "da": "Klassificering",
+              "fr": "Classification"
             },
             "example": {
               "en": "clear",
@@ -227,7 +250,8 @@
               "de": "sauber",
               "nl": "schoon",
               "no": "ren",
-              "da": "ren"
+              "da": "ren",
+              "fr": "clear"
             }
           },
           {
@@ -239,7 +263,8 @@
               "de": "Standbild",
               "nl": "Momentopname",
               "no": "Stillbilde",
-              "da": "Stillbillede"
+              "da": "Stillbillede",
+              "fr": "Photo"
             }
           }
         ]
@@ -252,7 +277,8 @@
           "de": "Eine Katze ging hinaus",
           "nl": "Een kat ging naar buiten",
           "no": "En katt gikk ut",
-          "da": "En kat gik ud"
+          "da": "En kat gik ud",
+          "fr": "Un chat est sorti"
         },
         "titleFormatted": {
           "en": "[[cat]] went out",
@@ -260,7 +286,8 @@
           "de": "[[cat]] ging hinaus",
           "nl": "[[cat]] ging naar buiten",
           "no": "[[cat]] gikk ut",
-          "da": "[[cat]] gik ud"
+          "da": "[[cat]] gik ud",
+          "fr": "[[cat]] est sorti"
         },
         "hint": {
           "en": "Fires when a cat goes out through the flap.",
@@ -268,7 +295,8 @@
           "de": "Wird ausgelöst, wenn eine Katze durch die Klappe hinausgeht.",
           "nl": "Wordt geactiveerd wanneer een kat door het luik naar buiten gaat.",
           "no": "Utløses når en katt går ut gjennom luken.",
-          "da": "Udløses, når en kat går ud gennem lemmen."
+          "da": "Udløses, når en kat går ud gennem lemmen.",
+          "fr": "Se déclenche quand un chat sort par la chatière."
         },
         "args": [
           {
@@ -285,7 +313,8 @@
               "de": "Katze",
               "nl": "Kat",
               "no": "Katt",
-              "da": "Kat"
+              "da": "Kat",
+              "fr": "Chat"
             },
             "placeholder": {
               "en": "Any cat",
@@ -293,7 +322,8 @@
               "de": "Jede Katze",
               "nl": "Elke kat",
               "no": "Hvilken som helst katt",
-              "da": "Enhver kat"
+              "da": "Enhver kat",
+              "fr": "N'importe quel chat"
             }
           }
         ],
@@ -307,7 +337,8 @@
               "de": "Katze",
               "nl": "Kat",
               "no": "Katt",
-              "da": "Kat"
+              "da": "Kat",
+              "fr": "Chat"
             },
             "example": {
               "en": "Misan",
@@ -315,7 +346,8 @@
               "de": "Misan",
               "nl": "Misan",
               "no": "Misan",
-              "da": "Misan"
+              "da": "Misan",
+              "fr": "Misan"
             }
           },
           {
@@ -327,7 +359,8 @@
               "de": "Chipnummer",
               "nl": "Chipnummer",
               "no": "Chipnummer",
-              "da": "Chipnummer"
+              "da": "Chipnummer",
+              "fr": "Code de puce"
             },
             "example": {
               "en": "956000015949802",
@@ -335,7 +368,8 @@
               "de": "956000015949802",
               "nl": "956000015949802",
               "no": "956000015949802",
-              "da": "956000015949802"
+              "da": "956000015949802",
+              "fr": "956000015949802"
             }
           },
           {
@@ -347,7 +381,8 @@
               "de": "Klassifizierung",
               "nl": "Classificatie",
               "no": "Klassifisering",
-              "da": "Klassificering"
+              "da": "Klassificering",
+              "fr": "Classification"
             },
             "example": {
               "en": "clear",
@@ -355,7 +390,8 @@
               "de": "sauber",
               "nl": "schoon",
               "no": "ren",
-              "da": "ren"
+              "da": "ren",
+              "fr": "clear"
             }
           },
           {
@@ -367,7 +403,8 @@
               "de": "Standbild",
               "nl": "Momentopname",
               "no": "Stillbilde",
-              "da": "Stillbillede"
+              "da": "Stillbillede",
+              "fr": "Photo"
             }
           }
         ]
@@ -380,7 +417,8 @@
           "de": "Eine Katze wurde abgewiesen",
           "nl": "Een kat werd geweigerd",
           "no": "En katt ble avvist",
-          "da": "En kat blev afvist"
+          "da": "En kat blev afvist",
+          "fr": "Un chat a été refusé"
         },
         "titleFormatted": {
           "en": "[[cat]] was turned away",
@@ -388,7 +426,8 @@
           "de": "[[cat]] wurde abgewiesen",
           "nl": "[[cat]] werd geweigerd",
           "no": "[[cat]] ble avvist",
-          "da": "[[cat]] blev afvist"
+          "da": "[[cat]] blev afvist",
+          "fr": "[[cat]] a été refusé"
         },
         "hint": {
           "en": "Fires when the flap refused to open. The reason tag says why, when the app can tell.",
@@ -396,7 +435,8 @@
           "de": "Wird ausgelöst, wenn die Klappe nicht geöffnet hat. Das Tag Grund sagt warum, sofern die App es feststellen kann.",
           "nl": "Wordt geactiveerd wanneer het luik niet openging. De tag Reden zegt waarom, als de app dat kan bepalen.",
           "no": "Utløses når luken nektet å åpne. Taggen Årsak sier hvorfor, når appen kan avgjøre det.",
-          "da": "Udløses, når lemmen nægtede at åbne. Tagget Årsag siger hvorfor, når appen kan afgøre det."
+          "da": "Udløses, når lemmen nægtede at åbne. Tagget Årsag siger hvorfor, når appen kan afgøre det.",
+          "fr": "Se déclenche quand la chatière a refusé de s'ouvrir. L'étiquette Raison indique pourquoi, lorsque l'app peut le déterminer."
         },
         "args": [
           {
@@ -413,7 +453,8 @@
               "de": "Katze",
               "nl": "Kat",
               "no": "Katt",
-              "da": "Kat"
+              "da": "Kat",
+              "fr": "Chat"
             },
             "placeholder": {
               "en": "Any cat",
@@ -421,7 +462,8 @@
               "de": "Jede Katze",
               "nl": "Elke kat",
               "no": "Hvilken som helst katt",
-              "da": "Enhver kat"
+              "da": "Enhver kat",
+              "fr": "N'importe quel chat"
             }
           }
         ],
@@ -435,7 +477,8 @@
               "de": "Katze",
               "nl": "Kat",
               "no": "Katt",
-              "da": "Kat"
+              "da": "Kat",
+              "fr": "Chat"
             },
             "example": {
               "en": "Misan",
@@ -443,7 +486,8 @@
               "de": "Misan",
               "nl": "Misan",
               "no": "Misan",
-              "da": "Misan"
+              "da": "Misan",
+              "fr": "Misan"
             }
           },
           {
@@ -455,7 +499,8 @@
               "de": "Chipnummer",
               "nl": "Chipnummer",
               "no": "Chipnummer",
-              "da": "Chipnummer"
+              "da": "Chipnummer",
+              "fr": "Code de puce"
             },
             "example": {
               "en": "956000015949802",
@@ -463,7 +508,8 @@
               "de": "956000015949802",
               "nl": "956000015949802",
               "no": "956000015949802",
-              "da": "956000015949802"
+              "da": "956000015949802",
+              "fr": "956000015949802"
             }
           },
           {
@@ -475,7 +521,8 @@
               "de": "Richtung",
               "nl": "Richting",
               "no": "Retning",
-              "da": "Retning"
+              "da": "Retning",
+              "fr": "Direction"
             },
             "example": {
               "en": "in",
@@ -483,7 +530,8 @@
               "de": "herein",
               "nl": "binnen",
               "no": "inn",
-              "da": "ind"
+              "da": "ind",
+              "fr": "in"
             }
           },
           {
@@ -495,7 +543,8 @@
               "de": "Grund",
               "nl": "Reden",
               "no": "Årsak",
-              "da": "Årsag"
+              "da": "Årsag",
+              "fr": "Raison"
             },
             "example": {
               "en": "she was carrying something",
@@ -503,7 +552,8 @@
               "de": "sie trug etwas bei sich",
               "nl": "ze droeg iets mee",
               "no": "hun bar på noe",
-              "da": "hun bar på noget"
+              "da": "hun bar på noget",
+              "fr": "il portait quelque chose"
             }
           },
           {
@@ -515,7 +565,8 @@
               "de": "Standbild",
               "nl": "Momentopname",
               "no": "Stillbilde",
-              "da": "Stillbillede"
+              "da": "Stillbillede",
+              "fr": "Photo"
             }
           }
         ]
@@ -528,7 +579,8 @@
           "de": "Eine Katze schaute, ging aber nicht durch",
           "nl": "Een kat keek maar ging er niet door",
           "no": "En katt kikket, men gikk ikke gjennom",
-          "da": "En kat kiggede, men gik ikke igennem"
+          "da": "En kat kiggede, men gik ikke igennem",
+          "fr": "Un chat a regardé sans passer"
         },
         "titleFormatted": {
           "en": "[[cat]] looked but did not come through",
@@ -536,7 +588,8 @@
           "de": "[[cat]] schaute, ging aber nicht durch",
           "nl": "[[cat]] keek maar ging er niet door",
           "no": "[[cat]] kikket, men gikk ikke gjennom",
-          "da": "[[cat]] kiggede, men gik ikke igennem"
+          "da": "[[cat]] kiggede, men gik ikke igennem",
+          "fr": "[[cat]] a regardé sans passer"
         },
         "hint": {
           "en": "Fires when a cat put its head through and changed its mind.",
@@ -544,7 +597,8 @@
           "de": "Wird ausgelöst, wenn eine Katze den Kopf durchsteckte und es sich anders überlegte.",
           "nl": "Wordt geactiveerd wanneer een kat zijn kop erdoor stak en zich bedacht.",
           "no": "Utløses når en katt stakk hodet gjennom og ombestemte seg.",
-          "da": "Udløses, når en kat stak hovedet igennem og skiftede mening."
+          "da": "Udløses, når en kat stak hovedet igennem og skiftede mening.",
+          "fr": "Se déclenche quand un chat a passé la tête puis a changé d'avis."
         },
         "args": [
           {
@@ -561,7 +615,8 @@
               "de": "Katze",
               "nl": "Kat",
               "no": "Katt",
-              "da": "Kat"
+              "da": "Kat",
+              "fr": "Chat"
             },
             "placeholder": {
               "en": "Any cat",
@@ -569,7 +624,8 @@
               "de": "Jede Katze",
               "nl": "Elke kat",
               "no": "Hvilken som helst katt",
-              "da": "Enhver kat"
+              "da": "Enhver kat",
+              "fr": "N'importe quel chat"
             }
           }
         ],
@@ -583,7 +639,8 @@
               "de": "Katze",
               "nl": "Kat",
               "no": "Katt",
-              "da": "Kat"
+              "da": "Kat",
+              "fr": "Chat"
             },
             "example": {
               "en": "Misan",
@@ -591,7 +648,8 @@
               "de": "Misan",
               "nl": "Misan",
               "no": "Misan",
-              "da": "Misan"
+              "da": "Misan",
+              "fr": "Misan"
             }
           },
           {
@@ -603,7 +661,8 @@
               "de": "Chipnummer",
               "nl": "Chipnummer",
               "no": "Chipnummer",
-              "da": "Chipnummer"
+              "da": "Chipnummer",
+              "fr": "Code de puce"
             },
             "example": {
               "en": "956000015949802",
@@ -611,7 +670,8 @@
               "de": "956000015949802",
               "nl": "956000015949802",
               "no": "956000015949802",
-              "da": "956000015949802"
+              "da": "956000015949802",
+              "fr": "956000015949802"
             }
           },
           {
@@ -623,7 +683,8 @@
               "de": "Richtung",
               "nl": "Richting",
               "no": "Retning",
-              "da": "Retning"
+              "da": "Retning",
+              "fr": "Direction"
             },
             "example": {
               "en": "in",
@@ -631,7 +692,8 @@
               "de": "herein",
               "nl": "binnen",
               "no": "inn",
-              "da": "ind"
+              "da": "ind",
+              "fr": "in"
             }
           },
           {
@@ -643,7 +705,8 @@
               "de": "Standbild",
               "nl": "Momentopname",
               "no": "Stillbilde",
-              "da": "Stillbillede"
+              "da": "Stillbillede",
+              "fr": "Photo"
             }
           }
         ]
@@ -656,7 +719,8 @@
           "de": "Eine Katze drückte sich durch",
           "nl": "Een kat duwde zich door het luik",
           "no": "En katt tvang luken",
-          "da": "En kat pressede sig igennem"
+          "da": "En kat pressede sig igennem",
+          "fr": "Un chat a forcé la chatière"
         },
         "titleFormatted": {
           "en": "[[cat]] forced the flap",
@@ -664,7 +728,8 @@
           "de": "[[cat]] drückte sich durch",
           "nl": "[[cat]] duwde zich door het luik",
           "no": "[[cat]] tvang luken",
-          "da": "[[cat]] pressede sig igennem"
+          "da": "[[cat]] pressede sig igennem",
+          "fr": "[[cat]] a forcé la chatière"
         },
         "hint": {
           "en": "Fires when a cat got through a locked flap.",
@@ -672,7 +737,8 @@
           "de": "Wird ausgelöst, wenn eine Katze durch eine gesperrte Klappe gelangt ist.",
           "nl": "Wordt geactiveerd wanneer een kat door een vergrendeld luik is gekomen.",
           "no": "Utløses når en katt har kommet gjennom en låst luke.",
-          "da": "Udløses, når en kat er kommet gennem en låst lem."
+          "da": "Udløses, når en kat er kommet gennem en låst lem.",
+          "fr": "Se déclenche quand un chat est passé malgré une chatière verrouillée."
         },
         "args": [
           {
@@ -689,7 +755,8 @@
               "de": "Katze",
               "nl": "Kat",
               "no": "Katt",
-              "da": "Kat"
+              "da": "Kat",
+              "fr": "Chat"
             },
             "placeholder": {
               "en": "Any cat",
@@ -697,7 +764,8 @@
               "de": "Jede Katze",
               "nl": "Elke kat",
               "no": "Hvilken som helst katt",
-              "da": "Enhver kat"
+              "da": "Enhver kat",
+              "fr": "N'importe quel chat"
             }
           }
         ],
@@ -711,7 +779,8 @@
               "de": "Katze",
               "nl": "Kat",
               "no": "Katt",
-              "da": "Kat"
+              "da": "Kat",
+              "fr": "Chat"
             },
             "example": {
               "en": "Misan",
@@ -719,7 +788,8 @@
               "de": "Misan",
               "nl": "Misan",
               "no": "Misan",
-              "da": "Misan"
+              "da": "Misan",
+              "fr": "Misan"
             }
           },
           {
@@ -731,7 +801,8 @@
               "de": "Chipnummer",
               "nl": "Chipnummer",
               "no": "Chipnummer",
-              "da": "Chipnummer"
+              "da": "Chipnummer",
+              "fr": "Code de puce"
             },
             "example": {
               "en": "956000015949802",
@@ -739,7 +810,8 @@
               "de": "956000015949802",
               "nl": "956000015949802",
               "no": "956000015949802",
-              "da": "956000015949802"
+              "da": "956000015949802",
+              "fr": "956000015949802"
             }
           },
           {
@@ -751,7 +823,8 @@
               "de": "Richtung",
               "nl": "Richting",
               "no": "Retning",
-              "da": "Retning"
+              "da": "Retning",
+              "fr": "Direction"
             },
             "example": {
               "en": "in",
@@ -759,7 +832,8 @@
               "de": "herein",
               "nl": "binnen",
               "no": "inn",
-              "da": "ind"
+              "da": "ind",
+              "fr": "in"
             }
           },
           {
@@ -771,7 +845,8 @@
               "de": "Standbild",
               "nl": "Momentopname",
               "no": "Stillbilde",
-              "da": "Stillbillede"
+              "da": "Stillbillede",
+              "fr": "Photo"
             }
           }
         ]
@@ -784,7 +859,8 @@
           "de": "Beute erkannt",
           "nl": "Prooi gedetecteerd",
           "no": "Bytte oppdaget",
-          "da": "Bytte registreret"
+          "da": "Bytte registreret",
+          "fr": "Proie détectée"
         },
         "hint": {
           "en": "Fires when the flap decided a cat was carrying something. Drop the snapshot into a notification to see for yourself.",
@@ -792,7 +868,8 @@
           "de": "Wird ausgelöst, wenn die Klappe entschied, dass eine Katze etwas trug. Füge das Standbild in eine Benachrichtigung ein, um selbst nachzusehen.",
           "nl": "Wordt geactiveerd wanneer het luik vond dat een kat iets meedroeg. Zet de momentopname in een melding om zelf te kijken.",
           "no": "Utløses når luken mente at en katt bar på noe. Legg stillbildet i et varsel for å se selv.",
-          "da": "Udløses, når lemmen vurderede, at en kat bar på noget. Læg stillbilledet i en notifikation for at se selv."
+          "da": "Udløses, når lemmen vurderede, at en kat bar på noget. Læg stillbilledet i en notifikation for at se selv.",
+          "fr": "Se déclenche quand la chatière estime qu'un chat portait quelque chose. Ajoutez la photo à une notification pour voir par vous-même."
         },
         "tokens": [
           {
@@ -804,7 +881,8 @@
               "de": "Katze",
               "nl": "Kat",
               "no": "Katt",
-              "da": "Kat"
+              "da": "Kat",
+              "fr": "Chat"
             },
             "example": {
               "en": "Misan",
@@ -812,7 +890,8 @@
               "de": "Misan",
               "nl": "Misan",
               "no": "Misan",
-              "da": "Misan"
+              "da": "Misan",
+              "fr": "Misan"
             }
           },
           {
@@ -824,7 +903,8 @@
               "de": "Chipnummer",
               "nl": "Chipnummer",
               "no": "Chipnummer",
-              "da": "Chipnummer"
+              "da": "Chipnummer",
+              "fr": "Code de puce"
             },
             "example": {
               "en": "956000015949802",
@@ -832,7 +912,8 @@
               "de": "956000015949802",
               "nl": "956000015949802",
               "no": "956000015949802",
-              "da": "956000015949802"
+              "da": "956000015949802",
+              "fr": "956000015949802"
             }
           },
           {
@@ -844,7 +925,8 @@
               "de": "Standbild",
               "nl": "Momentopname",
               "no": "Stillbilde",
-              "da": "Stillbillede"
+              "da": "Stillbillede",
+              "fr": "Photo"
             }
           }
         ],
@@ -864,7 +946,8 @@
           "de": "Eine unbekannte Katze nutzte die Klappe",
           "nl": "Een onbekende kat gebruikte het luik",
           "no": "En ukjent katt brukte luken",
-          "da": "En ukendt kat brugte lemmen"
+          "da": "En ukendt kat brugte lemmen",
+          "fr": "Un chat inconnu a utilisé la chatière"
         },
         "hint": {
           "en": "Fires for a chip this flap is not tracking. Use Repair to start tracking it.",
@@ -872,7 +955,8 @@
           "de": "Wird für einen Chip ausgelöst, den diese Klappe nicht verfolgt. Über Reparieren kannst du ihn aufnehmen.",
           "nl": "Wordt geactiveerd voor een chip die dit luik niet volgt. Gebruik Repareren om hem te gaan volgen.",
           "no": "Utløses for en brikke luken ikke følger. Bruk Reparer for å begynne å følge den.",
-          "da": "Udløses for en chip, lemmen ikke følger. Brug Reparer for at følge den."
+          "da": "Udløses for en chip, lemmen ikke følger. Brug Reparer for at følge den.",
+          "fr": "Se déclenche pour une puce que cette chatière ne suit pas. Utilisez Réparer pour commencer à la suivre."
         },
         "tokens": [
           {
@@ -884,7 +968,8 @@
               "de": "Chipnummer",
               "nl": "Chipnummer",
               "no": "Chipnummer",
-              "da": "Chipnummer"
+              "da": "Chipnummer",
+              "fr": "Code de puce"
             },
             "example": {
               "en": "956000015949802",
@@ -892,7 +977,8 @@
               "de": "956000015949802",
               "nl": "956000015949802",
               "no": "956000015949802",
-              "da": "956000015949802"
+              "da": "956000015949802",
+              "fr": "956000015949802"
             }
           },
           {
@@ -904,7 +990,8 @@
               "de": "Was geschah",
               "nl": "Wat er gebeurde",
               "no": "Hva som skjedde",
-              "da": "Hvad der skete"
+              "da": "Hvad der skete",
+              "fr": "Ce qui s'est passé"
             },
             "example": {
               "en": "came in",
@@ -912,7 +999,8 @@
               "de": "kam herein",
               "nl": "kwam binnen",
               "no": "kom inn",
-              "da": "kom ind"
+              "da": "kom ind",
+              "fr": "came in"
             }
           },
           {
@@ -924,7 +1012,8 @@
               "de": "Richtung",
               "nl": "Richting",
               "no": "Retning",
-              "da": "Retning"
+              "da": "Retning",
+              "fr": "Direction"
             },
             "example": {
               "en": "in",
@@ -932,7 +1021,8 @@
               "de": "herein",
               "nl": "binnen",
               "no": "inn",
-              "da": "ind"
+              "da": "ind",
+              "fr": "in"
             }
           },
           {
@@ -944,7 +1034,8 @@
               "de": "Standbild",
               "nl": "Momentopname",
               "no": "Stillbilde",
-              "da": "Stillbillede"
+              "da": "Stillbillede",
+              "fr": "Photo"
             }
           }
         ],
@@ -964,7 +1055,8 @@
           "de": "An der Klappe ist etwas passiert",
           "nl": "Er gebeurde iets bij het luik",
           "no": "Noe skjedde ved luken",
-          "da": "Der skete noget ved lemmen"
+          "da": "Der skete noget ved lemmen",
+          "fr": "Il s'est passé quelque chose à la chatière"
         },
         "titleFormatted": {
           "en": "[[action]] — [[cat]]",
@@ -972,7 +1064,8 @@
           "de": "[[action]] — [[cat]]",
           "nl": "[[action]] — [[cat]]",
           "no": "[[action]] — [[cat]]",
-          "da": "[[action]] — [[cat]]"
+          "da": "[[action]] — [[cat]]",
+          "fr": "[[action]] — [[cat]]"
         },
         "hint": {
           "en": "The catch-all card. Filter by what happened and by cat.",
@@ -980,7 +1073,8 @@
           "de": "Die Sammelkarte. Filtere nach Ereignis und Katze.",
           "nl": "De kaart die alles vangt. Filter op wat er gebeurde en op kat.",
           "no": "Kortet som fanger alt. Filtrer på hva som skjedde og på katt.",
-          "da": "Kortet der fanger alt. Filtrér på hvad der skete og på kat."
+          "da": "Kortet der fanger alt. Filtrér på hvad der skete og på kat.",
+          "fr": "La carte fourre-tout. Filtrez par événement et par chat."
         },
         "args": [
           {
@@ -997,7 +1091,8 @@
               "de": "Was geschah",
               "nl": "Wat er gebeurde",
               "no": "Hva som skjedde",
-              "da": "Hvad der skete"
+              "da": "Hvad der skete",
+              "fr": "Ce qui s'est passé"
             },
             "values": [
               {
@@ -1008,7 +1103,8 @@
                   "de": "Alles",
                   "nl": "Alles",
                   "no": "Hva som helst",
-                  "da": "Hvad som helst"
+                  "da": "Hvad som helst",
+                  "fr": "Tout"
                 }
               },
               {
@@ -1019,7 +1115,8 @@
                   "de": "Kam herein",
                   "nl": "Kwam binnen",
                   "no": "Kom inn",
-                  "da": "Kom ind"
+                  "da": "Kom ind",
+                  "fr": "Est entré"
                 }
               },
               {
@@ -1030,7 +1127,8 @@
                   "de": "Ging hinaus",
                   "nl": "Ging naar buiten",
                   "no": "Gikk ut",
-                  "da": "Gik ud"
+                  "da": "Gik ud",
+                  "fr": "Est sorti"
                 }
               },
               {
@@ -1041,7 +1139,8 @@
                   "de": "Nur geschaut",
                   "nl": "Alleen gekeken",
                   "no": "Bare kikket",
-                  "da": "Kiggede kun"
+                  "da": "Kiggede kun",
+                  "fr": "A seulement regardé"
                 }
               },
               {
@@ -1052,7 +1151,8 @@
                   "de": "Wurde abgewiesen",
                   "nl": "Werd geweigerd",
                   "no": "Ble avvist",
-                  "da": "Blev afvist"
+                  "da": "Blev afvist",
+                  "fr": "A été refusé"
                 }
               },
               {
@@ -1063,7 +1163,8 @@
                   "de": "Drückte sich durch",
                   "nl": "Duwde zich door",
                   "no": "Tvang luken",
-                  "da": "Pressede sig igennem"
+                  "da": "Pressede sig igennem",
+                  "fr": "A forcé la chatière"
                 }
               }
             ]
@@ -1077,7 +1178,8 @@
               "de": "Katze",
               "nl": "Kat",
               "no": "Katt",
-              "da": "Kat"
+              "da": "Kat",
+              "fr": "Chat"
             },
             "placeholder": {
               "en": "Any cat",
@@ -1085,7 +1187,8 @@
               "de": "Jede Katze",
               "nl": "Elke kat",
               "no": "Hvilken som helst katt",
-              "da": "Enhver kat"
+              "da": "Enhver kat",
+              "fr": "N'importe quel chat"
             }
           }
         ],
@@ -1099,7 +1202,8 @@
               "de": "Katze",
               "nl": "Kat",
               "no": "Katt",
-              "da": "Kat"
+              "da": "Kat",
+              "fr": "Chat"
             },
             "example": {
               "en": "Misan",
@@ -1107,7 +1211,8 @@
               "de": "Misan",
               "nl": "Misan",
               "no": "Misan",
-              "da": "Misan"
+              "da": "Misan",
+              "fr": "Misan"
             }
           },
           {
@@ -1119,7 +1224,8 @@
               "de": "Chipnummer",
               "nl": "Chipnummer",
               "no": "Chipnummer",
-              "da": "Chipnummer"
+              "da": "Chipnummer",
+              "fr": "Code de puce"
             },
             "example": {
               "en": "956000015949802",
@@ -1127,7 +1233,8 @@
               "de": "956000015949802",
               "nl": "956000015949802",
               "no": "956000015949802",
-              "da": "956000015949802"
+              "da": "956000015949802",
+              "fr": "956000015949802"
             }
           },
           {
@@ -1139,7 +1246,8 @@
               "de": "Was geschah",
               "nl": "Wat er gebeurde",
               "no": "Hva som skjedde",
-              "da": "Hvad der skete"
+              "da": "Hvad der skete",
+              "fr": "Ce qui s'est passé"
             },
             "example": {
               "en": "came in",
@@ -1147,7 +1255,8 @@
               "de": "kam herein",
               "nl": "kwam binnen",
               "no": "kom inn",
-              "da": "kom ind"
+              "da": "kom ind",
+              "fr": "came in"
             }
           },
           {
@@ -1159,7 +1268,8 @@
               "de": "Richtung",
               "nl": "Richting",
               "no": "Retning",
-              "da": "Retning"
+              "da": "Retning",
+              "fr": "Direction"
             },
             "example": {
               "en": "in",
@@ -1167,7 +1277,8 @@
               "de": "herein",
               "nl": "binnen",
               "no": "inn",
-              "da": "ind"
+              "da": "ind",
+              "fr": "in"
             }
           },
           {
@@ -1179,7 +1290,8 @@
               "de": "Klassifizierung",
               "nl": "Classificatie",
               "no": "Klassifisering",
-              "da": "Klassificering"
+              "da": "Klassificering",
+              "fr": "Classification"
             },
             "example": {
               "en": "clear",
@@ -1187,7 +1299,8 @@
               "de": "sauber",
               "nl": "schoon",
               "no": "ren",
-              "da": "ren"
+              "da": "ren",
+              "fr": "clear"
             }
           },
           {
@@ -1199,7 +1312,8 @@
               "de": "Ausgelöst durch",
               "nl": "Geactiveerd door",
               "no": "Utløst av",
-              "da": "Udløst af"
+              "da": "Udløst af",
+              "fr": "Déclenché par"
             },
             "example": {
               "en": "outdoor motion",
@@ -1207,7 +1321,8 @@
               "de": "Bewegung draußen",
               "nl": "beweging buiten",
               "no": "bevegelse ute",
-              "da": "bevægelse ude"
+              "da": "bevægelse ude",
+              "fr": "outdoor motion"
             }
           },
           {
@@ -1219,7 +1334,8 @@
               "de": "Standbild",
               "nl": "Momentopname",
               "no": "Stillbilde",
-              "da": "Stillbillede"
+              "da": "Stillbillede",
+              "fr": "Photo"
             }
           }
         ]
@@ -1234,7 +1350,8 @@
           "de": "Eine Katze !{{ist|ist nicht}} zu Hause",
           "nl": "Een kat !{{is|is niet}} thuis",
           "no": "En katt !{{er|er ikke}} hjemme",
-          "da": "En kat !{{er|er ikke}} hjemme"
+          "da": "En kat !{{er|er ikke}} hjemme",
+          "fr": "Un chat !{{est|n'est pas}} à la maison"
         },
         "titleFormatted": {
           "en": "[[cat]] !{{is|is not}} home",
@@ -1242,7 +1359,8 @@
           "de": "[[cat]] !{{ist|ist nicht}} zu Hause",
           "nl": "[[cat]] !{{is|is niet}} thuis",
           "no": "[[cat]] !{{er|er ikke}} hjemme",
-          "da": "[[cat]] !{{er|er ikke}} hjemme"
+          "da": "[[cat]] !{{er|er ikke}} hjemme",
+          "fr": "[[cat]] !{{est|n'est pas}} à la maison"
         },
         "args": [
           {
@@ -1259,7 +1377,8 @@
               "de": "Katze",
               "nl": "Kat",
               "no": "Katt",
-              "da": "Kat"
+              "da": "Kat",
+              "fr": "Chat"
             },
             "placeholder": {
               "en": "Any cat",
@@ -1267,7 +1386,8 @@
               "de": "Jede Katze",
               "nl": "Elke kat",
               "no": "Hvilken som helst katt",
-              "da": "Enhver kat"
+              "da": "Enhver kat",
+              "fr": "N'importe quel chat"
             }
           }
         ]
@@ -1280,7 +1400,8 @@
           "de": "Die Klappe !{{ist|ist nicht}} gesperrt",
           "nl": "Het luik !{{is|is niet}} vergrendeld",
           "no": "Luken !{{er|er ikke}} låst",
-          "da": "Lemmen !{{er|er ikke}} låst"
+          "da": "Lemmen !{{er|er ikke}} låst",
+          "fr": "La chatière !{{est|n'est pas}} verrouillée"
         },
         "hint": {
           "en": "Whether the door policy currently leaves the flap locked. If the policy uses rules that depend on the flap's own sensors, the app cannot tell and this card stops the Flow rather than guessing.",
@@ -1288,7 +1409,8 @@
           "de": "Ob die Türregel die Klappe derzeit gesperrt lässt. Nutzt die Regel Kriterien, die von den Sensoren der Klappe abhängen, kann die App es nicht feststellen und die Karte stoppt den Flow, statt zu raten.",
           "nl": "Of het deurbeleid het luik nu vergrendeld laat. Gebruikt het beleid regels die afhangen van de sensoren van het luik, dan kan de app het niet bepalen en stopt deze kaart de Flow in plaats van te gokken.",
           "no": "Om dørregelen akkurat nå lar luken være låst. Bruker regelen kriterier som avhenger av lukens egne sensorer, kan ikke appen avgjøre det, og kortet stopper flyten i stedet for å gjette.",
-          "da": "Om dørreglen lige nu lader lemmen være låst. Bruger reglen kriterier, der afhænger af lemmens egne sensorer, kan appen ikke afgøre det, og kortet stopper flowet i stedet for at gætte."
+          "da": "Om dørreglen lige nu lader lemmen være låst. Bruger reglen kriterier, der afhænger af lemmens egne sensorer, kan appen ikke afgøre det, og kortet stopper flowet i stedet for at gætte.",
+          "fr": "Indique si la politique d'accès laisse actuellement la chatière verrouillée. Si la politique utilise des règles qui dépendent des capteurs de la chatière, l'app ne peut pas le savoir et cette carte arrête le Flow plutôt que de deviner."
         },
         "args": [
           {
@@ -1306,7 +1428,8 @@
           "de": "Die Türregel !{{ist|ist nicht}}",
           "nl": "Het deurbeleid !{{is|is niet}}",
           "no": "Dørregelen !{{er|er ikke}}",
-          "da": "Dørreglen !{{er|er ikke}}"
+          "da": "Dørreglen !{{er|er ikke}}",
+          "fr": "La politique d'accès !{{est|n'est pas}}"
         },
         "titleFormatted": {
           "en": "The door policy !{{is|is not}} [[policy]]",
@@ -1314,7 +1437,8 @@
           "de": "Die Türregel !{{ist|ist nicht}} [[policy]]",
           "nl": "Het deurbeleid !{{is|is niet}} [[policy]]",
           "no": "Dørregelen !{{er|er ikke}} [[policy]]",
-          "da": "Dørreglen !{{er|er ikke}} [[policy]]"
+          "da": "Dørreglen !{{er|er ikke}} [[policy]]",
+          "fr": "La politique d'accès !{{est|n'est pas}} [[policy]]"
         },
         "args": [
           {
@@ -1331,7 +1455,8 @@
               "de": "Türregel",
               "nl": "Deurbeleid",
               "no": "Dørregel",
-              "da": "Dørregel"
+              "da": "Dørregel",
+              "fr": "Politique d'accès"
             }
           }
         ]
@@ -1346,7 +1471,8 @@
           "de": "Klappe entriegeln",
           "nl": "Ontgrendel het luik",
           "no": "Lås opp luken",
-          "da": "Lås lemmen op"
+          "da": "Lås lemmen op",
+          "fr": "Déverrouiller la chatière"
         },
         "hint": {
           "en": "Unlocks the flap once, the same as the unlock button in the OnlyCat app. The flap relocks according to its door policy.",
@@ -1354,7 +1480,8 @@
           "de": "Entriegelt die Klappe einmalig, wie der Entriegeln-Knopf in der OnlyCat-App. Danach sperrt die Klappe gemäß ihrer Türregel.",
           "nl": "Ontgrendelt het luik eenmalig, net als de ontgrendelknop in de OnlyCat-app. Daarna vergrendelt het luik volgens het deurbeleid.",
           "no": "Låser opp luken én gang, som opplåsingsknappen i OnlyCat-appen. Luken låser igjen etter dørregelen.",
-          "da": "Låser lemmen op én gang, som oplåsningsknappen i OnlyCat-appen. Lemmen låser igen efter dørreglen."
+          "da": "Låser lemmen op én gang, som oplåsningsknappen i OnlyCat-appen. Lemmen låser igen efter dørreglen.",
+          "fr": "Déverrouille la chatière une fois, comme le bouton de déverrouillage dans l'app OnlyCat. La chatière se reverrouille ensuite selon sa politique d'accès."
         },
         "args": [
           {
@@ -1372,7 +1499,8 @@
           "de": "Türregel wechseln",
           "nl": "Wissel het deurbeleid",
           "no": "Bytt dørregel",
-          "da": "Skift dørregel"
+          "da": "Skift dørregel",
+          "fr": "Changer la politique d'accès"
         },
         "titleFormatted": {
           "en": "Switch the door policy to [[policy]]",
@@ -1380,7 +1508,8 @@
           "de": "Türregel auf [[policy]] wechseln",
           "nl": "Wissel het deurbeleid naar [[policy]]",
           "no": "Bytt dørregel til [[policy]]",
-          "da": "Skift dørregel til [[policy]]"
+          "da": "Skift dørregel til [[policy]]",
+          "fr": "Changer la politique d'accès pour [[policy]]"
         },
         "args": [
           {
@@ -1397,7 +1526,8 @@
               "de": "Türregel",
               "nl": "Deurbeleid",
               "no": "Dørregel",
-              "da": "Dørregel"
+              "da": "Dørregel",
+              "fr": "Politique d'accès"
             }
           }
         ]
@@ -1410,7 +1540,8 @@
           "de": "Eine Katze als zu Hause oder draußen markieren",
           "nl": "Markeer een kat als thuis of buiten",
           "no": "Merk en katt som hjemme eller ute",
-          "da": "Markér en kat som hjemme eller ude"
+          "da": "Markér en kat som hjemme eller ude",
+          "fr": "Indiquer si un chat est à la maison ou dehors"
         },
         "titleFormatted": {
           "en": "Mark [[cat]] as [[where]]",
@@ -1418,7 +1549,8 @@
           "de": "[[cat]] als [[where]] markieren",
           "nl": "Markeer [[cat]] als [[where]]",
           "no": "Merk [[cat]] som [[where]]",
-          "da": "Markér [[cat]] som [[where]]"
+          "da": "Markér [[cat]] som [[where]]",
+          "fr": "Indiquer [[cat]] comme [[where]]"
         },
         "hint": {
           "en": "Corrects the app's idea of where a cat is — useful when one got in through a window. This only changes Homey, not OnlyCat.",
@@ -1426,7 +1558,8 @@
           "de": "Korrigiert, wo die App eine Katze vermutet — nützlich, wenn eine durchs Fenster hereinkam. Ändert nur Homey, nicht OnlyCat.",
           "nl": "Corrigeert waar de app denkt dat een kat is — handig als er een via een raam binnenkwam. Verandert alleen Homey, niet OnlyCat.",
           "no": "Retter appens oppfatning av hvor en katt er — nyttig når en kom inn gjennom et vindu. Endrer bare Homey, ikke OnlyCat.",
-          "da": "Retter appens opfattelse af, hvor en kat er — nyttigt når en kom ind gennem et vindue. Ændrer kun Homey, ikke OnlyCat."
+          "da": "Retter appens opfattelse af, hvor en kat er — nyttigt når en kom ind gennem et vindue. Ændrer kun Homey, ikke OnlyCat.",
+          "fr": "Corrige l'idée que l'app se fait de l'endroit où est un chat — utile quand il est rentré par une fenêtre. Cela ne change que Homey, pas OnlyCat."
         },
         "args": [
           {
@@ -1443,7 +1576,8 @@
               "de": "Katze",
               "nl": "Kat",
               "no": "Katt",
-              "da": "Kat"
+              "da": "Kat",
+              "fr": "Chat"
             },
             "placeholder": {
               "en": "Any cat",
@@ -1451,7 +1585,8 @@
               "de": "Jede Katze",
               "nl": "Elke kat",
               "no": "Hvilken som helst katt",
-              "da": "Enhver kat"
+              "da": "Enhver kat",
+              "fr": "N'importe quel chat"
             }
           },
           {
@@ -1463,7 +1598,8 @@
               "de": "Wo",
               "nl": "Waar",
               "no": "Hvor",
-              "da": "Hvor"
+              "da": "Hvor",
+              "fr": "Où"
             },
             "values": [
               {
@@ -1474,7 +1610,8 @@
                   "de": "Zu Hause",
                   "nl": "Thuis",
                   "no": "Hjemme",
-                  "da": "Hjemme"
+                  "da": "Hjemme",
+                  "fr": "À la maison"
                 }
               },
               {
@@ -1485,7 +1622,8 @@
                   "de": "Draußen",
                   "nl": "Buiten",
                   "no": "Ute",
-                  "da": "Ude"
+                  "da": "Ude",
+                  "fr": "Dehors"
                 }
               }
             ]
@@ -1500,7 +1638,8 @@
           "de": "Klappe neu starten",
           "nl": "Herstart het luik",
           "no": "Start luken på nytt",
-          "da": "Genstart lemmen"
+          "da": "Genstart lemmen",
+          "fr": "Redémarrer la chatière"
         },
         "args": [
           {
@@ -1520,7 +1659,8 @@
         "de": "Katzenklappe",
         "nl": "Kattenluik",
         "no": "Katteluke",
-        "da": "Kattelem"
+        "da": "Kattelem",
+        "fr": "Chatière"
       },
       "class": "lock",
       "capabilities": [
@@ -1546,7 +1686,8 @@
             "de": "Aktivität an der Klappe",
             "nl": "Activiteit bij het luik",
             "no": "Aktivitet ved luken",
-            "da": "Aktivitet ved lemmen"
+            "da": "Aktivitet ved lemmen",
+            "fr": "Activité à la chatière"
           }
         },
         "locked": {
@@ -1578,7 +1719,8 @@
               "de": "Mit OnlyCat verbinden",
               "nl": "Verbinden met OnlyCat",
               "no": "Koble til OnlyCat",
-              "da": "Forbind til OnlyCat"
+              "da": "Forbind til OnlyCat",
+              "fr": "Connexion à OnlyCat"
             },
             "usernameLabel": {
               "en": "Key name",
@@ -1586,7 +1728,8 @@
               "de": "Schlüsselname",
               "nl": "Sleutelnaam",
               "no": "Nøkkelnavn",
-              "da": "Nøglenavn"
+              "da": "Nøglenavn",
+              "fr": "Nom de la clé"
             },
             "usernamePlaceholder": {
               "en": "Homey",
@@ -1594,7 +1737,8 @@
               "de": "Homey",
               "nl": "Homey",
               "no": "Homey",
-              "da": "Homey"
+              "da": "Homey",
+              "fr": "Homey"
             },
             "passwordLabel": {
               "en": "API key",
@@ -1602,7 +1746,8 @@
               "de": "API-Schlüssel",
               "nl": "API-sleutel",
               "no": "API-nøkkel",
-              "da": "API-nøgle"
+              "da": "API-nøgle",
+              "fr": "Clé API"
             },
             "passwordPlaceholder": {
               "en": "oc_live_…",
@@ -1610,7 +1755,8 @@
               "de": "oc_live_…",
               "nl": "oc_live_…",
               "no": "oc_live_…",
-              "da": "oc_live_…"
+              "da": "oc_live_…",
+              "fr": "oc_live_…"
             }
           }
         },
@@ -1638,7 +1784,8 @@
               "de": "Mit OnlyCat verbinden",
               "nl": "Verbinden met OnlyCat",
               "no": "Koble til OnlyCat",
-              "da": "Forbind til OnlyCat"
+              "da": "Forbind til OnlyCat",
+              "fr": "Connexion à OnlyCat"
             },
             "usernameLabel": {
               "en": "Key name",
@@ -1646,7 +1793,8 @@
               "de": "Schlüsselname",
               "nl": "Sleutelnaam",
               "no": "Nøkkelnavn",
-              "da": "Nøglenavn"
+              "da": "Nøglenavn",
+              "fr": "Nom de la clé"
             },
             "usernamePlaceholder": {
               "en": "Homey",
@@ -1654,7 +1802,8 @@
               "de": "Homey",
               "nl": "Homey",
               "no": "Homey",
-              "da": "Homey"
+              "da": "Homey",
+              "fr": "Homey"
             },
             "passwordLabel": {
               "en": "API key",
@@ -1662,7 +1811,8 @@
               "de": "API-Schlüssel",
               "nl": "API-sleutel",
               "no": "API-nøkkel",
-              "da": "API-nøgle"
+              "da": "API-nøgle",
+              "fr": "Clé API"
             },
             "passwordPlaceholder": {
               "en": "oc_live_…",
@@ -1670,7 +1820,8 @@
               "de": "oc_live_…",
               "nl": "oc_live_…",
               "no": "oc_live_…",
-              "da": "oc_live_…"
+              "da": "oc_live_…",
+              "fr": "oc_live_…"
             }
           }
         }
@@ -1684,7 +1835,8 @@
             "de": "Klappe",
             "nl": "Luik",
             "no": "Luke",
-            "da": "Lem"
+            "da": "Lem",
+            "fr": "Chatière"
           },
           "children": [
             {
@@ -1696,7 +1848,8 @@
                 "de": "Geräte-ID",
                 "nl": "Apparaat-ID",
                 "no": "Enhets-ID",
-                "da": "Enheds-ID"
+                "da": "Enheds-ID",
+                "fr": "ID de l'appareil"
               },
               "value": ""
             },
@@ -1709,7 +1862,8 @@
                 "de": "MAC-Adresse",
                 "nl": "MAC-adres",
                 "no": "MAC-adresse",
-                "da": "MAC-adresse"
+                "da": "MAC-adresse",
+                "fr": "Adresse MAC"
               },
               "value": ""
             },
@@ -1722,7 +1876,8 @@
                 "de": "Zeitzone",
                 "nl": "Tijdzone",
                 "no": "Tidssone",
-                "da": "Tidszone"
+                "da": "Tidszone",
+                "fr": "Fuseau horaire"
               },
               "value": ""
             },
@@ -1735,7 +1890,8 @@
                 "de": "Firmware-Kanal",
                 "nl": "Firmwarekanaal",
                 "no": "Fastvarekanal",
-                "da": "Firmwarekanal"
+                "da": "Firmwarekanal",
+                "fr": "Canal du micrologiciel"
               },
               "value": ""
             },
@@ -1748,7 +1904,8 @@
                 "de": "API-Schlüssel",
                 "nl": "API-sleutel",
                 "no": "API-nøkkel",
-                "da": "API-nøgle"
+                "da": "API-nøgle",
+                "fr": "Clé API"
               },
               "value": ""
             }
@@ -1762,7 +1919,8 @@
             "de": "Katzen",
             "nl": "Katten",
             "no": "Katter",
-            "da": "Katte"
+            "da": "Katte",
+            "fr": "Chats"
           },
           "children": [
             {
@@ -1774,7 +1932,8 @@
                 "de": "Verfolgt",
                 "nl": "Gevolgd",
                 "no": "Fulgt",
-                "da": "Fulgt"
+                "da": "Fulgt",
+                "fr": "Suivis"
               },
               "value": ""
             }
@@ -1788,7 +1947,8 @@
             "de": "Erweitert",
             "nl": "Geavanceerd",
             "no": "Avansert",
-            "da": "Avanceret"
+            "da": "Avanceret",
+            "fr": "Avancé"
           },
           "children": [
             {
@@ -1801,7 +1961,8 @@
                 "de": "Nicht gesehene Ausflüge",
                 "nl": "Ongeziene uitstapjes",
                 "no": "Usette turer",
-                "da": "Usete ture"
+                "da": "Usete ture",
+                "fr": "Sorties non observées"
               },
               "hint": {
                 "en": "A cat can leave through a window or be carried out, and the flap sees none of it — so sometimes a cat comes back in when the app thought it was already indoors. It must have been out; the app just does not know for how long. This decides what to assume for \"Outside today\".",
@@ -1809,7 +1970,8 @@
                 "de": "Eine Katze kann durch ein Fenster verschwinden oder hinausgetragen werden, und die Klappe sieht davon nichts — manchmal kommt eine Katze also herein, obwohl die App sie drinnen wähnte. Draußen war sie in jedem Fall; nur wie lange, weiß die App nicht. Dies legt fest, was für \"Heute draußen\" angenommen wird.",
                 "nl": "Een kat kan via een raam weggaan of naar buiten gedragen worden, en het luik ziet daar niets van — soms komt een kat dus binnen terwijl de app dacht dat hij al binnen was. Buiten is hij hoe dan ook geweest; alleen niet hoe lang. Dit bepaalt wat er voor \"Vandaag buiten\" wordt aangenomen.",
                 "no": "En katt kan gå ut gjennom et vindu eller bæres ut, og luken ser ingenting av det — så noen ganger kommer en katt inn når appen trodde den allerede var inne. Ute har den vært uansett; appen vet bare ikke hvor lenge. Dette avgjør hva som antas for \"Ute i dag\".",
-                "da": "En kat kan gå ud gennem et vindue eller blive båret ud, og lemmen ser intet af det — så nogle gange kommer en kat ind, når appen troede, den allerede var inde. Ude har den været under alle omstændigheder; appen ved bare ikke hvor længe. Dette afgør, hvad der antages for \"Ude i dag\"."
+                "da": "En kat kan gå ud gennem et vindue eller blive båret ud, og lemmen ser intet af det — så nogle gange kommer en kat ind, når appen troede, den allerede var inde. Ude har den været under alle omstændigheder; appen ved bare ikke hvor længe. Dette afgør, hvad der antages for \"Ude i dag\".",
+                "fr": "Un chat peut sortir par une fenêtre ou être porté dehors, et la chatière n'en voit rien — il arrive donc qu'un chat rentre alors que l'app le croyait déjà à l'intérieur. Il était forcément dehors ; l'app ignore simplement depuis combien de temps. Ce réglage décide quoi supposer pour « Dehors aujourd'hui »."
               },
               "values": [
                 {
@@ -1820,7 +1982,8 @@
                     "de": "Nichts zählen",
                     "nl": "Niets meetellen",
                     "no": "Ikke tell noe",
-                    "da": "Tæl ingenting"
+                    "da": "Tæl ingenting",
+                    "fr": "Ne rien compter"
                   }
                 },
                 {
@@ -1831,7 +1994,8 @@
                     "de": "Die Hälfte der unbekannten Zeit annehmen",
                     "nl": "Ga uit van de helft van de onbekende tijd",
                     "no": "Anta halvparten av den ukjente tiden",
-                    "da": "Antag halvdelen af den ukendte tid"
+                    "da": "Antag halvdelen af den ukendte tid",
+                    "fr": "Compter la moitié du temps inconnu"
                   }
                 },
                 {
@@ -1842,7 +2006,8 @@
                     "de": "Die gesamte Zeit annehmen",
                     "nl": "Ga uit van de hele tijd",
                     "no": "Anta hele tiden",
-                    "da": "Antag hele tiden"
+                    "da": "Antag hele tiden",
+                    "fr": "Compter tout ce temps"
                   }
                 }
               ]
@@ -1857,7 +2022,8 @@
                 "de": "Debug-Protokollierung",
                 "nl": "Debug-logging",
                 "no": "Feilsøkingslogg",
-                "da": "Fejlfindingslog"
+                "da": "Fejlfindingslog",
+                "fr": "Journal de débogage"
               },
               "hint": {
                 "en": "Writes every gateway message and flap event to the app log. Leave this off: it is one line per cat, per event. Turn it on before reproducing a problem, then send the log from Settings → Apps → OnlyCat.",
@@ -1865,7 +2031,8 @@
                 "de": "Schreibt jede Gateway-Nachricht und jedes Klappen-Ereignis ins App-Protokoll. Lass es aus: es ist eine Zeile pro Katze und Ereignis. Schalte es ein, bevor du ein Problem reproduzierst, und sende dann das Protokoll aus Einstellungen → Apps → OnlyCat.",
                 "nl": "Schrijft elk gateway-bericht en elke luikgebeurtenis naar het app-logboek. Laat dit uit: het is één regel per kat, per gebeurtenis. Zet het aan voordat je een probleem reproduceert en stuur daarna het logboek via Instellingen → Apps → OnlyCat.",
                 "no": "Skriver hver gateway-melding og lukehendelse til apploggen. La den stå av: det blir én linje per katt og hendelse. Slå den på før du gjenskaper et problem, og send deretter loggen fra Innstillinger → Apper → OnlyCat.",
-                "da": "Skriver hver gateway-besked og lemhændelse til applogget. Lad den være slået fra: det er én linje pr. kat pr. hændelse. Slå den til, før du genskaber et problem, og send derefter logget fra Indstillinger → Apps → OnlyCat."
+                "da": "Skriver hver gateway-besked og lemhændelse til applogget. Lad den være slået fra: det er én linje pr. kat pr. hændelse. Slå den til, før du genskaber et problem, og send derefter logget fra Indstillinger → Apps → OnlyCat.",
+                "fr": "Écrit chaque message de la passerelle et chaque événement de la chatière dans le journal de l'app. Laissez ce réglage désactivé : cela fait une ligne par chat et par événement. Activez-le avant de reproduire un problème, puis envoyez le journal depuis Réglages → Apps → OnlyCat."
               }
             }
           ]
@@ -1883,7 +2050,8 @@
         "de": "Menschliche Aktivität",
         "nl": "Menselijke activiteit",
         "no": "Menneskelig aktivitet",
-        "da": "Menneskelig aktivitet"
+        "da": "Menneskelig aktivitet",
+        "fr": "Activité humaine"
       },
       "uiComponent": "sensor",
       "getable": true,
@@ -1895,7 +2063,8 @@
         "de": "Menschliche Aktivität",
         "nl": "Menselijke activiteit",
         "no": "Menneskelig aktivitet",
-        "da": "Menneskelig aktivitet"
+        "da": "Menneskelig aktivitet",
+        "fr": "Activité humaine"
       },
       "insightsTitleFalse": {
         "en": "None",
@@ -1903,7 +2072,8 @@
         "de": "Keine",
         "nl": "Geen",
         "no": "Ingen",
-        "da": "Ingen"
+        "da": "Ingen",
+        "fr": "Aucune"
       },
       "icon": "/assets/capabilities/alarm_human_ONLYCAT.svg"
     },
@@ -1915,7 +2085,8 @@
         "de": "Beute erkannt",
         "nl": "Prooi gedetecteerd",
         "no": "Bytte oppdaget",
-        "da": "Bytte registreret"
+        "da": "Bytte registreret",
+        "fr": "Proie détectée"
       },
       "uiComponent": "sensor",
       "getable": true,
@@ -1927,7 +2098,8 @@
         "de": "Beute erkannt",
         "nl": "Prooi gedetecteerd",
         "no": "Bytte oppdaget",
-        "da": "Bytte registreret"
+        "da": "Bytte registreret",
+        "fr": "Proie détectée"
       },
       "insightsTitleFalse": {
         "en": "No prey",
@@ -1935,7 +2107,8 @@
         "de": "Keine Beute",
         "nl": "Geen prooi",
         "no": "Ingen bytte",
-        "da": "Intet bytte"
+        "da": "Intet bytte",
+        "fr": "Pas de proie"
       },
       "icon": "/assets/capabilities/alarm_prey_ONLYCAT.svg"
     },
@@ -1947,7 +2120,8 @@
         "de": "Katze",
         "nl": "Kat",
         "no": "Katt",
-        "da": "Kat"
+        "da": "Kat",
+        "fr": "Chat"
       },
       "uiComponent": "sensor",
       "getable": true,
@@ -1959,7 +2133,8 @@
         "de": "Zu Hause",
         "nl": "Thuis",
         "no": "Hjemme",
-        "da": "Hjemme"
+        "da": "Hjemme",
+        "fr": "À la maison"
       },
       "insightsTitleFalse": {
         "en": "Out",
@@ -1967,7 +2142,8 @@
         "de": "Draußen",
         "nl": "Buiten",
         "no": "Ute",
-        "da": "Ude"
+        "da": "Ude",
+        "fr": "Dehors"
       },
       "icon": "/assets/capabilities/cat_home_ONLYCAT.svg"
     },
@@ -1979,7 +2155,8 @@
         "de": "Katzen zu Hause",
         "nl": "Katten thuis",
         "no": "Katter hjemme",
-        "da": "Katte hjemme"
+        "da": "Katte hjemme",
+        "fr": "Chats à la maison"
       },
       "uiComponent": "sensor",
       "getable": true,
@@ -1996,7 +2173,8 @@
         "de": "Letzte Abweisung",
         "nl": "Laatste weigering",
         "no": "Siste avvisning",
-        "da": "Seneste afvisning"
+        "da": "Seneste afvisning",
+        "fr": "Dernier refus"
       },
       "uiComponent": "sensor",
       "getable": true,
@@ -2012,7 +2190,8 @@
         "de": "Letztes Ereignis",
         "nl": "Laatste gebeurtenis",
         "no": "Siste hendelse",
-        "da": "Seneste hændelse"
+        "da": "Seneste hændelse",
+        "fr": "Dernier événement"
       },
       "uiComponent": "sensor",
       "getable": true,
@@ -2028,7 +2207,8 @@
         "de": "Türregel",
         "nl": "Deurbeleid",
         "no": "Dørregel",
-        "da": "Dørregel"
+        "da": "Dørregel",
+        "fr": "Politique d'accès"
       },
       "uiComponent": "picker",
       "getable": true,
@@ -2044,7 +2224,8 @@
         "de": "Beuteversuche",
         "nl": "Prooipogingen",
         "no": "Bytteforsøk",
-        "da": "Bytteforsøg"
+        "da": "Bytteforsøg",
+        "fr": "Tentatives avec proie"
       },
       "uiComponent": "sensor",
       "getable": true,
@@ -2061,7 +2242,8 @@
         "de": "Abweisungen",
         "nl": "Weigeringen",
         "no": "Avvisninger",
-        "da": "Afvisninger"
+        "da": "Afvisninger",
+        "fr": "Refus"
       },
       "uiComponent": "sensor",
       "getable": true,
@@ -2078,7 +2260,8 @@
         "de": "Heute draußen",
         "nl": "Vandaag buiten",
         "no": "Ute i dag",
-        "da": "Ude i dag"
+        "da": "Ude i dag",
+        "fr": "Dehors aujourd'hui"
       },
       "uiComponent": "sensor",
       "getable": true,
@@ -2092,7 +2275,8 @@
         "de": "h",
         "nl": "u",
         "no": "t",
-        "da": "t"
+        "da": "t",
+        "fr": "h"
       }
     },
     "trips_in_ONLYCAT": {
@@ -2103,7 +2287,8 @@
         "de": "Mal hinein",
         "nl": "Keer naar binnen",
         "no": "Ganger inn",
-        "da": "Gange ind"
+        "da": "Gange ind",
+        "fr": "Entrées"
       },
       "uiComponent": "sensor",
       "getable": true,
@@ -2120,7 +2305,8 @@
         "de": "Mal hinaus",
         "nl": "Keer naar buiten",
         "no": "Ganger ut",
-        "da": "Gange ud"
+        "da": "Gange ud",
+        "fr": "Sorties"
       },
       "uiComponent": "sensor",
       "getable": true,

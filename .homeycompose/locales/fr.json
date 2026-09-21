@@ -1,0 +1,72 @@
+{
+  "event": {
+    "transit": {
+      "inward": "__name__ est entré",
+      "outward": "__name__ est sorti"
+    },
+    "breach": {
+      "inward": "__name__ a forcé la chatière en entrant",
+      "outward": "__name__ a forcé la chatière en sortant"
+    },
+    "peek": {
+      "inward": "__name__ a regardé à l'intérieur mais est resté dehors",
+      "outward": "__name__ a regardé dehors mais est resté à l'intérieur"
+    },
+    "deny": {
+      "inward": "__name__ a été refusé à l'entrée",
+      "outward": "__name__ a été refusé à la sortie"
+    },
+    "unknown_cat": "Un chat inconnu",
+    "a_cat": "Un chat"
+  },
+  "reason": {
+    "prey": "Refusé — portait quelque chose",
+    "prey_named": "__name__ a été refusé — il portait quelque chose",
+    "human": "Refusé — la chatière a vu une personne, pas un chat",
+    "curfew": "Refusé — le couvre-feu verrouille la chatière entre __range__",
+    "curfew_named": "__name__ a été refusé — le couvre-feu verrouille la chatière entre __range__",
+    "not_allowed": "Refusé — pas autorisé à passer pour le moment",
+    "not_allowed_named": "__name__ a été refusé — il n'est pas autorisé à passer pour le moment",
+    "idle": "Refusé — la chatière est verrouillée quand aucune règle ne s'applique",
+    "idle_named": "__name__ a été refusé — la chatière est verrouillée quand aucune règle ne s'applique",
+    "rule": "Refusé par une règle de la politique d'accès",
+    "rule_named": "__name__ a été refusé par une règle de la politique d'accès",
+    "unknown": "Refusé — les règles de cette chatière dépendent de ses propres capteurs, l'app ne peut donc pas dire laquelle a refusé",
+    "unknown_named": "__name__ a été refusé — les règles de cette chatière dépendent de ses propres capteurs, l'app ne peut donc pas dire laquelle l'a refusé"
+  },
+  "policy": {
+    "unnamed": "Politique __id__",
+    "unknown": "Inconnue"
+  },
+  "flow": {
+    "any_cat": "N'importe quel chat"
+  },
+  "error": {
+    "no_connection": "Non connecté à OnlyCat",
+    "unauthorized": "La clé API OnlyCat a été rejetée. Ouvrez Réparer et collez-en une nouvelle.",
+    "unknown_policy": "Cette politique d'accès n'existe plus sur cette chatière",
+    "unknown_cat": "Ce chat n'est pas suivi sur cette chatière",
+    "clip_not_ready": "Le clip est encore en cours de traitement",
+    "no_clip": "Pas de clip pour cet événement",
+    "lock_unknown": "L'app ne peut pas dire si la chatière est verrouillée : cette politique d'accès utilise des règles qui dépendent des capteurs de la chatière.",
+    "cannot_lock": "OnlyCat n'a pas de commande de verrouillage — la chatière se verrouille elle-même selon sa politique d'accès. Changez plutôt de politique d'accès."
+  },
+  "pair": {
+    "title": "Connexion à OnlyCat",
+    "lead": "Cette app communique avec votre compte OnlyCat dans le cloud. Elle a besoin d'une clé API.",
+    "step1": "Ouvrez l'app OnlyCat sur votre téléphone.",
+    "step2": "Allez dans Compte et activez le Mode développeur.",
+    "step3": "Ouvrez Clés API et créez une clé pour Homey.",
+    "step4": "Copiez-la et collez-la ci-dessous — elle n'est affichée qu'une seule fois.",
+    "warn": "Une clé API OnlyCat donne un accès complet à votre compte OnlyCat, et il n'y a aucun moyen de la limiter. Créez une clé dédiée à Homey pour pouvoir la révoquer séparément plus tard.",
+    "continue": "Continuer",
+    "checking": "Vérification…",
+    "empty": "Collez d'abord votre clé API OnlyCat.",
+    "none": "Cette clé fonctionne, mais il n'y a aucune chatière sur ce compte."
+  },
+  "camera": {
+    "outside_today": "dehors aujourd'hui",
+    "last_clip": "Dernier clip",
+    "last_still": "Dernière image fixe"
+  }
+}

@@ -6,7 +6,8 @@
     "de": "Heute draußen",
     "nl": "Vandaag buiten",
     "no": "Ute i dag",
-    "da": "Ude i dag"
+    "da": "Ude i dag",
+    "fr": "Dehors aujourd'hui"
   },
   "uiComponent": "sensor",
   "getable": true,
@@ -20,6 +21,7 @@
     "de": "h",
     "nl": "u",
     "no": "t",
-    "da": "t"
+    "da": "t",
+    "fr": "h"
   }
 }

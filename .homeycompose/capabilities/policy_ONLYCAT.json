@@ -6,7 +6,8 @@
     "de": "Türregel",
     "nl": "Deurbeleid",
     "no": "Dørregel",
-    "da": "Dørregel"
+    "da": "Dørregel",
+    "fr": "Politique d'accès"
   },
   "uiComponent": "picker",
   "getable": true,

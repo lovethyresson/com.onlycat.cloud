@@ -6,7 +6,8 @@
     "de": "Letztes Ereignis",
     "nl": "Laatste gebeurtenis",
     "no": "Siste hendelse",
-    "da": "Seneste hændelse"
+    "da": "Seneste hændelse",
+    "fr": "Dernier événement"
   },
   "uiComponent": "sensor",
   "getable": true,

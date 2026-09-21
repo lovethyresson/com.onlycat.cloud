@@ -6,7 +6,8 @@
     "de": "Beute erkannt",
     "nl": "Prooi gedetecteerd",
     "no": "Bytte oppdaget",
-    "da": "Bytte registreret"
+    "da": "Bytte registreret",
+    "fr": "Proie détectée"
   },
   "uiComponent": "sensor",
   "getable": true,
@@ -18,7 +19,8 @@
     "de": "Beute erkannt",
     "nl": "Prooi gedetecteerd",
     "no": "Bytte oppdaget",
-    "da": "Bytte registreret"
+    "da": "Bytte registreret",
+    "fr": "Proie détectée"
   },
   "insightsTitleFalse": {
     "en": "No prey",
@@ -26,7 +28,8 @@
     "de": "Keine Beute",
     "nl": "Geen prooi",
     "no": "Ingen bytte",
-    "da": "Intet bytte"
+    "da": "Intet bytte",
+    "fr": "Pas de proie"
   },
   "icon": "/assets/capabilities/alarm_prey_ONLYCAT.svg"
 }

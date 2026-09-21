@@ -6,7 +6,8 @@
     "de": "Mal hinein",
     "nl": "Keer naar binnen",
     "no": "Ganger inn",
-    "da": "Gange ind"
+    "da": "Gange ind",
+    "fr": "Entrées"
   },
   "uiComponent": "sensor",
   "getable": true,

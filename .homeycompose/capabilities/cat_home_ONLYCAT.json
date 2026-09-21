@@ -6,7 +6,8 @@
     "de": "Katze",
     "nl": "Kat",
     "no": "Katt",
-    "da": "Kat"
+    "da": "Kat",
+    "fr": "Chat"
   },
   "uiComponent": "sensor",
   "getable": true,
@@ -18,7 +19,8 @@
     "de": "Zu Hause",
     "nl": "Thuis",
     "no": "Hjemme",
-    "da": "Hjemme"
+    "da": "Hjemme",
+    "fr": "À la maison"
   },
   "insightsTitleFalse": {
     "en": "Out",
@@ -26,7 +28,8 @@
     "de": "Draußen",
     "nl": "Buiten",
     "no": "Ute",
-    "da": "Ude"
+    "da": "Ude",
+    "fr": "Dehors"
   },
   "icon": "/assets/capabilities/cat_home_ONLYCAT.svg"
 }

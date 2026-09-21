@@ -130,6 +130,15 @@ prints "three policies, Night is active, two rules the app cannot evaluate", not
   showing you what happened at the door. The try/catch stays anyway: it sits in `onInit`, and a
   throw there costs the whole device rather than one camera row. Cheap insurance, not a
   compatibility shim.
+- **`last_event_ONLYCAT` and `last_blocked_ONLYCAT` hold a timestamp and nothing else.** Both
+  used to carry the sentence — "Zorro went out · 14:32", "Zorro was turned away because she was
+  carrying something" — and on a sensor tile that is prose crammed into a value slot beside five
+  numbers, truncated. The sentence still exists, as the `action` and `reason` Flow tokens, where
+  a notification has a line for it. `formatWhen` adds the date once the moment is not today,
+  because "Last refusal" is the capability most likely to be days old and a bare "14:32" on one
+  from last Tuesday reads as this afternoon. A device upgraded from an older build keeps the old
+  prose until `dropLegacyEventText` clears it once, which also lets `backfillLastRefusal` — which
+  returns early on any non-empty value — refill it.
 - **A camera entry is keyed by its `id`, and its title is fixed at first registration.** Passing
   a new title for an id already registered is silently ignored, which is why two entries sharing
   the id `event` both read "Last event" however they were relabelled. **Never put changing text in
@@ -153,7 +162,9 @@ prints "three policies, Night is active, two rules the app cannot evaluate", not
   with it, nobody gets a prey alert about last Tuesday because their Homey rebooted.
 - **Homey substitutes `__name__`, not `{{name}}`.** The Mustache spelling is not an error: `homey.__()` does not recognise it and hands back the string untouched, so the tile and every push notification read "{{name}} was turned away" for months without a single failure anywhere. Tests now reject `{{` in any locale and require every language to carry the same placeholders, since a translation that drops one silently loses the cat's name.
 - **No battery capability, and that is not an omission.** The OnlyCat flap is USB-C powered. Battery level is the single most-requested missing feature on the competing SureFlap app's tile, and it simply does not apply here — do not add `measure_battery` chasing parity.
-- **Six languages at parity** — `en`, `sv`, `de`, `nl`, `no`, `da`. A test enforces it.
+- **Seven languages at parity** — `en`, `sv`, `de`, `nl`, `no`, `da`, `fr`. A test enforces it. The list is chosen, not inherited: `nl` and `de` are where OnlyCat's market and Homey's user base both concentrate, `fr` is an OnlyCat site language and Homey's fourth community, and the Nordics are Homey strongholds inside OnlyCat's EU shipping range. `da` is the weakest of the seven and the one most likely to rot unnoticed.
+- **Everything but English is machine-translated.** Nobody has proof-read any of it. Dutch and German matter most, because they are the biggest audiences and a clumsy string there reads as careless rather than merely incomplete.
+- **Three Flow tokens are English in every language.** `direction`, `classification` and `Triggered by` come from the hardcoded `CLASSIFICATION_NAMES` / `TRIGGER_SOURCE_NAMES` maps in `drivers/cat_flap/device.ts`, so a French user's Direction tag still reads `in`. Their `example` values in the flow compose file are deliberately left English to match. Localising them means routing those maps through `this.t()`.
 - **`platforms: ["local"]`.** Homey Pro only. Nothing technical stops this app running on Homey
   Cloud — it talks to nothing but OnlyCat's API, so it needs no local network, no discovery, no
   app settings page and no permissions, and it passed `validate --level publish` for both

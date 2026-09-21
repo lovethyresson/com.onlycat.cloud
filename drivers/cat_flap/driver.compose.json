@@ -5,7 +5,8 @@
     "de": "Katzenklappe",
     "nl": "Kattenluik",
     "no": "Katteluke",
-    "da": "Kattelem"
+    "da": "Kattelem",
+    "fr": "Chatière"
   },
   "class": "lock",
   "capabilities": [
@@ -31,7 +32,8 @@
         "de": "Aktivität an der Klappe",
         "nl": "Activiteit bij het luik",
         "no": "Aktivitet ved luken",
-        "da": "Aktivitet ved lemmen"
+        "da": "Aktivitet ved lemmen",
+        "fr": "Activité à la chatière"
       }
     },
     "locked": {
@@ -63,7 +65,8 @@
           "de": "Mit OnlyCat verbinden",
           "nl": "Verbinden met OnlyCat",
           "no": "Koble til OnlyCat",
-          "da": "Forbind til OnlyCat"
+          "da": "Forbind til OnlyCat",
+          "fr": "Connexion à OnlyCat"
         },
         "usernameLabel": {
           "en": "Key name",
@@ -71,7 +74,8 @@
           "de": "Schlüsselname",
           "nl": "Sleutelnaam",
           "no": "Nøkkelnavn",
-          "da": "Nøglenavn"
+          "da": "Nøglenavn",
+          "fr": "Nom de la clé"
         },
         "usernamePlaceholder": {
           "en": "Homey",
@@ -79,7 +83,8 @@
           "de": "Homey",
           "nl": "Homey",
           "no": "Homey",
-          "da": "Homey"
+          "da": "Homey",
+          "fr": "Homey"
         },
         "passwordLabel": {
           "en": "API key",
@@ -87,7 +92,8 @@
           "de": "API-Schlüssel",
           "nl": "API-sleutel",
           "no": "API-nøkkel",
-          "da": "API-nøgle"
+          "da": "API-nøgle",
+          "fr": "Clé API"
         },
         "passwordPlaceholder": {
           "en": "oc_live_…",
@@ -95,7 +101,8 @@
           "de": "oc_live_…",
           "nl": "oc_live_…",
           "no": "oc_live_…",
-          "da": "oc_live_…"
+          "da": "oc_live_…",
+          "fr": "oc_live_…"
         }
       }
     },
@@ -123,7 +130,8 @@
           "de": "Mit OnlyCat verbinden",
           "nl": "Verbinden met OnlyCat",
           "no": "Koble til OnlyCat",
-          "da": "Forbind til OnlyCat"
+          "da": "Forbind til OnlyCat",
+          "fr": "Connexion à OnlyCat"
         },
         "usernameLabel": {
           "en": "Key name",
@@ -131,7 +139,8 @@
           "de": "Schlüsselname",
           "nl": "Sleutelnaam",
           "no": "Nøkkelnavn",
-          "da": "Nøglenavn"
+          "da": "Nøglenavn",
+          "fr": "Nom de la clé"
         },
         "usernamePlaceholder": {
           "en": "Homey",
@@ -139,7 +148,8 @@
           "de": "Homey",
           "nl": "Homey",
           "no": "Homey",
-          "da": "Homey"
+          "da": "Homey",
+          "fr": "Homey"
         },
         "passwordLabel": {
           "en": "API key",
@@ -147,7 +157,8 @@
           "de": "API-Schlüssel",
           "nl": "API-sleutel",
           "no": "API-nøkkel",
-          "da": "API-nøgle"
+          "da": "API-nøgle",
+          "fr": "Clé API"
         },
         "passwordPlaceholder": {
           "en": "oc_live_…",
@@ -155,7 +166,8 @@
           "de": "oc_live_…",
           "nl": "oc_live_…",
           "no": "oc_live_…",
-          "da": "oc_live_…"
+          "da": "oc_live_…",
+          "fr": "oc_live_…"
         }
       }
     }
@@ -169,7 +181,8 @@
         "de": "Klappe",
         "nl": "Luik",
         "no": "Luke",
-        "da": "Lem"
+        "da": "Lem",
+        "fr": "Chatière"
       },
       "children": [
         {
@@ -181,7 +194,8 @@
             "de": "Geräte-ID",
             "nl": "Apparaat-ID",
             "no": "Enhets-ID",
-            "da": "Enheds-ID"
+            "da": "Enheds-ID",
+            "fr": "ID de l'appareil"
           },
           "value": ""
         },
@@ -194,7 +208,8 @@
             "de": "MAC-Adresse",
             "nl": "MAC-adres",
             "no": "MAC-adresse",
-            "da": "MAC-adresse"
+            "da": "MAC-adresse",
+            "fr": "Adresse MAC"
           },
           "value": ""
         },
@@ -207,7 +222,8 @@
             "de": "Zeitzone",
             "nl": "Tijdzone",
             "no": "Tidssone",
-            "da": "Tidszone"
+            "da": "Tidszone",
+            "fr": "Fuseau horaire"
           },
           "value": ""
         },
@@ -220,7 +236,8 @@
             "de": "Firmware-Kanal",
             "nl": "Firmwarekanaal",
             "no": "Fastvarekanal",
-            "da": "Firmwarekanal"
+            "da": "Firmwarekanal",
+            "fr": "Canal du micrologiciel"
           },
           "value": ""
         },
@@ -233,7 +250,8 @@
             "de": "API-Schlüssel",
             "nl": "API-sleutel",
             "no": "API-nøkkel",
-            "da": "API-nøgle"
+            "da": "API-nøgle",
+            "fr": "Clé API"
           },
           "value": ""
         }
@@ -247,7 +265,8 @@
         "de": "Katzen",
         "nl": "Katten",
         "no": "Katter",
-        "da": "Katte"
+        "da": "Katte",
+        "fr": "Chats"
       },
       "children": [
         {
@@ -259,7 +278,8 @@
             "de": "Verfolgt",
             "nl": "Gevolgd",
             "no": "Fulgt",
-            "da": "Fulgt"
+            "da": "Fulgt",
+            "fr": "Suivis"
           },
           "value": ""
         }
@@ -273,7 +293,8 @@
         "de": "Erweitert",
         "nl": "Geavanceerd",
         "no": "Avansert",
-        "da": "Avanceret"
+        "da": "Avanceret",
+        "fr": "Avancé"
       },
       "children": [
         {
@@ -286,7 +307,8 @@
             "de": "Nicht gesehene Ausflüge",
             "nl": "Ongeziene uitstapjes",
             "no": "Usette turer",
-            "da": "Usete ture"
+            "da": "Usete ture",
+            "fr": "Sorties non observées"
           },
           "hint": {
             "en": "A cat can leave through a window or be carried out, and the flap sees none of it — so sometimes a cat comes back in when the app thought it was already indoors. It must have been out; the app just does not know for how long. This decides what to assume for \"Outside today\".",
@@ -294,7 +316,8 @@
             "de": "Eine Katze kann durch ein Fenster verschwinden oder hinausgetragen werden, und die Klappe sieht davon nichts — manchmal kommt eine Katze also herein, obwohl die App sie drinnen wähnte. Draußen war sie in jedem Fall; nur wie lange, weiß die App nicht. Dies legt fest, was für \"Heute draußen\" angenommen wird.",
             "nl": "Een kat kan via een raam weggaan of naar buiten gedragen worden, en het luik ziet daar niets van — soms komt een kat dus binnen terwijl de app dacht dat hij al binnen was. Buiten is hij hoe dan ook geweest; alleen niet hoe lang. Dit bepaalt wat er voor \"Vandaag buiten\" wordt aangenomen.",
             "no": "En katt kan gå ut gjennom et vindu eller bæres ut, og luken ser ingenting av det — så noen ganger kommer en katt inn når appen trodde den allerede var inne. Ute har den vært uansett; appen vet bare ikke hvor lenge. Dette avgjør hva som antas for \"Ute i dag\".",
-            "da": "En kat kan gå ud gennem et vindue eller blive båret ud, og lemmen ser intet af det — så nogle gange kommer en kat ind, når appen troede, den allerede var inde. Ude har den været under alle omstændigheder; appen ved bare ikke hvor længe. Dette afgør, hvad der antages for \"Ude i dag\"."
+            "da": "En kat kan gå ud gennem et vindue eller blive båret ud, og lemmen ser intet af det — så nogle gange kommer en kat ind, når appen troede, den allerede var inde. Ude har den været under alle omstændigheder; appen ved bare ikke hvor længe. Dette afgør, hvad der antages for \"Ude i dag\".",
+            "fr": "Un chat peut sortir par une fenêtre ou être porté dehors, et la chatière n'en voit rien — il arrive donc qu'un chat rentre alors que l'app le croyait déjà à l'intérieur. Il était forcément dehors ; l'app ignore simplement depuis combien de temps. Ce réglage décide quoi supposer pour « Dehors aujourd'hui »."
           },
           "values": [
             {
@@ -305,7 +328,8 @@
                 "de": "Nichts zählen",
                 "nl": "Niets meetellen",
                 "no": "Ikke tell noe",
-                "da": "Tæl ingenting"
+                "da": "Tæl ingenting",
+                "fr": "Ne rien compter"
               }
             },
             {
@@ -316,7 +340,8 @@
                 "de": "Die Hälfte der unbekannten Zeit annehmen",
                 "nl": "Ga uit van de helft van de onbekende tijd",
                 "no": "Anta halvparten av den ukjente tiden",
-                "da": "Antag halvdelen af den ukendte tid"
+                "da": "Antag halvdelen af den ukendte tid",
+                "fr": "Compter la moitié du temps inconnu"
               }
             },
             {
@@ -327,7 +352,8 @@
                 "de": "Die gesamte Zeit annehmen",
                 "nl": "Ga uit van de hele tijd",
                 "no": "Anta hele tiden",
-                "da": "Antag hele tiden"
+                "da": "Antag hele tiden",
+                "fr": "Compter tout ce temps"
               }
             }
           ]
@@ -342,7 +368,8 @@
             "de": "Debug-Protokollierung",
             "nl": "Debug-logging",
             "no": "Feilsøkingslogg",
-            "da": "Fejlfindingslog"
+            "da": "Fejlfindingslog",
+            "fr": "Journal de débogage"
           },
           "hint": {
             "en": "Writes every gateway message and flap event to the app log. Leave this off: it is one line per cat, per event. Turn it on before reproducing a problem, then send the log from Settings → Apps → OnlyCat.",
@@ -350,7 +377,8 @@
             "de": "Schreibt jede Gateway-Nachricht und jedes Klappen-Ereignis ins App-Protokoll. Lass es aus: es ist eine Zeile pro Katze und Ereignis. Schalte es ein, bevor du ein Problem reproduzierst, und sende dann das Protokoll aus Einstellungen → Apps → OnlyCat.",
             "nl": "Schrijft elk gateway-bericht en elke luikgebeurtenis naar het app-logboek. Laat dit uit: het is één regel per kat, per gebeurtenis. Zet het aan voordat je een probleem reproduceert en stuur daarna het logboek via Instellingen → Apps → OnlyCat.",
             "no": "Skriver hver gateway-melding og lukehendelse til apploggen. La den stå av: det blir én linje per katt og hendelse. Slå den på før du gjenskaper et problem, og send deretter loggen fra Innstillinger → Apper → OnlyCat.",
-            "da": "Skriver hver gateway-besked og lemhændelse til applogget. Lad den være slået fra: det er én linje pr. kat pr. hændelse. Slå den til, før du genskaber et problem, og send derefter logget fra Indstillinger → Apps → OnlyCat."
+            "da": "Skriver hver gateway-besked og lemhændelse til applogget. Lad den være slået fra: det er én linje pr. kat pr. hændelse. Slå den til, før du genskaber et problem, og send derefter logget fra Indstillinger → Apps → OnlyCat.",
+            "fr": "Écrit chaque message de la passerelle et chaque événement de la chatière dans le journal de l'app. Laissez ce réglage désactivé : cela fait une ligne par chat et par événement. Activez-le avant de reproduire un problème, puis envoyez le journal depuis Réglages → Apps → OnlyCat."
           }
         }
       ]

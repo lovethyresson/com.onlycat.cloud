@@ -473,13 +473,13 @@ describe('the flow card surface', () => {
 });
 
 describe('i18n', () => {
-  const locales = ['en', 'sv', 'de', 'nl', 'no', 'da'];
+  const locales = ['en', 'sv', 'de', 'nl', 'no', 'da', 'fr'];
 
   const flatten = (object: any, prefix = ''): string[] => Object.entries(object)
     .flatMap(([key, value]) => (value && typeof value === 'object'
       ? flatten(value, `${prefix}${key}.`) : [`${prefix}${key}`]));
 
-  it('has the same keys in all six languages', () => {
+  it('has the same keys in every language', () => {
     const base = flatten(require('../.homeycompose/locales/en.json')).sort();
     for (const locale of locales) {
       const keys = flatten(require(`../.homeycompose/locales/${locale}.json`)).sort();
@@ -760,7 +760,7 @@ describe('the app manifest', () => {
 
   it('is findable in the App Store', () => {
     assert.ok(manifest.tags, 'no search tags');
-    for (const locale of ['en', 'sv', 'de', 'nl', 'no', 'da']) {
+    for (const locale of ['en', 'sv', 'de', 'nl', 'no', 'da', 'fr']) {
       assert.ok(manifest.tags[locale]?.length, `no tags for ${locale}`);
       assert.ok(manifest.tags[locale].includes('OnlyCat'),
         `${locale} tags omit the brand name, which is what people will search for`);

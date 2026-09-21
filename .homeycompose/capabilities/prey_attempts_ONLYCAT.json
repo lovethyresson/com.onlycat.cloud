@@ -6,7 +6,8 @@
     "de": "Beuteversuche",
     "nl": "Prooipogingen",
     "no": "Bytteforsøk",
-    "da": "Bytteforsøg"
+    "da": "Bytteforsøg",
+    "fr": "Tentatives avec proie"
   },
   "uiComponent": "sensor",
   "getable": true,
