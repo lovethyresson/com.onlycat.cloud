@@ -1,6 +1,6 @@
 # OnlyCat for Homey
 
-**Your cat flap in Homey — who came in, who was turned away, and why.**
+**Who came in, who was turned away, and why.**
 
 A [Homey](https://homey.app/) app for the [OnlyCat](https://www.onlycat.com/) smart cat flap. One
 Homey device per flap, with every cat on it, and a snapshot on every Flow card.

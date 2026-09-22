@@ -9,7 +9,7 @@ They get conflated, so to be explicit:
 | `assets/icon.svg` | The **app** icon | OnlyCat's brand mark |
 | `assets/images/*.png` | The **app store** images (250×175, 500×350, 1000×700) | Lifestyle photograph |
 | `drivers/cat_flap/assets/icon.svg` | The **device** icon, on the tile | Line drawing of the flap, three-quarter view, `dev/make-device-icon.py` |
-| `drivers/cat_flap/assets/images/*.png` | The **driver** images (75×75, 500×500, 1000×1000) | Lifestyle photograph, cropped on the product |
+| `drivers/cat_flap/assets/images/*.png` | The **driver** images (75×75, 500×500, 1000×1000) | Cut-out of the flap over white, `dev/make-driver-images.py` |
 
 v0.1.0 used the brand mark for all four, which is wrong twice over: a logo on a device tile reads
 as a sticker among Homey's outlined hardware icons, and a flat logo is not a driver image at all.
@@ -25,21 +25,55 @@ python3 dev/make-device-icon.py /tmp/preview.png
 The preview exists because there is no SVG renderer on this machine, and an icon nobody looks at
 is how both earlier asset mistakes shipped.
 
-### The photographs
+### The app images
 
-Both sets of images are crops of OnlyCat's own `hero-3000.webp`
-(`https://www.onlycat.com/wp-content/themes/onlycat/assets/home/hero-3000.webp`, 3000×1751 —
-the flap on a dark door at dusk, with a cat asleep in a bed beside it). Driver images take a
-1300×1300 square centred on the flap; app images take a 2501×1751 landscape crop that keeps both
-the flap and the cat in frame.
+A 2501×1751 landscape crop of OnlyCat's own `hero-3000.webp`
+(`https://www.onlycat.com/wp-content/themes/onlycat/assets/home/hero-3000.webp`, 3000×1751 — the
+flap on a dark door at dusk, with a cat asleep in a bed beside it), keeping both the flap and the
+cat in frame.
 
 ```bash
-sips --cropToHeightWidth 1300 1300 --cropOffset 304 1228 hero-3000.png --out drv.png
-sips --cropToHeightWidth 1751 2501 --cropOffset 0 628   hero-3000.png --out app.png
+sips --cropToHeightWidth 1751 2501 --cropOffset 0 628 hero-3000.png --out app.png
 ```
 
 Athom encourage exactly this: *"Use brand images if this is possible… Lifestyle images and brand
 images are great examples and are strongly encouraged."*
+
+### The driver images
+
+**A driver image has a different job from an app image.** The app image sells the app; the driver
+image identifies the hardware, on white, the way every other driver in the store does. This was a
+1300×1300 square of the same hero photograph the app image is a crop of, and App Store review
+rejected it: *"Your driver image is identical to your app image, and does not have a white
+background. Please provide a distinct driver image with a white background, ideally showing a photo
+of the actual cat flap device."* Two crops of one photograph are not byte-identical, and that is
+beside the point — they look the same.
+
+The source is now `dev/assets/onlycat-flap.png`, 904×1024 RGBA: the flap with a real alpha channel,
+so `dev/make-driver-images.py` has nothing to key or trace. Composite over white, centre on a
+square canvas with a 7% margin, box-downscale to the three sizes.
+
+```bash
+python3 dev/make-driver-images.py
+```
+
+It is vendored rather than fetched because, unlike OnlyCat's published photographs, it is not at a
+URL the script could curl.
+
+**Nothing OnlyCat publishes would have done.** Their site serves no PNGs at all — every image is
+WebP, and every one is plain lossy `VP8` rather than the `VP8X`-with-alpha or `VP8L` that a cut-out
+would need. The `/specs/` turntable is `turntable-1080.mp4`, and MP4 carries no alpha. The only
+vectors are `Horizontal.svg`, which is the brand mark, and three 166×164 `manual/dimensions-*.svg`
+slices, which are the little line drawings in the specs table. Their best studio asset is
+`assets/specs/turntable-poster-1080.webp`, a clean 3D render — on a grey gradient.
+
+**So do not reach for automatic keying if this ever needs redoing.** Both candidate sources defeat
+it, for opposite reasons. In the product photograph the flap is white on a white table, which
+leaves almost no gradient to find, while the one strong edge in the frame is a wooden window sill
+crossing behind it — and showing again *through* the transparent door. In the render, the right-hand
+face reads 207 against a 203 backdrop: a four-level step the eye sees and no threshold does. Both
+were cut by tracing a silhouette polygon against a pixel grid, which worked, and which the alpha
+channel makes unnecessary.
 
 ## Where the brand mark comes from
 
@@ -102,3 +136,11 @@ into "sanctioned" for the cost of one message, and they are demonstrably approac
 
 Using the head mark rather than the ®-bearing wordmark is the deliberately lower-risk choice in the
 meantime.
+
+**`dev/assets/onlycat-flap.png` is a weaker position than the rest, and deliberately so.** It is
+derived from the hero shot on `petflapsuk.com` — a retailer's product photograph, background
+removed — and not from anything OnlyCat published. Homey's own reviewer linked that exact image as
+an example of what they wanted, which says what Athom will accept and is still not a licence from
+whoever owns the photograph. It is the one asset here not traceable to OnlyCat's own artwork. Ask
+about it in the same message that asks about the mark, and if the answer is awkward, the fallback
+is the turntable render cut out by hand, which at least comes from OnlyCat.

@@ -1,6 +1,6 @@
 {
   "id": "com.onlycat.cloud",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "compatibility": ">=12.7.0",
   "sdk": 3,
   "platforms": [
@@ -10,13 +10,13 @@
     "en": "OnlyCat"
   },
   "description": {
-    "en": "Your cat flap in Homey — who came in, who was turned away, and why",
-    "sv": "Kattluckan i Homey — vem kom in, vem nekades och varför",
-    "de": "Deine Katzenklappe in Homey — wer hereinkam, wer abgewiesen wurde und warum",
-    "nl": "Je kattenluik in Homey — wie er binnenkwam, wie werd geweigerd en waarom",
-    "no": "Katteluken i Homey — hvem kom inn, hvem ble avvist og hvorfor",
-    "da": "Din kattelem i Homey — hvem kom ind, hvem blev afvist og hvorfor",
-    "fr": "Votre chatière dans Homey — qui est entré, qui a été refusé, et pourquoi"
+    "en": "Who came in, who was turned away, and why.",
+    "sv": "Vem kom in, vem nekades och varför.",
+    "de": "Wer hereinkam, wer abgewiesen wurde und warum.",
+    "nl": "Wie er binnenkwam, wie werd geweigerd en waarom.",
+    "no": "Hvem kom inn, hvem ble avvist og hvorfor.",
+    "da": "Hvem kom ind, hvem blev afvist og hvorfor.",
+    "fr": "Qui est entré, qui a été refusé, et pourquoi."
   },
   "tags": {
     "en": [

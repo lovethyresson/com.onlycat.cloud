@@ -1,11 +1,11 @@
 {
-  "0.1.0": {
-    "en": "First test version.",
-    "sv": "Första testversionen.",
-    "de": "Erste Testversion.",
-    "nl": "Eerste testversie.",
-    "no": "Første testversjon.",
-    "da": "Første testversion.",
-    "fr": "Première version de test."
+  "1.0.0": {
+    "en": "First release.",
+    "sv": "Första versionen.",
+    "de": "Erste Version.",
+    "nl": "Eerste versie.",
+    "no": "Første versjon.",
+    "da": "Første version.",
+    "fr": "Première version."
   }
 }

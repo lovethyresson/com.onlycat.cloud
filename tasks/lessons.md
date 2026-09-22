@@ -233,3 +233,33 @@ window did.
 - Never write an unverified behaviour into a comment as though observed. Say "assumed" or find
   out. `docs/` and a test are for what was checked; a comment asserting a platform fact is a
   claim the next reader will trust.
+
+## Survey the sources before building the pipeline
+
+**2026-09-22, v1.0.0.** App Store review wanted the driver image to show the flap on white. I took
+the first plausible source — OnlyCat's product photograph, shot on a white table — and spent the
+next hour on it: flood fills that leaked, a modelled backdrop gradient, edge thresholds at five
+settings, and finally a silhouette polygon traced by hand against a pixel grid. It worked. Then:
+*"that driver image wasn't great. Can we look at options? Search for transparent version."* The
+answer was a cut-out with a real alpha channel, and the whole apparatus became one composite-over-
+white loop.
+
+Two separate failures, and the second is the expensive one. I never enumerated the candidate
+sources — the store photographs, the turntable render, the manual vectors — before committing to
+one; I found the render only when asked for options, and it was better than what I had already
+finished. And I never asked whether the hard part could be skipped. "Does an asset exist that
+already has the thing I am about to reconstruct?" costs one search. Reconstructing an alpha channel
+from a white-on-white photograph costs an hour and is worse.
+
+**Rules:**
+- **Enumerate the available sources before picking one**, and show them. A survey is cheap; a
+  pipeline built on the first candidate is not, and sunk cost then argues for keeping it.
+- **Before writing an algorithm to recover information, look for the information.** Alpha channels,
+  vector originals, press kits, raw exports. Segmentation, OCR and colour keying are all
+  reconstruction of something that existed upstream.
+- **When the work turns into a fight — five thresholds, three approaches, none clean — that is the
+  signal to go back to the input**, not to try a sixth threshold. Both cut-outs here ended in a
+  hand-traced polygon, which should have been read as "the input is wrong" rather than "tracing
+  works".
+- Show a rough option early. An hour of polish on an unchosen direction is an hour spent on the
+  wrong axis.
