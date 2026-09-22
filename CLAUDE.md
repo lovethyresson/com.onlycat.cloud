@@ -75,6 +75,17 @@ prints "three policies, Night is active, two rules the app cannot evaluate", not
   every manually triggered event.
 - **`idleLock` defaults to `true`**, per `TransitPolicy.ts`. The reference implementation defaults
   it to `false`, which is fail-open on a lock.
+- **An observation that restates where a cat already was is not a transit, and must charge
+  nothing.** `refreshCatLocations()` runs on every connect and re-asserts each cat's location from
+  `getRfidLastSeenByDevice`. It used to hand that to the same funnel a flap transit goes through,
+  dated `Date.now()` — so "Zorro is inside", when we already thought he was inside, was read as a
+  cat coming in through the flap, which proves a trip we did not see, which credited half the gap
+  since we last saw him. On a live flap the tile read **5.4 hours on a day Homey's own `cat_home`
+  Insights log put at 2.8**, jumping +2.0 in one step at the moment the app restarted. Two things
+  fix it and both matter: the observation is dated by `entry.eventTimestamp`, and it is tagged
+  `Evidence.restatement` so the unseen-trip arithmetic cannot fire. The general rule: **before
+  charging an unseen trip, ask whether anything actually happened.** A query answering "where is
+  this cat" never means "something just happened".
 - **`BREACH` counts as a transit; `PEEK` and `DENY` leave the cat where it was.** Use
   `locationFromSubevent`, which is OnlyCat's own function. Do not re-derive it.
 - **A summary is provisional until `processedFrameCount === frameCount`** and genuinely changes — a

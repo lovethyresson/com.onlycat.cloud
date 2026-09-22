@@ -1006,6 +1006,42 @@ describe('unseen trips', () => {
     assert.equal(hoursToday(state, midnight + 2 * H), 2, 'counted time from before midnight');
   });
 
+  it('does not invent a trip when a reconnect restates where the cat already was', () => {
+    // The bug, with the numbers it produced on a live flap: Zorro came in at 06:02, the socket
+    // reconnected at 10:19, and "Outside today" jumped +2.0h in a single step while he was
+    // demonstrably indoors — 5.4 hours on a day Homey's own presence log put at 2.8.
+    let state = applyLocation(emptyState('2026-09-20'), true, noon - 2 * H);
+    state = applyLocation(state, false, noon);
+    assert.equal(hoursToday(state, noon), 2, 'two hours actually spent outside');
+
+    const restated = applyLocation(state, false, noon + 4 * H,
+      { fraction: unseenFraction('half', 'restatement') });
+    assert.equal(hoursToday(restated, noon + 4 * H), 2,
+      'a reconnect credited hours the cat did not spend outside');
+
+    // The same observation read as a transition is the old behaviour, and is what inflated it.
+    const asTransition = applyLocation(state, false, noon + 4 * H,
+      { fraction: unseenFraction('half') });
+    assert.equal(hoursToday(asTransition, noon + 4 * H), 4);
+  });
+
+  it('leaves a running total alone when a reconnect restates that the cat is still out', () => {
+    // The mirror image: a restatement must not take time away either.
+    const out = applyLocation(emptyState('2026-09-20'), true, noon);
+    const restated = applyLocation(out, true, noon + 4 * H,
+      { fraction: unseenFraction('half', 'restatement') });
+    assert.equal(hoursToday(restated, noon + 4 * H), 4, 'a reconnect took two hours off the total');
+  });
+
+  it('charges nothing for a restatement whatever the setting says', () => {
+    // The setting answers "how much of an unseen gap to charge". A restatement never proves a
+    // gap happened, so there is nothing for it to answer.
+    assert.equal(unseenFraction('full', 'restatement'), 0);
+    assert.equal(unseenFraction('half', 'restatement'), 0);
+    assert.equal(unseenFraction('ignore', 'restatement'), 0);
+    assert.equal(unseenFraction('half', 'transition'), 0.5, 'a transition must still honour it');
+  });
+
   it('defaults to half on a missing or nonsense setting', () => {
     assert.equal(unseenFraction('half'), 0.5);
     assert.equal(unseenFraction('ignore'), 0);

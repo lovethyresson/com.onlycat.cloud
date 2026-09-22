@@ -34,6 +34,10 @@
  * The maths is symmetric: the unaccounted state occupies `fraction × gap`, added when that state
  * was "outside" and subtracted when it was "inside".
  *
+ * Only a **transition** can prove an unseen trip. An observation that merely restates where a cat
+ * already was proves nothing and must charge nothing — see `Evidence`, which is the distinction
+ * this module went two versions without.
+ *
  * ## Why it is not a stopwatch
  *
  * State is `(since, accumulatedToday, lastSeen)` and the live value is computed on read, rather
@@ -52,7 +56,30 @@ export const UNSEEN_FRACTION: Record<UnseenTrips, number> = {
   full: 1,
 };
 
-export function unseenFraction(setting: string | null | undefined): number {
+/**
+ * What an observation actually proves.
+ *
+ * A **transition** happened at a known moment: a cat used the flap, or the owner looked at it and
+ * said where it is. When it contradicts what we believed, a trip we did not see must have
+ * happened in between, and `UnseenTrips` decides how much of the gap to charge.
+ *
+ * A **restatement** is the same fact told again. The connect-time refresh reads
+ * `getRfidLastSeenByDevice`, which answers "where is this cat" — never "something just happened".
+ * Agreeing with what we already believed proves nothing, so it must charge nothing.
+ *
+ * Conflating the two cost two hours on a live flap. Every reconnect re-asserted "Zorro is
+ * inside"; the model read that as a cat coming in through the flap when we thought it was already
+ * in, concluded it must have slipped out unseen, and credited half the gap since we last saw it.
+ * The tile read 5.4 hours on a day Homey's own presence log put at 2.8, jumping +2.0 in a single
+ * step at the moment the app restarted.
+ */
+export type Evidence = 'transition' | 'restatement';
+
+export function unseenFraction(
+  setting: string | null | undefined,
+  evidence: Evidence = 'transition',
+): number {
+  if (evidence === 'restatement') return 0;
   return UNSEEN_FRACTION[(setting as UnseenTrips)] ?? UNSEEN_FRACTION.half;
 }
 

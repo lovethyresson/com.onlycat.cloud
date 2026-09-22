@@ -14,7 +14,7 @@ import {
   OnlyCatEventSummary, OnlyCatSubEvent, effectiveClassification, macAddress,
 } from '../../lib/onlycat/models';
 import {
-  OutsideState, applyLocation, emptyState, hoursToday, localDay, rollOver, unseenFraction,
+  Evidence, OutsideState, applyLocation, emptyState, hoursToday, localDay, rollOver, unseenFraction,
 } from '../../lib/outside';
 import { PolicyOutcome, evaluatePolicy, minutesOfDayIn } from '../../lib/policy';
 import { explainRefusal } from '../../lib/reason';
@@ -617,38 +617,55 @@ module.exports = class CatFlapDevice extends Homey.Device {
      * Record where a cat is, and keep its "outside today" clock honest.
      *
      * The single funnel for every source of truth about a cat's location — a flap transit, the
-     * backfill at startup, and the owner's manual override — so none of them can update the
+     * connect-time refresh, and the owner's manual override — so none of them can update the
      * presence capability while forgetting the clock.
+     *
+     * Two things the funnel has to be told, because getting either wrong silently invents hours:
+     *
+     * - **`observedAt` is when the observation happened, which is not always now.** The
+     *   connect-time refresh reports an event that can be hours old. It is clamped into today:
+     *   only today is counted, and a timestamp from yesterday would otherwise roll the day
+     *   backwards and wipe the total. The day itself always comes from the clock, never from the
+     *   observation.
+     * - **`evidence` says whether anything actually happened.** See `Evidence` in `lib/outside`.
      */
-    private async setCatState(rfid: string, home: boolean | null, at = Date.now()): Promise<void> {
+    private async setCatState(
+      rfid: string,
+      home: boolean | null,
+      observedAt = Date.now(),
+      evidence: Evidence = 'transition',
+    ): Promise<void> {
       const capability = capabilityForCat(rfid);
       if (this.hasCapability(capability)) {
         await this.setCapabilityValue(capability, home).catch(() => {});
       }
 
-      const day = localDay(this.timeZone, new Date(at));
-      const dayStart = this.localMidnight(at);
+      const now = Date.now();
+      const day = localDay(this.timeZone, new Date(now));
+      const dayStart = this.localMidnight(now);
+      const at = Math.min(Math.max(observedAt, dayStart), now);
       const current = this.outside[rfid] ?? emptyState(day);
       const outside = home === null ? null : !home;
 
       const before = this.outside[rfid];
       this.outside[rfid] = applyLocation(
-        rollOver(current, day, at, dayStart),
+        rollOver(current, day, now, dayStart),
         outside,
         at,
-        { fraction: unseenFraction(this.getSetting('unseen_trips')), dayStart },
+        { fraction: unseenFraction(this.getSetting('unseen_trips'), evidence), dayStart },
       );
 
       // Worth a line when it happens: it means the cat used a route the flap cannot see, and it
       // is the one place "Outside today" stops being a measurement and starts being an estimate.
-      if (before && (before.since !== null) === (outside === true)) {
+      // A restatement can never produce one — it is the same fact told twice, not a trip.
+      if (before && evidence === 'transition' && (before.since !== null) === (outside === true)) {
         this.logger.info(`${this.nameFor(rfid)}: unseen trip — it was ${outside ? 'in' : 'out'}`
           + ' at some point without using the flap'
           + ` (assuming: ${this.getSetting('unseen_trips') ?? 'half'})`);
       }
 
       await this.setStoreValue('outside', this.outside).catch(() => {});
-      await this.publishOutside(rfid, at);
+      await this.publishOutside(rfid, now);
       await this.updateCatsHome();
     }
 
@@ -799,7 +816,17 @@ module.exports = class CatFlapDevice extends Homey.Device {
           if (!entry) continue;
           const location = initialLocation(entry);
           if (location === null) continue;
-          await this.setCatState(cat.rfidCode, location);
+
+          // Dated by the event that established it, not by the moment we asked — and marked for
+          // what it is. This runs on every connect, so `Date.now()` and a default `transition`
+          // made each reconnect look like a cat coming through the flap.
+          const observed = Date.parse(entry.eventTimestamp ?? '');
+          await this.setCatState(
+            cat.rfidCode,
+            location,
+            Number.isFinite(observed) ? observed : Date.now(),
+            'restatement',
+          );
         }
       } catch (error: any) {
         this.logger.error('cat locations refresh failed:', error?.message ?? error);
