@@ -468,8 +468,8 @@ module.exports = class CatFlapDevice extends Homey.Device {
       // never touch availability: the app is still connected, still receiving that flap's events,
       // and still able to run every Flow — greying the tile out says "the OnlyCat app is broken"
       // when what is broken is the flap's own uplink, which the alarm already reports.
-      // A tester's diagnostic showed the cost: OnlyCat reported CONNECTION_LOST at 16:02 and
-      // then never pushed a recovery, so the device sat unavailable for an hour while events 105
+      // A tester's diagnostic against 1.0.0 showed the cost: OnlyCat reported CONNECTION_LOST at
+      // 16:02 and then never pushed a recovery, so the device sat unavailable for an hour while events 105
       // and 106 arrived, were classified, and updated every capability underneath a dead-looking
       // tile. Only an app restart cleared it. Availability is written by `onReady`, `onDown` and
       // `onUnauthorized` — the gateway's own lifecycle — and by nothing here.

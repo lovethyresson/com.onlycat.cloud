@@ -297,7 +297,7 @@ from a white-on-white photograph costs an hour and is worse.
 
 ## A one-way rule about two signals leaves the other way open
 
-**2026-09-22, v1.0.0.** The repo had a hard-won, explicitly documented rule: `onDown` — our socket
+**2026-09-22, v1.0.1.** The repo had a hard-won, explicitly documented rule: `onDown` — our socket
 dropping — must never write `alarm_connectivity`, because that capability means *the flap* is
 offline. It was written up in CLAUDE.md, with the cost that bought it: two indistinguishable
 signals on one tile and an alarm Flow firing on every reconnect blip. "One writer. Do not add a

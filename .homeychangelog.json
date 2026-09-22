@@ -1,4 +1,13 @@
 {
+  "1.0.1": {
+    "en": "Connection hardening. A flap that OnlyCat reports as offline no longer greys out the device in Homey — the offline alarm still tells you, and events, Flows and the camera keep working.",
+    "sv": "Stabilare anslutning. En lucka som OnlyCat rapporterar som frånkopplad gör inte längre enheten grå i Homey — larmet meddelar dig fortfarande, och händelser, flöden och kameran fungerar som vanligt.",
+    "de": "Stabilere Verbindung. Eine Klappe, die OnlyCat als offline meldet, macht das Gerät in Homey nicht mehr grau — der Alarm meldet sich weiterhin, und Ereignisse, Flows und die Kamera laufen weiter.",
+    "nl": "Stabielere verbinding. Een luik dat OnlyCat als offline meldt, maakt het apparaat in Homey niet langer grijs — het alarm waarschuwt je nog steeds, en gebeurtenissen, Flows en de camera blijven werken.",
+    "no": "Stabilere tilkobling. En luke som OnlyCat rapporterer som frakoblet, gjør ikke lenger enheten grå i Homey — alarmen varsler deg fortsatt, og hendelser, flyter og kameraet fortsetter å virke.",
+    "da": "Mere stabil forbindelse. En lem, som OnlyCat melder som offline, gør ikke længere enheden grå i Homey — alarmen giver dig stadig besked, og hændelser, Flows og kameraet bliver ved med at virke.",
+    "fr": "Connexion plus robuste. Une chatière signalée hors ligne par OnlyCat ne grise plus l'appareil dans Homey — l'alarme vous prévient toujours, et les événements, les Flows et la caméra continuent de fonctionner."
+  },
   "1.0.0": {
     "en": "First release.",
     "sv": "Första versionen.",

@@ -119,7 +119,7 @@ prints "three policies, Night is active, two rules the app cannot evaluate", not
   at the top of `refresh()` flickered a genuinely offline flap off and on, two spurious triggers,
   every reconnect. One writer. Do not add a second.
 - **Availability is our socket, and the converse holds just as hard**: `refreshDevice()` must not
-  mark the device unavailable because the *flap* is offline. It did once, and a tester's
+  mark the device unavailable because the *flap* is offline. It did in 1.0.0, and a tester's
   diagnostic showed the price — OnlyCat reported `CONNECTION_LOST`, never pushed a recovery, and
   the tile sat greyed out for an hour while events 105 and 106 arrived through a healthy socket
   and updated every capability underneath it. Only a restart cleared it, so the owner reported

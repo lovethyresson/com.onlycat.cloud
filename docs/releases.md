@@ -5,32 +5,12 @@ wording lives in `.homeychangelog.json`; the short version is in the [README](..
 
 | Version | Highlights |
 |---|---|
+| **1.0.1** | Connection hardening. A flap OnlyCat reports as offline no longer marks the Homey device unavailable. `alarm_connectivity` says the flap is down, availability says our socket is down, and neither writes the other's signal any more. |
 | **1.0.0** | First release. One Homey device per flap (`class: "lock"`, official `locked` made read-only via `capabilitiesOptions`, policy picker owning the quick-action slot). Cats are runtime capability instances rather than devices. Full event pipeline — `deviceEventUpdate` → `getEvent` + `getEventSummary` — firing Flow cards on the final summary only, since OnlyCat revises a TRANSIT to a PEEK mid-event and Homey cannot un-fire a trigger. Lock state and refusal reasons are both computed from a local re-implementation of the flap's transit-policy engine, which reports an un-confident result rather than naming a cause it cannot stand behind. Image Flow token on every event card. Seven languages. |
 
-## 1.0.0 notes
+## 1.0.1 notes
 
-**Two bugs avoided, both confirmed in the reference implementation** (`OnlyCatAI/onlycat-home-assistant`):
-
-- `EventTriggerSource.Manual` and `EventClassification.Unknown` are both `0`, and a truthiness
-  check drops them. There it makes every manually triggered event lose its trigger source and then
-  dereference null.
-- `idleLock` defaults to `true` server-side (`TransitPolicy.ts`) and to `false` there. A policy
-  omitting the field therefore reads as unlocked in the reference client and locked on the real
-  flap — fail-open, on a lock.
-
-Presence also follows OnlyCat's own `getRfidLastSeenLocationFromSubevent` rather than a re-derivation:
-`BREACH` is a transit, `PEEK` and `DENY` leave the cat where it was. The reference implementation
-treats everything that is not `TRANSIT` as the inverse, which marks a cat that forced its way in as
-being outside.
-
-**One bug found by our own tests, in our own code.** The reconnect integration test failed because
-socket.io does not auto-reconnect after `io server disconnect` — `reconnection: true` covers
-transport failures only. OnlyCat's models document `disconnectReason: "SERVER_INITIATED_DISCONNECT"`,
-so a deploy on their side would have left every flap dark, looking merely unavailable, until the app
-was restarted by hand. `scheduleReconnect()` in `lib/gateway.ts` is the fix. This is the single
-strongest argument for the in-process fake gateway existing at all: no unit test would have reached it.
-
-**One bug found by a tester's diagnostic, before the store release.** `refreshDevice()` wrote
+**A flap offline was reported as the app being broken.** `refreshDevice()` wrote
 availability as well as `alarm_connectivity`: `connected === false` on the *flap* called
 `markUnavailable()`, so Homey greyed the tile out and captioned it "Not connected to OnlyCat" — a
 sentence about our socket, printed because of theirs. The rule forbidding the reverse (`onDown`
@@ -61,6 +41,29 @@ for that hour instead. Clearing it on an arriving event is tempting and was not 
 `refreshDevice()` is the single writer, that rule has already been paid for once, and there is no
 evidence a re-read at 16:23 would have returned anything different. The alarm reports what OnlyCat
 says, and only that.
+
+## 1.0.0 notes
+
+**Two bugs avoided, both confirmed in the reference implementation** (`OnlyCatAI/onlycat-home-assistant`):
+
+- `EventTriggerSource.Manual` and `EventClassification.Unknown` are both `0`, and a truthiness
+  check drops them. There it makes every manually triggered event lose its trigger source and then
+  dereference null.
+- `idleLock` defaults to `true` server-side (`TransitPolicy.ts`) and to `false` there. A policy
+  omitting the field therefore reads as unlocked in the reference client and locked on the real
+  flap — fail-open, on a lock.
+
+Presence also follows OnlyCat's own `getRfidLastSeenLocationFromSubevent` rather than a re-derivation:
+`BREACH` is a transit, `PEEK` and `DENY` leave the cat where it was. The reference implementation
+treats everything that is not `TRANSIT` as the inverse, which marks a cat that forced its way in as
+being outside.
+
+**One bug found by our own tests, in our own code.** The reconnect integration test failed because
+socket.io does not auto-reconnect after `io server disconnect` — `reconnection: true` covers
+transport failures only. OnlyCat's models document `disconnectReason: "SERVER_INITIATED_DISCONNECT"`,
+so a deploy on their side would have left every flap dark, looking merely unavailable, until the app
+was restarted by hand. `scheduleReconnect()` in `lib/gateway.ts` is the fix. This is the single
+strongest argument for the in-process fake gateway existing at all: no unit test would have reached it.
 
 **Verified against hardware since.** Run on a real flap (`OC-0CBFB4903101`) on 2026-09-20:
 
