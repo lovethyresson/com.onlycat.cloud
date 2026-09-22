@@ -234,6 +234,37 @@ window did.
   out. `docs/` and a test are for what was checked; a comment asserting a platform fact is a
   claim the next reader will trust.
 
+## "This view doesn't work" is a question about the surface, not the data
+
+**2026-09-22, v1.0.0.** Asked how better to illustrate "Outside today" than a cumulative timeseries
+that resets every night, I offered three variations on the same theme: a rolling 24-hour window, a
+"yesterday" companion capability, a per-trip duration. All three were new *numbers fed to Homey
+Insights*. The answer was "none of these were helpful — what would be helpful is a bar chart with
+hours outside, and week/month; Homey's Insights really doesn't work for that."
+
+The complaint was never about which number to compute. It was that Insights charts a capability's
+value over time with per-bucket averaging and has no concept of a daily total as a bar. No choice
+of capability fixes that, so every option I gave was a variation inside the broken constraint.
+Homey Pro apps have shipped their own **dashboard widgets** since firmware 12.3.0 — HTML, CSS, JS
+and an `api.js` backend, where you draw whatever you like. This app already requires `>=12.7.0`.
+The capability existed the whole time and I did not look for it, because I had accepted the
+surface as fixed and was only searching within it.
+
+Worse: the rule was already written down. `tasks/lessons.md` says *"when the platform ships a view,
+a template or a widget for roughly this job, use it"* — the word **widget** is in it. A lesson that
+is only read after the mistake repeats has not been learned.
+
+**Rules:**
+- **When someone says an existing view does not work, the first question is whether a different
+  surface exists** — not which data to feed the one that does not work. Enumerate the platform's
+  surfaces before enumerating options inside one of them.
+- **Check the platform's capability list before declaring a shape impossible.** "Homey can't chart
+  that" was true of Insights and false of Homey. One search settled it, after three wrong answers.
+- **A written lesson only counts if it is read at the start.** Re-read `tasks/lessons.md` when a
+  task touches a platform surface, which is exactly when it is most likely to already say something.
+- When the user rejects a whole set of options rather than picking one, **the framing is wrong, not
+  the ranking.** Stop generating more options in that frame.
+
 ## Survey the sources before building the pipeline
 
 **2026-09-22, v1.0.0.** App Store review wanted the driver image to show the flap on white. I took
