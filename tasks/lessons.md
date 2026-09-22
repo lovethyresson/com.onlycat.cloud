@@ -294,3 +294,35 @@ from a white-on-white photograph costs an hour and is worse.
   works".
 - Show a rough option early. An hour of polish on an unchosen direction is an hour spent on the
   wrong axis.
+
+## A one-way rule about two signals leaves the other way open
+
+**2026-09-22, v1.0.0.** The repo had a hard-won, explicitly documented rule: `onDown` — our socket
+dropping — must never write `alarm_connectivity`, because that capability means *the flap* is
+offline. It was written up in CLAUDE.md, with the cost that bought it: two indistinguishable
+signals on one tile and an alarm Flow firing on every reconnect blip. "One writer. Do not add a
+second."
+
+The converse was never checked. `refreshDevice()` was reading OnlyCat's `connectivity.connected`
+and calling `markUnavailable()` from it — the flap's state writing *our* signal, the same
+conflation pointed the other way, sitting three lines below a comment forbidding it. A user's
+diagnostic showed what it cost: OnlyCat reported the flap offline, never pushed a recovery, and the
+device stayed greyed out for an hour captioned "Not connected to OnlyCat" while events arrived,
+classified and updated every capability underneath it. The owner read the caption literally and
+restarted the app.
+
+The rule had been stated as a direction — *A must not write B* — when the thing that mattered was a
+partition: two signals, two writers, no crossing. A direction is half a rule, and the unstated half
+is where the bug lives.
+
+**Rules:**
+- **When a rule forbids A from writing B, immediately check whether B writes A.** Conflation is
+  symmetric; the write-up almost never is, because it is written from the incident that happened.
+- **State invariants as partitions, not directions.** "`refreshDevice()` owns `alarm_connectivity`,
+  the gateway lifecycle owns availability, neither crosses" is checkable in both directions by
+  grep. "`onDown` must not touch `alarm_connectivity`" is checkable in one.
+- **A comment explaining a trap is a place to look for the trap, not proof of its absence.** The
+  offending line was in the same function as the paragraph warning about it.
+- **"Restarting fixed it" means state that nothing clears.** Ask what the clearing path is and what
+  happens when the upstream signal that would trigger it never arrives — here, `deviceUpdate` was
+  the only thing that re-read connectivity, so a missing recovery push was permanent.

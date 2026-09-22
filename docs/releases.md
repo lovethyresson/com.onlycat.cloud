@@ -30,6 +30,38 @@ so a deploy on their side would have left every flap dark, looking merely unavai
 was restarted by hand. `scheduleReconnect()` in `lib/gateway.ts` is the fix. This is the single
 strongest argument for the in-process fake gateway existing at all: no unit test would have reached it.
 
+**One bug found by a tester's diagnostic, before the store release.** `refreshDevice()` wrote
+availability as well as `alarm_connectivity`: `connected === false` on the *flap* called
+`markUnavailable()`, so Homey greyed the tile out and captioned it "Not connected to OnlyCat" — a
+sentence about our socket, printed because of theirs. The rule forbidding the reverse (`onDown`
+must never write `alarm_connectivity`) was already documented, three lines above the offending
+call.
+
+Diagnostic `f180ca74` (Homey Pro Early 2023, flap `OC-0CBFB4903101`) shows the whole shape of it.
+OnlyCat pushed `deviceUpdate` at 16:02:57 with `CONNECTION_LOST`, flickered back at 16:03:05, went
+down again at 16:03:08 with `DUPLICATE_CLIENTID` and then `CONNECTION_LOST`, and never once pushed a
+recovery: the re-read at 16:18:08 still said offline. Meanwhile the socket was never touched — there
+is no `gateway: disconnected` line in the log at all. Event 105 arrived at 16:23 and event 106 at
+16:48, both fully classified, both committed, both incrementing the trip counters, underneath a
+device Homey considered dead. `deviceUpdate` is the only thing that re-reads connectivity, so with
+no recovery push there was nothing to clear it; the owner restarted the app, `refreshDevice()` ran
+against a by-then-healthy record, and it came back. They reported it, reasonably, as "my app was
+disconnected".
+
+The fix is a separation, not a retry. Availability is written only by the gateway's own lifecycle —
+`onReady`, `onDown`, `onUnauthorized` — and `refreshDevice()` writes only `alarm_connectivity`.
+`ready` is the honest signal: it fires after `getDevices`, `getDevice` and `getDeviceEvents` have
+all acked, so a rejected key emits `unauthorized` and never reaches it. The already-connected
+shortcut in `connect()`, which exists because a second flap attaching to a live shared gateway never
+sees `ready`, now calls `onReady()` rather than duplicating half of it.
+
+What this deliberately does not fix: OnlyCat's `connectivity.connected` was stale for at least five
+minutes — offline at 16:18, sending events at 16:23 — so `alarm_connectivity` stands alone and wrong
+for that hour instead. Clearing it on an arriving event is tempting and was not done.
+`refreshDevice()` is the single writer, that rule has already been paid for once, and there is no
+evidence a re-read at 16:23 would have returned anything different. The alarm reports what OnlyCat
+says, and only that.
+
 **Verified against hardware since.** Run on a real flap (`OC-0CBFB4903101`) on 2026-09-20:
 
 - `Device#setCameraImage` and `setCameraVideo` both exist and work. An image and a video are *separate* entries even under one id, and while they shared the id `event` the still was never requested at all. Split into `still` and `clip`, both serve — `still JPEG, 30387 bytes`. An id that stops being registered leaves no orphan behind, contrary to what this repo claimed for several days.

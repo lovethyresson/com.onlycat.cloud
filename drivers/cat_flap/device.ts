@@ -343,7 +343,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
       // in "No response" forever with a perfectly healthy socket underneath it.
       if (this.gateway.connected) {
         this.logger.debug('gateway was already up; refreshing without waiting for ready');
-        void this.refresh().catch((e) => this.logger.error('refresh failed:', e?.message ?? e));
+        this.onReady();
       }
     }
 
@@ -351,6 +351,10 @@ module.exports = class CatFlapDevice extends Homey.Device {
     // removable by identity in teardown(), or a re-paired device leaks a listener per init.
     private onReady = (): void => {
       this.logger.info('connected; refreshing');
+      // Availability is our socket and nothing else. `ready` fires only once the subscriptions
+      // are armed, which means three RPCs acked — a rejected key emits `unauthorized` and never
+      // gets here — so this is the one honest place to say the device is reachable.
+      void this.markAvailable();
       void this.refresh().catch((error) => this.logger.error('refresh failed:', error?.message ?? error));
     };
 
@@ -403,8 +407,8 @@ module.exports = class CatFlapDevice extends Homey.Device {
      * Each stage runs independently on purpose. `getDeviceTransitPolicies` and friends are
      * documented to hang, and when the stages were chained with `await` one hung call left the
      * device sitting in "No response" with nothing in the log — the socket was fine, the refresh
-     * simply never finished. Availability is decided by the first stage; nothing later can hold
-     * it hostage, and every stage says how long it took.
+     * simply never finished. Availability is already settled before the first stage runs, so no
+     * stage can hold it hostage, and every stage says how long it took.
      */
     private async refresh(): Promise<void> {
       if (this.refreshing) {
@@ -460,9 +464,16 @@ module.exports = class CatFlapDevice extends Homey.Device {
         + `${device.connectivity?.disconnectReason ? ` (${device.connectivity.disconnectReason})` : ''}`
         + `, zone ${device.timeZone ?? 'unset'}, policy ${device.deviceTransitPolicyId ?? 'none'}`);
 
+      // The flap being offline is `alarm_connectivity` and ONLY `alarm_connectivity`. It must
+      // never touch availability: the app is still connected, still receiving that flap's events,
+      // and still able to run every Flow — greying the tile out says "the OnlyCat app is broken"
+      // when what is broken is the flap's own uplink, which the alarm already reports.
+      // A tester's diagnostic showed the cost: OnlyCat reported CONNECTION_LOST at 16:02 and
+      // then never pushed a recovery, so the device sat unavailable for an hour while events 105
+      // and 106 arrived, were classified, and updated every capability underneath a dead-looking
+      // tile. Only an app restart cleared it. Availability is written by `onReady`, `onDown` and
+      // `onUnauthorized` — the gateway's own lifecycle — and by nothing here.
       await this.setCapabilityValue('alarm_connectivity', !connected).catch(() => {});
-      if (connected) await this.markAvailable();
-      else await this.markUnavailable(this.t('error.no_connection'));
 
       await this.setSettings({
         device_id: this.deviceId,
