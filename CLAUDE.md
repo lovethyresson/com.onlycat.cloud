@@ -125,6 +125,7 @@ prints "three policies, Night is active, two rules the app cannot evaluate", not
   and updated every capability underneath it. Only a restart cleared it, so the owner reported
   the *app* as disconnected. `onReady` / `onDown` / `onUnauthorized` own availability;
   `refreshDevice()` owns `alarm_connectivity`. Neither crosses.
+- **`alarm_prey_ONLYCAT` and `alarm_human_ONLYCAT` fall on a five-minute hold, not on an event.** Through 1.0.1 nothing lowered them but the next event's classification, so a person seen at 14:00 left "Human activity — yes" on the tile until an unrelated cat came through, which can be the next morning. Clearing on conclusion, the way `alarm_motion` does, looks like the obvious fix and is wrong: OnlyCat classifies an event at or after it concludes, so it would lower the alarm in the same `afterUpdate` pass that raised it. Each alarm is raised only by its own classification and lowered only by its own timer, so one event never clears another's. `seedAlarms()` writes `false` unconditionally at startup, because a persisted `true` outlives the timer that would have lowered it. **An `alarm_*` capability needs something that lowers it — before adding one, name that thing.**
 - **A minute timer re-evaluates the lock state.** Time-range rules turn over on the clock, not on
   an event: a curfew starting at 22:00 must show up without waiting for the next cat.
 - **`locked` is read-only** — OnlyCat has no "lock now", only policy activation and a one-shot

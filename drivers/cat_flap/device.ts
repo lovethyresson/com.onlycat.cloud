@@ -92,6 +92,24 @@ const CLIP_PROBE_MS = 4000;
 /** Clear the activity alarm if the flap never tells us the event concluded. */
 const MOTION_TIMEOUT_MS = 120000;
 
+/**
+ * How long a classification alarm stays raised.
+ *
+ * `alarm_motion` is a state with an end the flap reports, so it clears on conclusion. "A person
+ * was at the door" is not that kind of fact — it is a moment. OnlyCat classifies an event at or
+ * after the point it concludes, so clearing these on conclusion would lower the alarm in the same
+ * pass that raised it, and `hydrate` fetching an already-finished event makes that the common
+ * case rather than the edge one. A hold is the only thing that gives the statement a window in
+ * which it is true.
+ *
+ * Without one they never fell at all. Nothing but the next event's classification ever wrote
+ * `false`, so a person seen at 14:00 left "Human activity — yes" on the tile until an unrelated
+ * cat happened through, which can be the following morning. Five minutes is long enough for a
+ * Flow condition to read and for the tile to be worth a glance, short enough to be gone before
+ * it starts lying.
+ */
+const CLASSIFICATION_HOLD_MS = 300000;
+
 const TRIGGER_SOURCE_NAMES: Record<number, string> = {
   [EventTriggerSource.Manual]: 'manual',
   [EventTriggerSource.Remote]: 'remote',
@@ -120,6 +138,9 @@ module.exports = class CatFlapDevice extends Homey.Device {
     private currentImageUrl: string | null = null;
     private summaryTimer: ReturnType<typeof setTimeout> | null = null;
     private motionTimer: ReturnType<typeof setTimeout> | null = null;
+
+    /** One hold per classification alarm, keyed by capability. */
+    private alarmTimers: Record<string, ReturnType<typeof setTimeout> | null> = {};
 
     /** Scoped per flap, so a two-flap household's logs can be told apart. */
     private logger!: Logger;
@@ -299,6 +320,10 @@ module.exports = class CatFlapDevice extends Homey.Device {
       if (this.motionTimer) this.homey.clearTimeout(this.motionTimer);
       this.summaryTimer = null;
       this.motionTimer = null;
+      for (const timer of Object.values(this.alarmTimers)) {
+        if (timer) this.homey.clearTimeout(timer);
+      }
+      this.alarmTimers = {};
       if (this.gateway) {
         this.gateway.untrackDevice(this.deviceId);
         this.gateway.off('ready', this.onReady);
@@ -573,26 +598,22 @@ module.exports = class CatFlapDevice extends Homey.Device {
     }
 
     /**
-     * Load the most recent event so the camera and the event line are not blank.
-     *
-     * Without this a freshly started app shows an empty camera and no history until the next cat
-     * goes through, which can be hours. The event is adopted as already-settled, so no Flow card
-     * fires — nobody wants a prey alert about last Tuesday because their Homey rebooted.
-     */
-    /**
-     * Give the alarms a value before anything has happened.
+     * Lower the alarms before anything has happened.
      *
      * Homey persists a capability's value across restarts, but only once something has written
      * one — an untouched capability renders as "-" on the tile, which is how "Prey detected"
      * and "Human activity" looked on a freshly paired flap. `false` is not a guess here: it
-     * means no event is in progress, which is true at startup by definition.
+     * means no event is in progress and no hold is running, which is true at startup by
+     * definition — every timer that would lower one of these died with the previous process.
      *
-     * Only ever fills a blank. A value already there is real state and is left alone.
+     * Written unconditionally, not just into a blank. Treating a stored `true` as real state was
+     * the other half of the latch: the value survived the restart, the timer behind it did not,
+     * and nothing was left that could ever lower it. Restarting inside a hold costs one early
+     * "turned off" trigger, which is the correct one to lose.
      */
     private async seedAlarms(): Promise<void> {
       for (const capability of ['alarm_motion', 'alarm_prey_ONLYCAT', 'alarm_human_ONLYCAT']) {
         if (!this.hasCapability(capability)) continue;
-        if (this.getCapabilityValue(capability) !== null) continue;
         await this.setCapabilityValue(capability, false).catch(() => {});
       }
 
@@ -780,6 +801,13 @@ module.exports = class CatFlapDevice extends Homey.Device {
       this.logger.debug(`history: no refusal in the last ${recent.length} event(s)`);
     }
 
+    /**
+     * Load the most recent event so the camera and the event line are not blank.
+     *
+     * Without this a freshly started app shows an empty camera and no history until the next cat
+     * goes through, which can be hours. The event is adopted as already-settled, so no Flow card
+     * fires — nobody wants a prey alert about last Tuesday because their Homey rebooted.
+     */
     private async backfillLatestEvent(): Promise<void> {
       const events = await this.gateway.getDeviceEvents(this.deviceId, false);
       const usable = events.filter((event) => event.eventId != null && !event.deletedAt);
@@ -1007,12 +1035,41 @@ module.exports = class CatFlapDevice extends Homey.Device {
       }, MOTION_TIMEOUT_MS);
     }
 
+    /**
+     * Raise whichever classification alarm this event calls for.
+     *
+     * Only ever raises. Each alarm falls on its own hold rather than on the next event, because
+     * the two facts are independent: a person at the door at 14:00 is not made untrue by a cat
+     * going out at 14:01. The old code wrote `false` to the alarm that did not match, which made
+     * an unrelated event the only thing that could ever lower one — and on a quiet flap nothing
+     * unrelated arrives for hours.
+     *
+     * `classification` is compared, never tested for truthiness: `EventClassification.Unknown`
+     * is 0, and an event still being classified has none at all. Neither raises anything, and
+     * neither disturbs a hold already running.
+     */
     private async applyClassification(event: OnlyCatEvent): Promise<void> {
       const classification = effectiveClassification(event);
-      await this.setCapabilityValue('alarm_prey_ONLYCAT',
-        classification === EventClassification.Contraband).catch(() => {});
-      await this.setCapabilityValue('alarm_human_ONLYCAT',
-        classification === EventClassification.HumanActivity).catch(() => {});
+      if (classification == null) return;
+      if (classification === EventClassification.Contraband) await this.holdAlarm('alarm_prey_ONLYCAT');
+      if (classification === EventClassification.HumanActivity) await this.holdAlarm('alarm_human_ONLYCAT');
+    }
+
+    /**
+     * Raise an alarm and arm the timer that lowers it again.
+     *
+     * Re-arming on a repeat is deliberate: `applyClassification` runs on every update pass for
+     * the same event, so the hold measures from the last thing the flap said rather than the
+     * first.
+     */
+    private async holdAlarm(capability: string): Promise<void> {
+      const running = this.alarmTimers[capability];
+      if (running) this.homey.clearTimeout(running);
+      await this.setCapabilityValue(capability, true).catch(() => {});
+      this.alarmTimers[capability] = this.homey.setTimeout(() => {
+        this.alarmTimers[capability] = null;
+        void this.setCapabilityValue(capability, false).catch(() => {});
+      }, CLASSIFICATION_HOLD_MS);
     }
 
     /**
