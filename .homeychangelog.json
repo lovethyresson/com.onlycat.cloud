@@ -1,4 +1,13 @@
 {
+  "1.0.2": {
+    "en": "Prey detected and Human activity now switch off by themselves five minutes after the flap sees prey or a person, instead of staying on until the next cat came through.",
+    "sv": "Byte upptäckt och Mänsklig aktivitet slås nu av av sig själva fem minuter efter att luckan sett ett byte eller en människa, i stället för att ligga kvar tills nästa katt passerade.",
+    "de": "Beute erkannt und Menschliche Aktivität schalten sich jetzt fünf Minuten, nachdem die Klappe Beute oder einen Menschen gesehen hat, von selbst aus, statt bis zur nächsten Katze an zu bleiben.",
+    "nl": "Prooi gedetecteerd en Menselijke activiteit gaan nu vanzelf uit vijf minuten nadat het luik een prooi of een mens heeft gezien, in plaats van aan te blijven tot de volgende kat langskwam.",
+    "no": "Bytte oppdaget og Menneskelig aktivitet slår seg nå av av seg selv fem minutter etter at luken har sett et bytte eller et menneske, i stedet for å bli stående på til neste katt kom forbi.",
+    "da": "Bytte registreret og Menneskelig aktivitet slår nu selv fra fem minutter efter, at lemmen har set et bytte eller et menneske, i stedet for at blive ved, indtil den næste kat kom forbi.",
+    "fr": "Proie détectée et Activité humaine s'éteignent désormais d'elles-mêmes cinq minutes après que la chatière a vu une proie ou une personne, au lieu de rester allumées jusqu'au passage du chat suivant."
+  },
   "1.0.1": {
     "en": "Connection hardening. A flap that OnlyCat reports as offline no longer greys out the device in Homey — the offline alarm still tells you, and events, Flows and the camera keep working.",
     "sv": "Stabilare anslutning. En lucka som OnlyCat rapporterar som frånkopplad gör inte längre enheten grå i Homey — larmet meddelar dig fortfarande, och händelser, flöden och kameran fungerar som vanligt.",

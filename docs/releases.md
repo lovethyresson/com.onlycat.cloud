@@ -5,8 +5,23 @@ wording lives in `.homeychangelog.json`; the short version is in the [README](..
 
 | Version | Highlights |
 |---|---|
+| **1.0.2** | `alarm_prey_ONLYCAT` and `alarm_human_ONLYCAT` fall on a five-minute hold (`CLASSIFICATION_HOLD_MS`) instead of latching until the next event's classification. `seedAlarms()` now lowers all three alarms at startup rather than only filling blanks. |
 | **1.0.1** | Connection hardening. A flap OnlyCat reports as offline no longer marks the Homey device unavailable. `alarm_connectivity` says the flap is down, availability says our socket is down, and neither writes the other's signal any more. |
 | **1.0.0** | First release. One Homey device per flap (`class: "lock"`, official `locked` made read-only via `capabilitiesOptions`, policy picker owning the quick-action slot). Cats are runtime capability instances rather than devices. Full event pipeline — `deviceEventUpdate` → `getEvent` + `getEventSummary` — firing Flow cards on the final summary only, since OnlyCat revises a TRANSIT to a PEEK mid-event and Homey cannot un-fire a trigger. Lock state and refusal reasons are both computed from a local re-implementation of the flap's transit-policy engine, which reports an un-confident result rather than naming a cause it cannot stand behind. Image Flow token on every event card. Seven languages. |
+
+## 1.0.2 notes
+
+**The classification alarms never fell.** `applyClassification()` was their only writer, and it wrote `classification === X` for the event in hand — so the only thing that could ever write `false` was a later event classified as something else. A person seen at 14:00 left "Human activity — yes" on the tile for as long as the flap stayed quiet, which overnight is hours. The auto-generated "turned off" trigger fired whenever an unrelated cat eventually came through, and a Flow condition on either alarm read `true` all that time.
+
+**Clearing on conclusion, the `alarm_motion` pattern, was the first proposal and is wrong.** `isEventConcluded` is `frameCount != null`, and OnlyCat only classifies an event at or after it concludes. `afterUpdate()` runs `applyClassification()` and then checks conclusion in the same pass, so the alarm would have been lowered in the tick that raised it. `hydrate()` fetching an already-finished event makes that the common case. `alarm_motion` describes a state whose end the flap reports; "a person was at the door" is a moment, and a moment needs a hold.
+
+**The mechanism.** `holdAlarm()` raises the alarm and arms a `this.homey.setTimeout` to lower it after five minutes, re-arming on each update pass for the same event, so the hold runs from the last thing the flap said. Each alarm is raised only by its own classification and lowered only by its own timer, so a cat going out at 14:01 no longer clears a person seen at 14:00. A `null` classification (still being classified) or `Unknown` (`0`, compared and never truth-tested) raises nothing and leaves a running hold alone. `teardown()` clears the timers.
+
+**The other half of the latch was the restart.** `seedAlarms()` only wrote into a blank, on the grounds that a stored value was real state. It wasn't: Homey persists the capability value across a restart, but the timer that would lower it dies with the process. It now writes `false` unconditionally. A restart inside a hold costs one early "turned off" trigger. The backfill of the last event does not call `applyClassification()`, so a reboot does not re-raise an alarm from history.
+
+**Five minutes is a choice.** It is long enough for a Flow condition to read and for the tile to be worth a glance, and short enough to be gone before it misleads. It is not derived from anything OnlyCat reports.
+
+**Unverified on hardware.** No test instantiates `drivers/cat_flap/device.ts`, since it needs a Homey runtime, so the suite passing shows nothing else broke and does not prove the hold works. The check is on a real flap: trigger a human event and watch the tile fall five minutes later. Model drift was checked by hand again, because `dev/check-models.mjs` still does not exist: upstream `OnlyCatAI/onlycat-shared-models` HEAD is `aecefd5`, the commit that is vendored.
 
 ## 1.0.1 notes
 
