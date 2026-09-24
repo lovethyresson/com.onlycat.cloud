@@ -223,7 +223,7 @@ it would mean silently discarding a subevent the API sends.
 | `policy_ONLYCAT` | custom enum, picker, setable | Job 1, and the tile's **quick action**. |
 | `alarm_motion` | official | An event is in progress: set on `deviceEventUpdate`, cleared when `frameCount` is set. |
 | `alarm_prey_ONLYCAT` | custom bool | `eventEffectiveClassification === Contraband`. Custom rather than `alarm_problem`: prey is not a device fault, and a specific title reads better than "Problem". |
-| `alarm_human_ONLYCAT` | custom bool | `eventEffectiveClassification === HumanActivity`. |
+| `alarm_human_ONLYCAT` | custom bool | `eventEffectiveClassification === HumanActivity`. Both classification alarms are raised by their own classification and lowered by a five-minute hold (1.0.2), never by a later event. |
 | `alarm_connectivity` | official | `Device.connectivity.connected === false`, paired with `setUnavailable()`. |
 | `last_event_ONLYCAT` | custom string, sensor | Job 2/4 — the last thing that happened, in words: "Misan came in". Rendered from the vocabulary table ([§5](#5-the-core-table-the-subevent-vocabulary)) in the flap's own time zone. |
 | `last_blocked_ONLYCAT` | custom string, sensor | Job 3 — the last refusal *and why*: "Misan was turned away — she was carrying something." |

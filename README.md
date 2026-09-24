@@ -5,8 +5,8 @@
 A [Homey](https://homey.app/) app for the [OnlyCat](https://www.onlycat.com/) smart cat flap. One
 Homey device per flap, with every cat on it, and a snapshot on every Flow card.
 
-> **0.1.0 — the first test release.** Running against a real OnlyCat account and a real flap.
-> Not on the Homey App Store yet, so install it with the CLI ([below](#installing)).
+> **1.0.2.** Running against a real OnlyCat account and a real flap. Submitted to the Homey App
+> Store and in review, so for now install it with the CLI ([below](#installing)).
 > Found something? [Open an issue](https://github.com/lovethyresson/com.onlycat.cloud/issues).
 
 ---
@@ -140,6 +140,12 @@ shipping without them.
 happening: a cat that starts coming through and turns back changes from a transit to a peek. Homey
 cannot un-fire a Flow, so the app waits for the final version. The activity sensor on the tile
 still reacts immediately.
+
+**Prey detected and Human activity switch themselves off after five minutes.** They record
+something the flap saw, not something still going on, so each stays on for five minutes after the
+flap last reported it and then clears by itself. A cat coming through in the meantime does not
+clear it early. The activity sensor is different: it covers the event itself, so it goes off as
+soon as the event ends.
 
 **"Outside today" is an estimate, and here is what it assumes.** The flap sees the flap, not the
 cat. Cats leave through windows and get carried to the vet, so sometimes one comes back in when
