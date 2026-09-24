@@ -1,4 +1,13 @@
 {
+  "1.0.3": {
+    "en": "The store page now links to the app's thread on the Homey Community forum.",
+    "sv": "Butikssidan länkar nu till appens tråd på Homey Community-forumet.",
+    "de": "Die Store-Seite verlinkt jetzt auf den Thread der App im Homey-Community-Forum.",
+    "nl": "De winkelpagina linkt nu naar het topic van de app op het Homey Community-forum.",
+    "no": "Butikksiden lenker nå til appens tråd på Homey Community-forumet.",
+    "da": "Butikssiden linker nu til appens tråd på Homey Community-forummet.",
+    "fr": "La page de la boutique renvoie désormais vers le fil de l'application sur le forum Homey Community."
+  },
   "1.0.2": {
     "en": "Prey detected and Human activity now switch off by themselves five minutes after the flap sees prey or a person, instead of staying on until the next cat came through.",
     "sv": "Byte upptäckt och Mänsklig aktivitet slås nu av av sig själva fem minuter efter att luckan sett ett byte eller en människa, i stället för att ligga kvar tills nästa katt passerade.",

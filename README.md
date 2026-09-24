@@ -5,9 +5,9 @@
 A [Homey](https://homey.app/) app for the [OnlyCat](https://www.onlycat.com/) smart cat flap. One
 Homey device per flap, with every cat on it, and a snapshot on every Flow card.
 
-> **1.0.2.** Running against a real OnlyCat account and a real flap. Submitted to the Homey App
-> Store and in review, so for now install it with the CLI ([below](#installing)).
-> Found something? [Open an issue](https://github.com/lovethyresson/com.onlycat.cloud/issues).
+> **On the [Homey App Store](https://homey.app/a/com.onlycat.cloud/).** Questions and ideas go in
+> the [Homey Community thread](https://community.homey.app/t/159946); bugs can also go in
+> [an issue](https://github.com/lovethyresson/com.onlycat.cloud/issues).
 
 ---
 
@@ -46,13 +46,16 @@ action; restarting the flap is a Flow action, since it is not something you reac
 
 ## Installing
 
-**Homey Pro only.** Not on the Homey App Store yet either, so for now it installs from source
-with the [Homey CLI](https://apps.developer.homey.app/the-basics/getting-started).
+**Homey Pro only.** Install it from the [Homey App Store](https://homey.app/a/com.onlycat.cloud/),
+then add the device: **Devices → + → OnlyCat → Cat flap**.
 
 Nothing technical rules out Homey Cloud — the app talks to nothing but OnlyCat's API and needs no
 local network, discovery or permissions. Publishing for Homey Cloud just requires an organization
 with [Verified Developer](https://apps.developer.homey.app/app-store/verified-developer) status,
 which individuals cannot get, so claiming the platform would be a promise this app cannot keep.
+
+To install from source instead, use the
+[Homey CLI](https://apps.developer.homey.app/the-basics/getting-started):
 
 ```bash
 git clone https://github.com/lovethyresson/com.onlycat.cloud.git
@@ -61,8 +64,6 @@ npm install
 npx homey login
 npx homey app install
 ```
-
-Then add the device: **Devices → + → OnlyCat → Cat flap**.
 
 ### Getting an API key
 
