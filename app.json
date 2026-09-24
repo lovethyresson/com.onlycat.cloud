@@ -126,6 +126,7 @@
   "bugs": {
     "url": "https://github.com/lovethyresson/com.onlycat.cloud/issues"
   },
+  "homeyCommunityTopicId": 159946,
   "license": "GPL-3.0-or-later",
   "flow": {
     "triggers": [

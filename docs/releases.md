@@ -5,7 +5,7 @@ wording lives in `.homeychangelog.json`; the short version is in the [README](..
 
 | Version | Highlights |
 |---|---|
-| **1.0.2** | `alarm_prey_ONLYCAT` and `alarm_human_ONLYCAT` fall on a five-minute hold (`CLASSIFICATION_HOLD_MS`) instead of latching until the next event's classification. `seedAlarms()` now lowers all three alarms at startup rather than only filling blanks. |
+| **1.0.2** | `alarm_prey_ONLYCAT` and `alarm_human_ONLYCAT` fall on a five-minute hold (`CLASSIFICATION_HOLD_MS`) instead of latching until the next event's classification. `seedAlarms()` now lowers all three alarms at startup rather than only filling blanks. `homeyCommunityTopicId` points the store page's Community link at [the forum thread](https://community.homey.app/t/159946). |
 | **1.0.1** | Connection hardening. A flap OnlyCat reports as offline no longer marks the Homey device unavailable. `alarm_connectivity` says the flap is down, availability says our socket is down, and neither writes the other's signal any more. |
 | **1.0.0** | First release. One Homey device per flap (`class: "lock"`, official `locked` made read-only via `capabilitiesOptions`, policy picker owning the quick-action slot). Cats are runtime capability instances rather than devices. Full event pipeline — `deviceEventUpdate` → `getEvent` + `getEventSummary` — firing Flow cards on the final summary only, since OnlyCat revises a TRANSIT to a PEEK mid-event and Homey cannot un-fire a trigger. Lock state and refusal reasons are both computed from a local re-implementation of the flap's transit-policy engine, which reports an un-confident result rather than naming a cause it cannot stand behind. Image Flow token on every event card. Seven languages. |
 
