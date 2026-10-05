@@ -5,10 +5,25 @@ wording lives in `.homeychangelog.json`; the short version is in the [README](..
 
 | Version | Highlights |
 |---|---|
+| **1.0.4** | Cats and door policies are re-read while connected, not only at pairing, Repair and connect. `syncCats()` (new `reconcileCats()` in `lib/cats.ts`) runs on every connect, every ten minutes (`ACCOUNT_SYNC_MS`) and when an untracked chip uses the flap. `refreshPolicies()` runs on the same clock and on a `deviceUpdate` naming an active policy we do not know. The gateway logs any push it has no handler for. Fixes Repair stopping the lock and outside-today ticks. |
 | **1.0.3** | `homeyCommunityTopicId` points the store page's Community link at [the forum thread](https://community.homey.app/t/159946). No code change. |
 | **1.0.2** | `alarm_prey_ONLYCAT` and `alarm_human_ONLYCAT` fall on a five-minute hold (`CLASSIFICATION_HOLD_MS`) instead of latching until the next event's classification. `seedAlarms()` now lowers all three alarms at startup rather than only filling blanks. |
 | **1.0.1** | Connection hardening. A flap OnlyCat reports as offline no longer marks the Homey device unavailable. `alarm_connectivity` says the flap is down, availability says our socket is down, and neither writes the other's signal any more. |
 | **1.0.0** | First release. One Homey device per flap (`class: "lock"`, official `locked` made read-only via `capabilitiesOptions`, policy picker owning the quick-action slot). Cats are runtime capability instances rather than devices. Full event pipeline — `deviceEventUpdate` → `getEvent` + `getEventSummary` — firing Flow cards on the final summary only, since OnlyCat revises a TRANSIT to a PEEK mid-event and Homey cannot un-fire a trigger. Lock state and refusal reasons are both computed from a local re-implementation of the flap's transit-policy engine, which reports an un-confident result rather than naming a cause it cannot stand behind. Image Flow token on every event card. Seven languages. |
+
+## 1.0.4 notes
+
+**Nothing re-read the account after connecting.** Policies were fetched in `refresh()`, which runs on `ready`, so a restart did pick up a new one. Nothing ran between connects, and the socket stays up for days. Cats were worse off: `this.cats` came from the store written at pairing, and only Repair rewrote it. A cat added in the OnlyCat app never appeared without a Repair, and restarting did not help.
+
+**OnlyCat pushes nothing for either, as far as we know.** `subscribe: true` covers devices and events. No policy or RFID-profile push has ever been seen. So the app polls every ten minutes and also watches for two cheaper signals. An untracked chip passing through the flap is the moment a new cat matters. A `deviceUpdate` whose `deviceTransitPolicyId` is not in our list means a policy was created and activated in the OnlyCat app. `socket.onAny` now logs every unhandled push by name, so a diagnostic log will show it if OnlyCat does announce these changes under some other name.
+
+**`reconcileCats()` adds and drops on purpose, and asymmetrically.** It adds whatever pairing would have offered (`offerableCats`, unhidden chips). It drops only chips that come back with `hiddenAt`. It keeps a chip that is merely missing from `getRfidLastSeenByDevice`: removing a capability takes its Insights log and every Flow pointing at it, and one incomplete reply is not evidence the cat is gone. Names come from `getRfidProfile` each pass, so a rename reaches the tile. Insights keeps the name the log was created with (see CLAUDE.md). New cats get their location seeded from the same `lastSeen` reply, tagged `restatement`, so the outside-today clock charges nothing for them.
+
+**Churn is avoided.** `syncCapabilities()` only runs when the cat list actually changed. The policy picker's `setCapabilityOptions` is only re-sent when the serialized values differ. `syncCats()` is single-flight, because connect, the clock and an unknown chip can all ask at once.
+
+**A latent bug fixed along the way.** `applyRepair()` calls `teardown()`, which clears `lockTimer`, and nothing restarted it. After a Repair the lock state stopped following curfew boundaries and outside-today stopped ticking until the app restarted. Timers are now started by `startTimers()` from both `onInit` and `applyRepair`.
+
+**Unverified on hardware.** As in 1.0.2, no test instantiates the device. The new tests cover `reconcileCats()`. The check on a real flap: add a policy in the OnlyCat app and wait up to ten minutes for the picker; add a cat and either wait or let it use the flap.
 
 ## 1.0.2 notes
 

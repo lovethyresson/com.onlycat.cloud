@@ -76,8 +76,9 @@ npx homey app install
 > Make a key just for Homey so you can revoke that one on its own later.
 
 Homey lists the flaps on the account and picks up the cats OnlyCat knows about, skipping any you
-have hidden as neighbours' cats. To change the key later, or pick up a cat you have added since,
-use the device's **Repair**.
+have hidden as neighbours' cats. Cats and door policies you add, rename or hide in the OnlyCat app
+later reach Homey by themselves: within ten minutes, at once when a new cat first uses the flap,
+and on every app restart. To change the key later, use the device's **Repair**.
 
 ## Flow cards
 

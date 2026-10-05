@@ -1,4 +1,13 @@
 {
+  "1.0.4": {
+    "en": "Cats and door policies you add or rename in the OnlyCat app now appear in Homey on their own, without a Repair. A new cat gets its tile the first time it uses the flap.",
+    "sv": "Katter och dörregler som du lägger till eller byter namn på i OnlyCat-appen dyker nu upp i Homey av sig själva, utan Reparera. En ny katt får sin ruta första gången den använder luckan.",
+    "de": "Katzen und Türregeln, die du in der OnlyCat-App hinzufügst oder umbenennst, erscheinen jetzt von selbst in Homey, ohne Reparatur. Eine neue Katze bekommt ihre Kachel, sobald sie die Klappe zum ersten Mal benutzt.",
+    "nl": "Katten en deurbeleid die je in de OnlyCat-app toevoegt of hernoemt, verschijnen nu vanzelf in Homey, zonder Repareren. Een nieuwe kat krijgt zijn tegel zodra hij het luik voor het eerst gebruikt.",
+    "no": "Katter og dørregler du legger til eller gir nytt navn i OnlyCat-appen, dukker nå opp i Homey av seg selv, uten Reparer. En ny katt får sin flis første gang den bruker luken.",
+    "da": "Katte og dørregler, du tilføjer eller omdøber i OnlyCat-appen, dukker nu op i Homey af sig selv, uden Reparer. En ny kat får sin flise første gang, den bruger lemmen.",
+    "fr": "Les chats et les politiques d'accès que vous ajoutez ou renommez dans l'application OnlyCat apparaissent désormais d'eux-mêmes dans Homey, sans Réparer. Un nouveau chat obtient sa tuile dès qu'il utilise la chatière pour la première fois."
+  },
   "1.0.3": {
     "en": "The store page now links to the app's thread on the Homey Community forum.",
     "sv": "Butikssidan länkar nu till appens tråd på Homey Community-forumet.",
