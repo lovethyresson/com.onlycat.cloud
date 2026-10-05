@@ -326,3 +326,11 @@ is where the bug lives.
 - **"Restarting fixed it" means state that nothing clears.** Ask what the clearing path is and what
   happens when the upstream signal that would trigger it never arrives — here, `deviceUpdate` was
   the only thing that re-read connectivity, so a missing recovery push was permanent.
+
+## Read the third-party source before diagnosing it
+
+The forum post rendered with every markdown character escaped. I first blamed the missing preview cards and the fake `upload://` name, which were real flaws but not the cause. Then I blamed the composer's rich-text mode. The second screenshot showed the same escaping in Markdown mode. The cause was in Discourse's source at the forum's exact commit (read from the `generator` meta tag): the paste handler converts clipboard HTML back to markdown through the ProseMirror serializer, which escapes everything, and keeps the longer result. A plain-text clipboard skips that path entirely.
+
+**Rules:**
+- **When a third-party tool misbehaves, read its source at the deployed version before proposing a cause.** Discourse is open source and publishes its commit in every page. Reading the code took four commands; the two guesses each cost the user a round trip.
+- **A fix that does not reproduce the symptom exactly is still a guess.** "Rich-text mode escapes markdown" did not explain why `!` stayed and `[` did not. The serializer's escape set explains every character in the screenshot.
