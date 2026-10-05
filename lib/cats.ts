@@ -53,26 +53,40 @@ export function offerableCats(lastSeen: OnlyCatRfidLastSeen[]): string[] {
 }
 
 /**
- * The tracked cats after a fresh look at the account.
+ * The tracked cats with their names refreshed from their OnlyCat profiles.
  *
- * Adds every chip pairing would have offered and drops the ones the household has since hidden,
- * which is what makes OnlyCat's own "not my cat" reach Homey. A chip that is merely missing from
- * `lastSeen` is kept: that list is a query, not a roster, and removing a capability takes its
- * Insights history and every Flow pointing at it along with it — not a price to pay for a gap in
- * one reply. Existing cats keep their order; new ones are appended. `labels` carries the names
- * from the cats' OnlyCat profiles, and a cat with no label keeps the name it had.
+ * Names only. Which cats are followed is the owner's choice, made in pairing or Repair, and
+ * nothing in the background changes it: a cat added in the OnlyCat app waits, unticked, in the
+ * Repair list, and a cat hidden there keeps its sensors until the owner removes it — the removal
+ * is what carries the warning. A cat with no label keeps the name it had.
  */
-export function reconcileCats(
-  current: TrackedCat[],
+export function renameCats(current: TrackedCat[], labels: Record<string, string | undefined>): TrackedCat[] {
+  return current.map((cat) => ({ rfidCode: cat.rfidCode, name: labels[cat.rfidCode] || cat.name }));
+}
+
+export interface CatChoice extends TrackedCat {
+    included: boolean;
+}
+
+/**
+ * Every cat the Repair list offers: the ones tracked, the ones switched off, and any OnlyCat
+ * knows about that are neither yet. Hidden chips are left out — the owner already told OnlyCat
+ * they are not theirs. Tracked first, then switched off, then new, each in the order known.
+ */
+export function catChoices(
+  tracked: TrackedCat[],
+  excluded: TrackedCat[],
   lastSeen: OnlyCatRfidLastSeen[],
-  labels: Record<string, string | undefined>,
-): TrackedCat[] {
+): CatChoice[] {
   const hidden = new Set(lastSeen.filter((entry) => entry.hiddenAt).map((entry) => entry.rfidCode));
-  const kept = current.filter((cat) => !hidden.has(cat.rfidCode));
-  const added = offerableCats(lastSeen)
-    .filter((code) => !kept.some((cat) => cat.rfidCode === code))
-    .map((rfidCode) => ({ rfidCode, name: rfidCode }));
-  return [...kept, ...added].map((cat) => ({ rfidCode: cat.rfidCode, name: labels[cat.rfidCode] || cat.name }));
+  const known = [...tracked, ...excluded].map((cat) => cat.rfidCode);
+  return [
+    ...tracked.map((cat) => ({ ...cat, included: true })),
+    ...excluded.filter((cat) => !hidden.has(cat.rfidCode)).map((cat) => ({ ...cat, included: false })),
+    ...offerableCats(lastSeen)
+      .filter((code) => !known.includes(code))
+      .map((rfidCode) => ({ rfidCode, name: rfidCode, included: false })),
+  ];
 }
 
 /** Initial location for a chip, from whatever OnlyCat last recorded. */

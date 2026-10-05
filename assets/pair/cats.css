@@ -1,0 +1,6 @@
+.cats-intro { margin: 0 0 16px; }
+.cats-flap { margin: 0 0 20px; }
+.cats-flap-name { font-weight: 600; margin: 0 0 8px; }
+.cats-chip { display: block; font-size: 0.85em; opacity: 0.6; }
+.cats-empty, .cats-note { font-size: 0.9em; opacity: 0.75; }
+#change_key { width: 100%; margin-top: 8px; }

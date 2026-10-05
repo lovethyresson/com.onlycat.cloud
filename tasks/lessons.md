@@ -334,3 +334,11 @@ The forum post rendered with every markdown character escaped. I first blamed th
 **Rules:**
 - **When a third-party tool misbehaves, read its source at the deployed version before proposing a cause.** Discourse is open source and publishes its commit in every page. Reading the code took four commands; the two guesses each cost the user a round trip.
 - **A fix that does not reproduce the symptom exactly is still a guess.** "Rich-text mode escapes markdown" did not explain why `!` stayed and `[` did not. The serializer's escape set explains every character in the screenshot.
+
+## A platform behaviour copied from a sibling app's UI string is still unverified
+
+**2026-10-05.** The Repair cat list warned that unticking a cat would delete its Insights history. Nothing in this app deleted anything; I took it on the strength of Nibe's identical string, "removes its capabilities, including their Insights history". The owner removed a cat and the "outside today" log was still there. `homey api insights get-logs` showed both of that cat's logs had survived. `removeCapability()` leaves the log, and the SDK's `ManagerInsights` can only delete logs the app created itself.
+
+**Rules:**
+- **A warning is a claim about what will happen. Verify it like code.** Before shipping copy that says data will be deleted, find the line that deletes it, or check a real Homey afterwards. `homey api insights get-logs` takes seconds.
+- **Another app saying it does not make it true.** Nibe's string was never checked either. One unverified claim, copied, is now two.

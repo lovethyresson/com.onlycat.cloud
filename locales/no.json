@@ -62,7 +62,19 @@
     "continue": "Fortsett",
     "checking": "Sjekker…",
     "empty": "Lim inn OnlyCat-API-nøkkelen din først.",
-    "none": "Nøkkelen virker, men det finnes ingen kateluker på kontoen."
+    "none": "Nøkkelen virker, men det finnes ingen kateluker på kontoen.",
+    "cats": {
+      "title": "Katter",
+      "intro_pair": "Velg hvilke katter som skal følges. Hver katt får en sensor som viser om den er hjemme og hvor lenge den har vært ute i dag.",
+      "intro_repair": "Velg hvilke katter luken følger. Katter som er lagt til i OnlyCat-appen siden sist, vises her uten hake.",
+      "note_repair": "Fjerner du haken for en katt, fjernes sensorene, og flyter som bruker dem slutter å virke. Insights-historikken blir liggende i Insights, der du kan slette den; huker du av katten igjen, fortsetter historikken.",
+      "none": "OnlyCat har ingen katter for denne luken ennå.",
+      "unnamed": "Navnløs katt",
+      "next": "Neste",
+      "save": "Lagre",
+      "change_key": "Bytt API-nøkkel",
+      "confirm_remove": "Slutte å følge __names__? Sensorene fjernes, og flyter som bruker dem slutter å virke. Insights-historikken blir liggende til du sletter den i Insights."
+    }
   },
   "camera": {
     "last_event": "Siste hendelse",

@@ -62,7 +62,19 @@
     "continue": "Continuer",
     "checking": "Vérification…",
     "empty": "Collez d'abord votre clé API OnlyCat.",
-    "none": "Cette clé fonctionne, mais il n'y a aucune chatière sur ce compte."
+    "none": "Cette clé fonctionne, mais il n'y a aucune chatière sur ce compte.",
+    "cats": {
+      "title": "Chats",
+      "intro_pair": "Choisissez les chats à suivre. Chacun reçoit un capteur indiquant s'il est à la maison et depuis combien de temps il est dehors aujourd'hui.",
+      "intro_repair": "Choisissez les chats suivis par cette chatière. Les chats ajoutés dans l'application OnlyCat depuis la dernière fois apparaissent ici non cochés.",
+      "note_repair": "Décocher un chat retire ses capteurs, et les Flows qui les utilisent cessent de fonctionner. Son historique Insights reste dans Insights, où vous pouvez le supprimer ; cochez à nouveau le chat et l'historique reprend.",
+      "none": "OnlyCat ne connaît encore aucun chat pour cette chatière.",
+      "unnamed": "Chat sans nom",
+      "next": "Suivant",
+      "save": "Enregistrer",
+      "change_key": "Changer de clé API",
+      "confirm_remove": "Ne plus suivre __names__ ? Leurs capteurs seront retirés et les Flows qui les utilisent cesseront de fonctionner. Leur historique Insights reste jusqu'à ce que vous le supprimiez dans Insights."
+    }
   },
   "camera": {
     "outside_today": "dehors aujourd'hui",

@@ -1,7 +1,7 @@
 import Homey from 'homey';
 import {
-  CAT_CAPABILITY, TrackedCat, capabilityForCat, capabilitySyncPlan, initialLocation,
-  outsideCapabilityForCat, reconcileCats, rfidFromCapability,
+  CAT_CAPABILITY, CatChoice, TrackedCat, capabilityForCat, capabilitySyncPlan, catChoices, initialLocation,
+  outsideCapabilityForCat, renameCats, rfidFromCapability,
 } from '../../lib/cats';
 import {
   EventStore, clipUrl, imageUrl, isEventConcluded, usableSubevents,
@@ -55,9 +55,10 @@ const MANUAL_UNLOCK_MS = 120000;
 const LOCK_TICK_MS = 60000;
 
 /**
- * How often to re-read the door policies and the cats while connected. OnlyCat pushes nothing
- * when either changes, so a policy or cat added in the OnlyCat app reaches Homey on this clock —
- * or sooner, when the flap activates a policy we have not seen or reads a chip we do not track.
+ * How often to re-read the door policies and the cats' names while connected. OnlyCat pushes
+ * nothing when either changes, so a policy added in the OnlyCat app reaches Homey on this clock —
+ * or sooner, when the flap activates a policy we have not seen. New cats do not: they are added
+ * in Repair.
  */
 const ACCOUNT_SYNC_MS = 10 * 60000;
 
@@ -141,6 +142,9 @@ module.exports = class CatFlapDevice extends Homey.Device {
     private activePolicyId: number | null = null;
     private timeZone: string | null = null;
     private cats: TrackedCat[] = [];
+
+    /** Cats the owner switched off in pairing or Repair. Kept by name so events can still say who. */
+    private excluded: TrackedCat[] = [];
     private lastImage: Homey.Image | null = null;
     private currentImageUrl: string | null = null;
     private summaryTimer: ReturnType<typeof setTimeout> | null = null;
@@ -160,9 +164,6 @@ module.exports = class CatFlapDevice extends Homey.Device {
     private lockTimer: ReturnType<typeof setInterval> | null = null;
 
     private syncTimer: ReturnType<typeof setInterval> | null = null;
-
-    /** Single-flight: connect, the sync clock and an unknown chip can all ask at once. */
-    private catSync: Promise<void> | null = null;
 
     /** What was last pushed to the policy picker, so an unchanged list is not re-sent. */
     private appliedPolicyValues = '';
@@ -204,6 +205,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
       await this.seedAlarms();
 
       this.cats = (this.getStoreValue('cats') as TrackedCat[]) ?? [];
+      this.excluded = (this.getStoreValue('excludedCats') as TrackedCat[]) ?? [];
       this.logger.info(`init: ${this.cats.length} tracked cat(s)${
         this.cats.length ? ` — ${this.cats.map((c) => c.name).join(', ')}` : ''}`);
 
@@ -268,7 +270,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
         // Nothing to ask while the socket is down; the reconnect's own refresh covers the gap.
         if (!this.gateway?.connected) return;
         void this.refreshPolicies();
-        void this.syncCats().catch((e) => this.logger.error('cat sync:', e?.message ?? e));
+        void this.refreshCatNames().catch((e) => this.logger.error('cat names:', e?.message ?? e));
       }, ACCOUNT_SYNC_MS);
     }
 
@@ -493,7 +495,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
           ['policies', () => this.refreshPolicies()],
           ['lock', () => this.updateLockState()],
           ['history', () => this.backfillLatestEvent()],
-          ['cats', () => this.syncCats()],
+          ['cat names', () => this.refreshCatNames()],
           ['locations', () => this.refreshCatLocations()],
         ];
 
@@ -895,47 +897,27 @@ module.exports = class CatFlapDevice extends Homey.Device {
     }
 
     /**
-     * Pick up cats added, renamed or hidden in the OnlyCat app.
-     *
-     * Pairing and Repair used to be the only places the cat list was read, so a new cat meant a
-     * Repair. Runs on every connect, on the sync clock, and when the flap reads a chip we do not
-     * track — the moment a new cat first uses the door.
+     * Follow a cat renamed in the OnlyCat app. Never adds or removes one — see `renameCats`.
+     * The capability title follows; the Insights log keeps the name it was created with.
      */
-    private syncCats(): Promise<void> {
-      this.catSync ??= this.doSyncCats().finally(() => {
-        this.catSync = null;
-      });
-      return this.catSync;
-    }
-
-    private async doSyncCats(): Promise<void> {
-      const lastSeen = await this.gateway.getRfidLastSeenByDevice(this.deviceId);
-      const candidates = reconcileCats(this.cats, lastSeen, {});
-
+    private async refreshCatNames(): Promise<void> {
       const labels: Record<string, string | undefined> = {};
-      for (const cat of candidates) {
+      for (const cat of this.cats) {
         try {
           labels[cat.rfidCode] = (await this.gateway.getRfidProfile(this.deviceId, cat.rfidCode))?.label ?? undefined;
         } catch {
-          // A profile we cannot read keeps the name we have — never a reason to drop the cat.
+          // A profile we cannot read keeps the name we have.
         }
       }
 
-      const next = reconcileCats(this.cats, lastSeen, labels);
+      const next = renameCats(this.cats, labels);
       if (JSON.stringify(next) === JSON.stringify(this.cats)) return;
-
-      const added = next.filter((cat) => !this.cats.some((c) => c.rfidCode === cat.rfidCode));
-      const removed = this.cats.filter((cat) => !next.some((c) => c.rfidCode === cat.rfidCode));
-      this.logger.info(`cats: now ${next.map((c) => c.name).join(', ') || 'none'}`
-        + `${added.length ? ` (added ${added.map((c) => c.name).join(', ')})` : ''}`
-        + `${removed.length ? ` (hidden in OnlyCat: ${removed.map((c) => c.name).join(', ')})` : ''}`);
+      this.logger.info(`cats renamed: ${next.map((c) => c.name).join(', ')}`);
 
       this.cats = next;
       await this.setStoreValue('cats', next).catch(() => {});
       await this.syncCapabilities();
       await this.setSettings({ tracked_cats: next.map((cat) => cat.name).join(', ') || '—' }).catch(() => {});
-      // A new cat's tile should say where it is now, not stay blank until it next uses the door.
-      if (added.length) await this.refreshCatLocations(lastSeen, added);
     }
 
     private async refreshCatLocations(
@@ -1324,10 +1306,9 @@ module.exports = class CatFlapDevice extends Homey.Device {
         await this.fire(kind.trigger, base, { cat: rfid });
       }
 
-      if (!tracked) {
-        // Possibly a cat added in the OnlyCat app since we last looked. If so it gets its tile
-        // now; this event still fires as unknown, because at the time it was.
-        if (rfid) void this.syncCats().catch((error) => this.logger.error('cat sync:', error?.message ?? error));
+      // A cat the owner switched off is known, just not followed — it is not an unknown cat.
+      const switchedOff = this.excluded.some((cat) => cat.rfidCode === rfid);
+      if (!tracked && !switchedOff) {
         await this.fire('unknown_cat', {
           rfid, action: actionLabel, direction, image: this.lastImage,
         });
@@ -1348,8 +1329,9 @@ module.exports = class CatFlapDevice extends Homey.Device {
 
     private nameFor(rfid: string | null): string {
       if (!rfid) return this.t('event.a_cat');
-      const tracked = this.cats.find((cat) => cat.rfidCode === rfid);
-      return tracked?.name ?? this.t('event.unknown_cat');
+      const known = this.cats.find((cat) => cat.rfidCode === rfid)
+        ?? this.excluded.find((cat) => cat.rfidCode === rfid);
+      return known?.name ?? this.t('event.unknown_cat');
     }
 
     private async fire(card: string, tokens: Record<string, any>, state: Record<string, any> = {}): Promise<void> {
@@ -1410,15 +1392,56 @@ module.exports = class CatFlapDevice extends Homey.Device {
       await this.updateLockState();
     }
 
-    /** Called by the driver after a Repair that changed the key or the tracked cats. */
-    async applyRepair(apiKey: string, cats: TrackedCat[]): Promise<void> {
+    /**
+     * Called by the driver after a Repair that changed the key. The cats stay as they are; which
+     * ones are followed is the cat list's business.
+     */
+    async applyRepair(apiKey: string): Promise<void> {
       this.teardown();
       await this.setStoreValue('apiKey', apiKey);
-      await this.setStoreValue('cats', cats);
-      this.cats = cats;
-      await this.syncCapabilities();
       this.startTimers();
       await this.connect();
+    }
+
+    /** The Repair cat list: everything tracked, switched off, or new on the account. */
+    async catList(): Promise<CatChoice[]> {
+      if (!this.gateway?.connected) throw new Error(this.t('error.no_connection'));
+      const lastSeen = await this.gateway.getRfidLastSeenByDevice(this.deviceId);
+      const choices = catChoices(this.cats, this.excluded, lastSeen);
+      for (const choice of choices) {
+        try {
+          const label = (await this.gateway.getRfidProfile(this.deviceId, choice.rfidCode))?.label;
+          if (label) choice.name = label;
+        } catch { /* keep the name we have */ }
+      }
+      return choices;
+    }
+
+    /**
+     * Apply the owner's choice from Repair. A cat switched off loses its capabilities and its
+     * outside-today state. Its Insights logs survive: they belong to the device, not this app,
+     * and the SDK can only delete an app's own logs. Observed on a live Homey — both logs of a
+     * removed cat were still listed. Switching the cat back on reuses the same capability ids,
+     * so its history simply continues. A cat switched on gets its current location at once.
+     */
+    async applyCatSelection(choices: CatChoice[]): Promise<void> {
+      const included = choices.filter((cat) => cat.included).map(({ rfidCode, name }) => ({ rfidCode, name }));
+      const excluded = choices.filter((cat) => !cat.included).map(({ rfidCode, name }) => ({ rfidCode, name }));
+      const added = included.filter((cat) => !this.cats.some((c) => c.rfidCode === cat.rfidCode));
+      const removed = this.cats.filter((cat) => !included.some((c) => c.rfidCode === cat.rfidCode));
+
+      for (const cat of removed) delete this.outside[cat.rfidCode];
+      this.cats = included;
+      this.excluded = excluded;
+      await this.setStoreValue('cats', included);
+      await this.setStoreValue('excludedCats', excluded);
+      await this.setStoreValue('outside', this.outside).catch(() => {});
+      await this.syncCapabilities();
+      await this.setSettings({ tracked_cats: included.map((cat) => cat.name).join(', ') || '—' }).catch(() => {});
+      await this.updateCatsHome().catch(() => {});
+      this.logger.info(`cats chosen in Repair: ${included.map((c) => c.name).join(', ') || 'none'}`
+        + `${removed.length ? ` (removed ${removed.map((c) => c.name).join(', ')})` : ''}`);
+      if (added.length && this.gateway?.connected) await this.refreshCatLocations(undefined, added);
     }
 
     /** Every capability instance currently representing a cat, for the autocomplete. */

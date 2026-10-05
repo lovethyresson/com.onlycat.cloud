@@ -62,7 +62,19 @@
     "continue": "Fortsätt",
     "checking": "Kontrollerar…",
     "empty": "Klistra in din OnlyCat API-nyckel först.",
-    "none": "Nyckeln fungerar, men det finns inga kattluckor på kontot."
+    "none": "Nyckeln fungerar, men det finns inga kattluckor på kontot.",
+    "cats": {
+      "title": "Katter",
+      "intro_pair": "Välj vilka katter som ska följas. Varje katt får en sensor som visar om den är hemma och hur länge den varit ute i dag.",
+      "intro_repair": "Välj vilka katter luckan följer. Katter som lagts till i OnlyCat-appen sedan sist visas här utan bock.",
+      "note_repair": "Bockar du ur en katt tas dess sensorer bort, och flöden som använder dem slutar fungera. Insights-historiken finns kvar i Insights, där du kan radera den; bockar du i katten igen fortsätter historiken.",
+      "none": "OnlyCat har inga katter för den här luckan ännu.",
+      "unnamed": "Namnlös katt",
+      "next": "Nästa",
+      "save": "Spara",
+      "change_key": "Byt API-nyckel",
+      "confirm_remove": "Sluta följa __names__? Sensorerna tas bort och flöden som använder dem slutar fungera. Insights-historiken finns kvar tills du raderar den i Insights."
+    }
   },
   "camera": {
     "last_event": "Senaste händelsen",

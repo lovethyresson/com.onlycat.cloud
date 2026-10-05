@@ -62,7 +62,19 @@
     "continue": "Weiter",
     "checking": "Wird geprüft…",
     "empty": "Füge zuerst deinen OnlyCat-API-Schlüssel ein.",
-    "none": "Der Schlüssel funktioniert, aber auf dem Konto gibt es keine Katzenklappen."
+    "none": "Der Schlüssel funktioniert, aber auf dem Konto gibt es keine Katzenklappen.",
+    "cats": {
+      "title": "Katzen",
+      "intro_pair": "Wähle, welchen Katzen gefolgt werden soll. Jede bekommt einen Sensor, der zeigt, ob sie zu Hause ist und wie lange sie heute draußen war.",
+      "intro_repair": "Wähle, welchen Katzen diese Klappe folgt. Katzen, die seit dem letzten Mal in der OnlyCat-App hinzugekommen sind, erscheinen hier ohne Haken.",
+      "note_repair": "Wenn du eine Katze abwählst, werden ihre Sensoren entfernt, und Flows, die sie verwenden, funktionieren nicht mehr. Ihr Insights-Verlauf bleibt in Insights, wo du ihn löschen kannst; hakst du die Katze wieder an, wird der Verlauf fortgesetzt.",
+      "none": "OnlyCat kennt für diese Klappe noch keine Katzen.",
+      "unnamed": "Katze ohne Namen",
+      "next": "Weiter",
+      "save": "Speichern",
+      "change_key": "API-Schlüssel ändern",
+      "confirm_remove": "__names__ nicht mehr folgen? Die Sensoren werden entfernt, und Flows, die sie verwenden, funktionieren nicht mehr. Der Insights-Verlauf bleibt, bis du ihn in Insights löschst."
+    }
   },
   "camera": {
     "last_event": "Letztes Ereignis",

@@ -1,6 +1,6 @@
 import Homey from 'homey';
 import PairSession from 'homey/lib/PairSession';
-import { TrackedCat, offerableCats } from '../../lib/cats';
+import { CatChoice, TrackedCat, offerableCats } from '../../lib/cats';
 import { ActionFilter } from '../../lib/events';
 import {
   Gateway, GATEWAY_URL, OnlyCatAuthError, verifyApiKey,
@@ -17,15 +17,28 @@ type CatFlapDevice = Homey.Device & {
     unlock(): Promise<void>;
     reboot(): Promise<void>;
     activatePolicy(policyId: number): Promise<void>;
-    applyRepair(apiKey: string, cats: TrackedCat[]): Promise<void>;
+    applyRepair(apiKey: string): Promise<void>;
+    catList(): Promise<CatChoice[]>;
+    applyCatSelection(choices: CatChoice[]): Promise<void>;
 };
 
 interface DiscoveredFlap {
     name: string;
     data: { id: string };
-    store: { apiKey: string; cats: TrackedCat[] };
+    store: { apiKey: string; cats: TrackedCat[]; excludedCats?: TrackedCat[] };
     settings: Record<string, string>;
 }
+
+/** What the shared cat view is handed: which flow it is in, and the cats per flap. */
+interface CatContext {
+    mode: 'pair' | 'repair';
+    flaps: { id: string; name: string; cats: CatChoice[] }[];
+    /** Why the list could not be read. The view still opens, so the key button stays reachable. */
+    error?: string;
+}
+
+/** What the cat view sends back: each flap's full list, with `included` set by the owner. */
+type CatSelection = Record<string, CatChoice[]>;
 
 module.exports = class CatFlapDriver extends Homey.Driver {
 
@@ -238,15 +251,27 @@ module.exports = class CatFlapDriver extends Homey.Driver {
 
     private pendingKeyName = '';
 
+    /** The account as read for this pairing session, so the cat view and the device list agree. */
+    private pendingFlaps: DiscoveredFlap[] | null = null;
+
+    private pendingSelection: CatSelection = {};
+
+    private async pendingDiscovery(): Promise<DiscoveredFlap[]> {
+      if (!this.pendingApiKey) {
+        this.logger.error('pair: discovery ran with no verified key — login never completed');
+        throw new Error('The API key did not carry over. Go back and enter it again.');
+      }
+      this.pendingFlaps ??= await this.discover(this.pendingApiKey, this.pendingKeyName);
+      return this.pendingFlaps;
+    }
+
     async onPair(session: PairSession): Promise<void> {
-      this.pendingApiKey = '';
-      this.pendingKeyName = '';
+      this.resetPairing();
       this.logger.info('pair: session started');
 
       session.setHandler('disconnect', async () => {
         this.logger.info('pair: session ended');
-        this.pendingApiKey = '';
-        this.pendingKeyName = '';
+        this.resetPairing();
       });
 
       /*
@@ -275,6 +300,7 @@ module.exports = class CatFlapDriver extends Homey.Driver {
           }
           this.pendingApiKey = key;
           this.pendingKeyName = name;
+          this.pendingFlaps = null;
           this.logger.info(`pair: key accepted, ${devices.length} flap(s) on the account`);
           return true;
         } catch (error: any) {
@@ -287,14 +313,30 @@ module.exports = class CatFlapDriver extends Homey.Driver {
         }
       });
 
+      // Between the key and the device list: which cats each flap should track. Every cat starts
+      // ticked, the way pairing has always worked; unticking one here costs nothing, since no
+      // capability exists yet.
+      session.setHandler('cat_context', async (): Promise<CatContext> => {
+        const flaps = await this.pendingDiscovery();
+        return {
+          mode: 'pair',
+          flaps: flaps.map((flap) => ({
+            id: flap.data.id,
+            name: flap.name,
+            cats: flap.store.cats.map((cat) => ({ ...cat, included: true })),
+          })),
+        };
+      });
+
+      session.setHandler('cats_selected', async (selection: CatSelection) => {
+        this.pendingSelection = selection ?? {};
+        this.logger.info(`pair: cats chosen for ${Object.keys(this.pendingSelection).length} flap(s)`);
+      });
+
       session.setHandler('list_devices', async () => {
         this.logger.info(`pair: list_devices called, holding ${redactKey(this.pendingApiKey)}`);
-        if (!this.pendingApiKey) {
-          this.logger.error('pair: list_devices ran with no verified key — login never completed');
-          throw new Error('The API key did not carry over. Go back and enter it again.');
-        }
         try {
-          const found = await this.discover(this.pendingApiKey, this.pendingKeyName);
+          const found = (await this.pendingDiscovery()).map((flap) => this.withSelection(flap));
           this.logger.info(`pair: offering ${found.length} flap(s)${
             found.length ? `: ${found.map((f) => f.data.id).join(', ')}` : ''}`);
           return found;
@@ -305,12 +347,59 @@ module.exports = class CatFlapDriver extends Homey.Driver {
       });
     }
 
+    private resetPairing(): void {
+      this.pendingApiKey = '';
+      this.pendingKeyName = '';
+      this.pendingFlaps = null;
+      this.pendingSelection = {};
+    }
+
+    /**
+     * A discovered flap with the owner's cat choice applied. The cats left out are stored as
+     * switched off, so the device's own sync does not add them back on its first connect.
+     */
+    private withSelection(flap: DiscoveredFlap): DiscoveredFlap {
+      const chosen = this.pendingSelection[flap.data.id];
+      if (!chosen) return flap;
+      const pick = (included: boolean) => chosen
+        .filter((cat) => cat.included === included)
+        .map(({ rfidCode, name }) => ({ rfidCode, name }));
+      const cats = pick(true);
+      return {
+        ...flap,
+        store: { ...flap.store, cats, excludedCats: pick(false) },
+        settings: { ...flap.settings, tracked_cats: cats.map((cat) => cat.name).join(', ') || '—' },
+      };
+    }
+
     async onRepair(session: PairSession, device: Homey.Device): Promise<void> {
       const deviceId = device.getData().id as string;
       this.logger.info(`repair: session started for ${deviceId}`);
 
       session.setHandler('disconnect', async () => {
         this.logger.info('repair: session ended');
+      });
+
+      // Repair opens on the cat list. Changing the key is a button on it, because the key screen
+      // cannot be pre-filled and putting it first would mean re-pasting the key every time.
+      // A rejected key is the commonest reason to open Repair, and it is exactly when the cat list
+      // cannot be read. Throwing here would leave the view with an alert and no way to the key
+      // screen, so the failure travels as data instead.
+      session.setHandler('cat_context', async (): Promise<CatContext> => {
+        const flap = { id: deviceId, name: device.getName() ?? '', cats: [] as CatChoice[] };
+        try {
+          flap.cats = await (device as CatFlapDevice).catList();
+          return { mode: 'repair', flaps: [flap] };
+        } catch (error: any) {
+          this.logger.error('repair: cat list unavailable:', error?.message ?? error);
+          return { mode: 'repair', flaps: [flap], error: error?.message ?? String(error) };
+        }
+      });
+
+      session.setHandler('cats_selected', async (selection: CatSelection) => {
+        const chosen = selection?.[deviceId];
+        if (!chosen) throw new Error('No cat selection arrived for this flap.');
+        await (device as CatFlapDevice).applyCatSelection(chosen);
       });
 
       session.setHandler('login', async ({ username, password }: { username: string; password: string }) => {
@@ -337,45 +426,8 @@ module.exports = class CatFlapDriver extends Homey.Driver {
           throw new Error('That key works, but this flap is not on its OnlyCat account.');
         }
 
-        // Re-read the cats too: Repair is also how a new cat gets picked up, and asking the owner
-        // to re-pair the whole flap for that would be absurd.
-        const gateway = new Gateway(
-          key,
-          (...a) => this.logger.debug('repair:', ...a),
-          (...a) => this.logger.error('repair:', ...a),
-          GATEWAY_URL,
-        );
-        gateway.connect();
-        let cats: TrackedCat[] = (device.getStoreValue('cats') as TrackedCat[]) ?? [];
-        try {
-          await new Promise<void>((resolve, reject) => {
-            const timer = this.homey.setTimeout(() => reject(new Error('Timed out')), 20000);
-            gateway.on('ready', () => {
-              this.homey.clearTimeout(timer); resolve();
-            });
-          });
-          const lastSeen = await gateway.getRfidLastSeenByDevice(deviceId);
-          const codes = offerableCats(lastSeen);
-          const refreshed: TrackedCat[] = [];
-          for (const rfidCode of codes) {
-            const existing = cats.find((cat) => cat.rfidCode === rfidCode);
-            let catName = existing?.name ?? rfidCode;
-            try {
-              const profile = await gateway.getRfidProfile(deviceId, rfidCode);
-              if (profile?.label) catName = profile.label;
-            } catch { /* keep the name we have */ }
-            refreshed.push({ rfidCode, name: catName });
-          }
-          if (refreshed.length) cats = refreshed;
-          this.logger.info(`repair: ${cats.length} cat(s) — ${cats.map((c) => c.name).join(', ') || 'none'}`);
-        } catch (error: any) {
-          this.logger.error('repair: cat refresh failed:', error?.message ?? error);
-        } finally {
-          gateway.destroy();
-        }
-
         await device.setSettings({ key_name: name || '—' }).catch(() => {});
-        await (device as CatFlapDevice).applyRepair(key, cats);
+        await (device as CatFlapDevice).applyRepair(key);
         this.logger.info('repair: applied');
         return true;
       });

@@ -62,7 +62,19 @@
     "continue": "Doorgaan",
     "checking": "Controleren…",
     "empty": "Plak eerst je OnlyCat-API-sleutel.",
-    "none": "De sleutel werkt, maar er staan geen kattenluiken op het account."
+    "none": "De sleutel werkt, maar er staan geen kattenluiken op het account.",
+    "cats": {
+      "title": "Katten",
+      "intro_pair": "Kies welke katten je wilt volgen. Elke kat krijgt een sensor die laat zien of hij thuis is en hoe lang hij vandaag buiten was.",
+      "intro_repair": "Kies welke katten dit luik volgt. Katten die sinds de vorige keer in de OnlyCat-app zijn toegevoegd, staan hier zonder vinkje.",
+      "note_repair": "Als je een kat uitvinkt, worden zijn sensoren verwijderd en werken Flows die ze gebruiken niet meer. De Insights-geschiedenis blijft in Insights staan, waar je die kunt verwijderen; vink je de kat weer aan, dan loopt de geschiedenis door.",
+      "none": "OnlyCat kent nog geen katten voor dit luik.",
+      "unnamed": "Kat zonder naam",
+      "next": "Volgende",
+      "save": "Opslaan",
+      "change_key": "API-sleutel wijzigen",
+      "confirm_remove": "__names__ niet meer volgen? De sensoren worden verwijderd en Flows die ze gebruiken werken niet meer. De Insights-geschiedenis blijft staan tot je die in Insights verwijdert."
+    }
   },
   "camera": {
     "outside_today": "vandaag buiten",

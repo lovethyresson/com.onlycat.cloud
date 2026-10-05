@@ -62,7 +62,19 @@
     "continue": "Continue",
     "checking": "Checking…",
     "empty": "Paste your OnlyCat API key first.",
-    "none": "That key works, but there are no cat flaps on the account."
+    "none": "That key works, but there are no cat flaps on the account.",
+    "cats": {
+      "title": "Cats",
+      "intro_pair": "Choose which cats to follow. Each one gets a sensor showing whether it is home, and how long it has been out today.",
+      "intro_repair": "Choose which cats this flap follows. Cats added in the OnlyCat app since you last looked appear here unticked.",
+      "note_repair": "Unticking a cat removes its sensors, and Flows that use them stop working. Its Insights history stays in Insights, where you can delete it; tick the cat again and the history carries on.",
+      "none": "OnlyCat has no cats for this flap yet.",
+      "unnamed": "Unnamed cat",
+      "next": "Next",
+      "save": "Save",
+      "change_key": "Change API key",
+      "confirm_remove": "Stop following __names__? Their sensors will be removed and Flows that use them will stop working. Their Insights history stays until you delete it in Insights."
+    }
   },
   "camera": {
     "last_event": "Last event",

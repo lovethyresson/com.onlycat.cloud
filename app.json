@@ -1762,6 +1762,9 @@
           }
         },
         {
+          "id": "select_cats"
+        },
+        {
           "id": "list_devices",
           "template": "list_devices",
           "navigation": {
@@ -1774,6 +1777,9 @@
         }
       ],
       "repair": [
+        {
+          "id": "select_cats"
+        },
         {
           "id": "login_credentials",
           "template": "login_credentials",
@@ -1936,7 +1942,16 @@
                 "da": "Fulgt",
                 "fr": "Suivis"
               },
-              "value": ""
+              "value": "",
+              "hint": {
+                "en": "To add or remove cats, repair the device. Cats you add in the OnlyCat app are not followed until you tick them there.",
+                "sv": "Reparera enheten för att lägga till eller ta bort katter. Katter du lägger till i OnlyCat-appen följs inte förrän du bockar i dem där.",
+                "de": "Um Katzen hinzuzufügen oder zu entfernen, repariere das Gerät. Katzen, die du in der OnlyCat-App hinzufügst, werden erst verfolgt, wenn du sie dort anhakst.",
+                "nl": "Repareer het apparaat om katten toe te voegen of te verwijderen. Katten die je in de OnlyCat-app toevoegt, worden pas gevolgd als je ze daar aanvinkt.",
+                "no": "Reparer enheten for å legge til eller fjerne katter. Katter du legger til i OnlyCat-appen følges ikke før du huker dem av der.",
+                "da": "Reparer enheden for at tilføje eller fjerne katte. Katte, du tilføjer i OnlyCat-appen, følges ikke, før du sætter flueben ved dem der.",
+                "fr": "Pour ajouter ou retirer des chats, réparez l'appareil. Les chats ajoutés dans l'application OnlyCat ne sont suivis qu'une fois cochés à cet endroit."
+              }
             }
           ]
         },

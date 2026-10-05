@@ -62,7 +62,19 @@
     "continue": "Fortsæt",
     "checking": "Kontrollerer…",
     "empty": "Indsæt din OnlyCat-API-nøgle først.",
-    "none": "Nøglen virker, men der er ingen kattelemme på kontoen."
+    "none": "Nøglen virker, men der er ingen kattelemme på kontoen.",
+    "cats": {
+      "title": "Katte",
+      "intro_pair": "Vælg hvilke katte der skal følges. Hver kat får en sensor, der viser, om den er hjemme, og hvor længe den har været ude i dag.",
+      "intro_repair": "Vælg hvilke katte lemmen følger. Katte, der er tilføjet i OnlyCat-appen siden sidst, vises her uden flueben.",
+      "note_repair": "Fjerner du fluebenet ved en kat, fjernes dens sensorer, og flows, der bruger dem, holder op med at virke. Insights-historikken bliver i Insights, hvor du kan slette den; sætter du flueben ved katten igen, fortsætter historikken.",
+      "none": "OnlyCat har ingen katte til denne lem endnu.",
+      "unnamed": "Navnløs kat",
+      "next": "Næste",
+      "save": "Gem",
+      "change_key": "Skift API-nøgle",
+      "confirm_remove": "Stop med at følge __names__? Sensorerne fjernes, og flows, der bruger dem, holder op med at virke. Insights-historikken bliver, indtil du sletter den i Insights."
+    }
   },
   "camera": {
     "last_event": "Seneste hændelse",

@@ -1,8 +1,10 @@
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync, statSync } from 'node:fs';
+import {
+  existsSync, readFileSync, readdirSync, statSync,
+} from 'node:fs';
 import { describe, it } from 'node:test';
 import {
-  capabilityForCat, capabilitySyncPlan, initialLocation, offerableCats, reconcileCats, rfidFromCapability,
+  capabilityForCat, capabilitySyncPlan, catChoices, initialLocation, offerableCats, renameCats, rfidFromCapability,
 } from '../lib/cats';
 import {
   EventStore, clipUrl, isSummaryFinal, posterFrame, usableSubevents,
@@ -339,30 +341,30 @@ describe('cats as capabilities', () => {
     assert.deepEqual(offered, ['A']);
   });
 
-  it('picks up a cat added in the OnlyCat app, and keeps the ones it has', () => {
-    const next = reconcileCats(
-      [{ rfidCode: 'A', name: 'Zorro' }],
-      [{ deviceId: 'd', rfidCode: 'A' }, { deviceId: 'd', rfidCode: 'B' }],
-      { B: 'Misan' },
-    );
-    assert.deepEqual(next, [{ rfidCode: 'A', name: 'Zorro' }, { rfidCode: 'B', name: 'Misan' }]);
-  });
-
-  it('renames from the profile, and keeps the old name when there is none', () => {
+  it('only renames in the background — never adds or removes a cat', () => {
+    // Which cats are followed is chosen in pairing and Repair. A cat added in the OnlyCat app
+    // waits in the Repair list; one hidden there keeps its sensors until the owner removes it,
+    // because removing is the step that carries the warning.
     const current = [{ rfidCode: 'A', name: 'Zorro' }, { rfidCode: 'B', name: 'Misan' }];
-    const lastSeen = [{ deviceId: 'd', rfidCode: 'A' }, { deviceId: 'd', rfidCode: 'B' }];
-    assert.deepEqual(reconcileCats(current, lastSeen, { A: 'Zorro II' }),
+    assert.deepEqual(renameCats(current, { A: 'Zorro II', C: 'Newcomer' }),
       [{ rfidCode: 'A', name: 'Zorro II' }, { rfidCode: 'B', name: 'Misan' }]);
   });
 
-  it('drops a cat hidden in OnlyCat, but never one merely missing from the reply', () => {
-    // Removing a capability takes its Insights and Flows with it. A gap in one query is not
-    // evidence the cat is gone; hiding it in OnlyCat is.
-    const current = [{ rfidCode: 'A', name: 'Zorro' }, { rfidCode: 'B', name: 'Misan' }];
-    const next = reconcileCats(current, [
-      { deviceId: 'd', rfidCode: 'B', hiddenAt: '2026-01-01T00:00:00Z' },
-    ], {});
-    assert.deepEqual(next, [{ rfidCode: 'A', name: 'Zorro' }]);
+  it('lists tracked, switched-off and new cats for the Repair view, never hidden ones', () => {
+    const choices = catChoices(
+      [{ rfidCode: 'A', name: 'Zorro' }],
+      [{ rfidCode: 'B', name: 'Misan' }, { rfidCode: 'H', name: 'Neighbour' }],
+      [
+        { deviceId: 'd', rfidCode: 'A' },
+        { deviceId: 'd', rfidCode: 'C' },
+        { deviceId: 'd', rfidCode: 'H', hiddenAt: '2026-01-01T00:00:00Z' },
+      ],
+    );
+    assert.deepEqual(choices, [
+      { rfidCode: 'A', name: 'Zorro', included: true },
+      { rfidCode: 'B', name: 'Misan', included: false },
+      { rfidCode: 'C', name: 'C', included: false },
+    ]);
   });
 
   it('treats an unknown location as null, not as "out"', () => {
@@ -677,22 +679,31 @@ describe('pairing', () => {
       'the placeholder should show what an OnlyCat key looks like');
   });
 
-  it('chains to the device list and then adds', () => {
-    assert.equal(driver.pair[1].template, 'list_devices');
-    assert.equal(driver.pair[1].navigation?.next, 'add_devices');
-    assert.equal(driver.pair[2].template, 'add_devices');
+  it('asks which cats to follow, then chains to the device list and adds', () => {
+    // The cat view sits AFTER the credentials view, so the login handler still cannot be skipped,
+    // and declares no navigation: Homey would draw its own Next button, which is exactly how a
+    // custom view once walked past verification. The script calls nextView() itself.
+    assert.equal(driver.pair[1].id, 'select_cats');
+    assert.equal(driver.pair[1].template, undefined);
+    assert.equal(driver.pair[1].navigation, undefined);
+    assert.equal(driver.pair[2].template, 'list_devices');
+    assert.equal(driver.pair[2].navigation?.next, 'add_devices');
+    assert.equal(driver.pair[3].template, 'add_devices');
   });
 
-  it('gives repair the same view and nothing after it', () => {
-    assert.equal(driver.repair.length, 1);
-    assert.equal(driver.repair[0].template, 'login_credentials');
+  it('opens repair on the cat list, with the key screen behind it and nothing after', () => {
+    // The key screen cannot be pre-filled, so leading with it would mean re-pasting the key just
+    // to untick a cat. The cat view reaches it with showView().
+    assert.deepEqual(driver.repair.map((v: any) => v.id), ['select_cats', 'login_credentials']);
     assert.equal(driver.repair[0].navigation, undefined);
+    assert.equal(driver.repair[1].template, 'login_credentials');
+    assert.equal(driver.repair[1].navigation, undefined);
   });
 
-  it('ships no hand-rolled pairing HTML', () => {
-    // If a custom view ever comes back it should be a decision, not a leftover.
-    assert.equal(existsSync('drivers/cat_flap/pair'), false, 'a custom pair view has reappeared');
-    assert.equal(existsSync('drivers/cat_flap/repair'), false, 'a custom repair view has reappeared');
+  it('ships exactly one custom view, shared by pairing and repair', () => {
+    // If another custom view comes along it should be a decision, not a leftover.
+    assert.deepEqual(readdirSync('drivers/cat_flap/pair'), ['select_cats.html']);
+    assert.deepEqual(readdirSync('drivers/cat_flap/repair'), ['select_cats.html']);
   });
 
   it('records which key a flap is using', () => {

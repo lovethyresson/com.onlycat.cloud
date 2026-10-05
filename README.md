@@ -75,10 +75,16 @@ npx homey app install
 > **An OnlyCat API key has full access to your OnlyCat account, and there is no way to limit it.**
 > Make a key just for Homey so you can revoke that one on its own later.
 
-Homey lists the flaps on the account and picks up the cats OnlyCat knows about, skipping any you
-have hidden as neighbours' cats. Cats and door policies you add, rename or hide in the OnlyCat app
-later reach Homey by themselves: within ten minutes, at once when a new cat first uses the flap,
-and on every app restart. To change the key later, use the device's **Repair**.
+Homey then lists the cats OnlyCat knows about, skipping any you have hidden as neighbours' cats,
+all ticked. Untick any you do not want followed, then pick the flaps. Door policies you add in the
+OnlyCat app later, and new names for your cats, reach Homey by themselves within ten minutes and on
+every app restart.
+
+**New cats are added in Repair, not automatically.** The device's **Repair** opens on the same cat
+list, with any cat added in the OnlyCat app since showing unticked. Ticking a cat adds its sensors.
+Unticking one removes them, and Flows using them stop working — Homey asks first. Its **Insights
+history stays** in Insights, where you can delete it; tick the cat again and the history carries
+on. **Change API key** at the bottom of that screen is where a new key goes.
 
 ## Flow cards
 
