@@ -5,11 +5,26 @@ wording lives in `.homeychangelog.json`; the short version is in the [README](..
 
 | Version | Highlights |
 |---|---|
+| **1.0.5** | Which cats a flap follows is chosen by the owner: one custom view, `assets/pair/cats.js`, shared by pairing (after the credentials view) and Repair (first, with Change API key behind it). Unticking a tracked cat in Repair confirms by name. The background sync no longer adds or removes cats — `reconcileCats()` became `renameCats()` — and switched-off cats are remembered in `excludedCats`. Copy no longer claims Insights history is deleted. |
 | **1.0.4** | Cats and door policies are re-read while connected, not only at pairing, Repair and connect. `syncCats()` (new `reconcileCats()` in `lib/cats.ts`) runs on every connect, every ten minutes (`ACCOUNT_SYNC_MS`) and when an untracked chip uses the flap. `refreshPolicies()` runs on the same clock and on a `deviceUpdate` naming an active policy we do not know. The gateway logs any push it has no handler for. Fixes Repair stopping the lock and outside-today ticks. |
 | **1.0.3** | `homeyCommunityTopicId` points the store page's Community link at [the forum thread](https://community.homey.app/t/159946). No code change. |
 | **1.0.2** | `alarm_prey_ONLYCAT` and `alarm_human_ONLYCAT` fall on a five-minute hold (`CLASSIFICATION_HOLD_MS`) instead of latching until the next event's classification. `seedAlarms()` now lowers all three alarms at startup rather than only filling blanks. |
 | **1.0.1** | Connection hardening. A flap OnlyCat reports as offline no longer marks the Homey device unavailable. `alarm_connectivity` says the flap is down, availability says our socket is down, and neither writes the other's signal any more. |
 | **1.0.0** | First release. One Homey device per flap (`class: "lock"`, official `locked` made read-only via `capabilitiesOptions`, policy picker owning the quick-action slot). Cats are runtime capability instances rather than devices. Full event pipeline — `deviceEventUpdate` → `getEvent` + `getEventSummary` — firing Flow cards on the final summary only, since OnlyCat revises a TRANSIT to a PEEK mid-event and Homey cannot un-fire a trigger. Lock state and refusal reasons are both computed from a local re-implementation of the flap's transit-policy engine, which reports an un-confident result rather than naming a cause it cannot stand behind. Image Flow token on every event card. Seven languages. |
+
+## 1.0.5 notes
+
+**Why settings could not hold it.** Device settings are one static form per driver: no row per cat, no per-device labels, no confirmation dialog. A per-cat switch needs a list built at runtime and a real confirm, and a pair/repair view is the only Homey surface with both. The *Tracked* row in settings now carries a hint pointing at Repair.
+
+**Repair opens on the cat list, not the key.** `login_credentials` cannot be pre-filled, so leading with it would mean re-pasting the API key just to untick a cat. The key screen is reached with `showView('login_credentials')`. A rejected key is the commonest reason to open Repair and exactly when the list cannot be read, so `cat_context` returns the failure as data and the view still offers the key button.
+
+**Pairing asks before the device list, not after.** Placing the view between `list_devices` and `add_devices` would mean reading Homey's selected-devices view store, whose keys are undocumented. Before the list, the driver owns everything: `cat_context` and `list_devices` share one cached discovery, and the choice goes into each device's store as `cats` and `excludedCats`.
+
+**1.0.4's auto-add is reversed.** The owner wanted the list to be theirs, and auto-removing a cat hidden in OnlyCat skipped the warning a manual removal now carries. `renameCats()` only follows profile names. New cats wait unticked in Repair; a switched-off cat no longer fires *unknown cat* and is still named in events.
+
+**Insights logs survive `removeCapability()`.** The first draft of the warning said a cat's history would be deleted, copied from Nibe's identical string. On a live Homey both logs of a removed cat were still listed, and the SDK's `ManagerInsights` only reaches logs the app created. Deleting them would need the Web API permission, which this app does not request. The copy now says the history stays and can be deleted in Insights; re-ticking a cat reuses its capability ids, so the log continues.
+
+**Tested where the tests can reach.** `test/cat-view.test.ts` runs the view with a global `Homey` and calls nothing. Wrapped in the settings-page `onHomeyReady` form it fails 5 of 6. Unverified on hardware: Homey's checkbox styling, `Homey.confirm`, and whether Repair closes after a key change reached through `showView`.
 
 ## 1.0.4 notes
 

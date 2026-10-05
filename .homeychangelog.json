@@ -1,4 +1,13 @@
 {
+  "1.0.5": {
+    "en": "You now choose which cats to follow, when pairing and in the device's Repair. New cats from the OnlyCat app are no longer added automatically: open Repair and tick them.",
+    "sv": "Du väljer nu vilka katter som ska följas, vid parkoppling och under enhetens Reparera. Nya katter från OnlyCat-appen läggs inte längre till automatiskt: öppna Reparera och bocka i dem.",
+    "de": "Du wählst jetzt selbst, welchen Katzen gefolgt wird – beim Koppeln und in der Reparatur des Geräts. Neue Katzen aus der OnlyCat-App werden nicht mehr automatisch hinzugefügt: Öffne die Reparatur und hake sie an.",
+    "nl": "Je kiest nu zelf welke katten je volgt, bij het koppelen en via Repareren van het apparaat. Nieuwe katten uit de OnlyCat-app worden niet meer automatisch toegevoegd: open Repareren en vink ze aan.",
+    "no": "Du velger nå hvilke katter som skal følges, ved paring og under enhetens Reparer. Nye katter fra OnlyCat-appen legges ikke lenger til automatisk: åpne Reparer og huk dem av.",
+    "da": "Du vælger nu selv, hvilke katte der følges, ved parring og under enhedens Reparer. Nye katte fra OnlyCat-appen tilføjes ikke længere automatisk: åbn Reparer og sæt flueben ved dem.",
+    "fr": "Vous choisissez désormais les chats à suivre, lors de l'appairage et dans Réparer de l'appareil. Les nouveaux chats de l'application OnlyCat ne sont plus ajoutés automatiquement : ouvrez Réparer et cochez-les."
+  },
   "1.0.4": {
     "en": "Cats and door policies you add or rename in the OnlyCat app now appear in Homey on their own, without a Repair. A new cat gets its tile the first time it uses the flap.",
     "sv": "Katter och dörregler som du lägger till eller byter namn på i OnlyCat-appen dyker nu upp i Homey av sig själva, utan Reparera. En ny katt får sin ruta första gången den använder luckan.",
