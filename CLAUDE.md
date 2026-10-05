@@ -86,6 +86,7 @@ prints "three policies, Night is active, two rules the app cannot evaluate", not
   `Evidence.restatement` so the unseen-trip arithmetic cannot fire. The general rule: **before
   charging an unseen trip, ask whether anything actually happened.** A query answering "where is
   this cat" never means "something just happened".
+- **Policies and cats change with no push.** Nobody has seen a policy or RFID-profile push, so `syncCats()` and `refreshPolicies()` run on connect, on a ten-minute clock, and on the two cheap signals there are: an untracked chip at the flap, and a `deviceUpdate` naming a policy we do not know. Cats are added freely and removed **only** when OnlyCat returns them `hiddenAt`. A chip missing from one reply is kept, because removing a capability takes its Insights log and Flows with it. `socket.onAny` logs unhandled pushes; if one turns up for these, wire it and keep the clock as backstop.
 - **`BREACH` counts as a transit; `PEEK` and `DENY` leave the cat where it was.** Use
   `locationFromSubevent`, which is OnlyCat's own function. Do not re-derive it.
 - **A summary is provisional until `processedFrameCount === frameCount`** and genuinely changes — a

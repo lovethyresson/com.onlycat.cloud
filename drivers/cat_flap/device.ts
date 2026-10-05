@@ -1,7 +1,7 @@
 import Homey from 'homey';
 import {
   CAT_CAPABILITY, TrackedCat, capabilityForCat, capabilitySyncPlan, initialLocation,
-  outsideCapabilityForCat, rfidFromCapability,
+  outsideCapabilityForCat, reconcileCats, rfidFromCapability,
 } from '../../lib/cats';
 import {
   EventStore, clipUrl, imageUrl, isEventConcluded, usableSubevents,
@@ -11,7 +11,7 @@ import { Gateway, GATEWAY_URL, OnlyCatAuthError } from '../../lib/gateway';
 import { Logger } from '../../lib/log';
 import {
   EventClassification, EventTriggerSource, OnlyCatDeviceTransitPolicy, OnlyCatEvent,
-  OnlyCatEventSummary, OnlyCatSubEvent, effectiveClassification, macAddress,
+  OnlyCatEventSummary, OnlyCatRfidLastSeen, OnlyCatSubEvent, effectiveClassification, macAddress,
 } from '../../lib/onlycat/models';
 import {
   Evidence, OutsideState, applyLocation, emptyState, hoursToday, localDay, rollOver, unseenFraction,
@@ -53,6 +53,13 @@ const MANUAL_UNLOCK_MS = 120000;
 
 /** How often to re-evaluate the idle lock state, so a curfew boundary is noticed. */
 const LOCK_TICK_MS = 60000;
+
+/**
+ * How often to re-read the door policies and the cats while connected. OnlyCat pushes nothing
+ * when either changes, so a policy or cat added in the OnlyCat app reaches Homey on this clock —
+ * or sooner, when the flap activates a policy we have not seen or reads a chip we do not track.
+ */
+const ACCOUNT_SYNC_MS = 10 * 60000;
 
 /** One id shared by the still and the clip, so the still becomes the clip's poster frame. */
 /**
@@ -152,6 +159,14 @@ module.exports = class CatFlapDevice extends Homey.Device {
 
     private lockTimer: ReturnType<typeof setInterval> | null = null;
 
+    private syncTimer: ReturnType<typeof setInterval> | null = null;
+
+    /** Single-flight: connect, the sync clock and an unknown chip can all ask at once. */
+    private catSync: Promise<void> | null = null;
+
+    /** What was last pushed to the policy picker, so an unchanged list is not re-sent. */
+    private appliedPolicyValues = '';
+
     private clipVideo: any = null;
 
     /** While set, the derived lock state defers to a remote unlock the owner just asked for. */
@@ -234,12 +249,27 @@ module.exports = class CatFlapDevice extends Homey.Device {
       // Time-range rules change on the clock, not on an event: a curfew starting at 22:00 must
       // show up without waiting for the next cat. A minute's granularity is plenty and costs
       // nothing; computing exact boundaries across wrapping ranges would not buy anything.
+      this.startTimers();
+      await this.connect();
+    }
+
+    /**
+     * Owned by the device, not the connection, and started again after a Repair — whose
+     * `teardown()` clears them. Before 1.0.4 it did not, and a repaired flap stopped noticing
+     * curfew boundaries until the app restarted.
+     */
+    private startTimers(): void {
       this.lockTimer = this.homey.setInterval(() => {
         void this.updateLockState().catch((e) => this.logger.error('lock tick:', e?.message ?? e));
         void this.updateOutside().catch((e) => this.logger.error('outside tick:', e?.message ?? e));
       }, LOCK_TICK_MS);
 
-      await this.connect();
+      this.syncTimer = this.homey.setInterval(() => {
+        // Nothing to ask while the socket is down; the reconnect's own refresh covers the gap.
+        if (!this.gateway?.connected) return;
+        void this.refreshPolicies();
+        void this.syncCats().catch((e) => this.logger.error('cat sync:', e?.message ?? e));
+      }, ACCOUNT_SYNC_MS);
     }
 
     /**
@@ -316,6 +346,8 @@ module.exports = class CatFlapDevice extends Homey.Device {
     private teardown(): void {
       if (this.lockTimer) this.homey.clearInterval(this.lockTimer);
       this.lockTimer = null;
+      if (this.syncTimer) this.homey.clearInterval(this.syncTimer);
+      this.syncTimer = null;
       if (this.summaryTimer) this.homey.clearTimeout(this.summaryTimer);
       if (this.motionTimer) this.homey.clearTimeout(this.motionTimer);
       this.summaryTimer = null;
@@ -402,7 +434,14 @@ module.exports = class CatFlapDevice extends Homey.Device {
       this.logger.debug('deviceUpdate -> re-reading the device');
       // Push payloads are invalidation signals, not data — both other clients re-fetch rather
       // than trusting the body, and the body is a Partial<Device> anyway.
-      void this.refreshDevice().catch((error) => this.logger.error('device refresh failed:', error?.message ?? error));
+      void this.refreshDevice()
+        .then(async () => {
+          // A policy created in the OnlyCat app and activated there arrives as nothing more than
+          // a new id on the device. Re-read the list rather than show a picker missing its value.
+          const known = this.policies.some((p) => p.deviceTransitPolicyId === this.activePolicyId);
+          if (this.activePolicyId != null && !known) await this.refreshPolicies();
+        })
+        .catch((error) => this.logger.error('device refresh failed:', error?.message ?? error));
     };
 
     // ------------------------------------------------------------------------------------------
@@ -454,7 +493,8 @@ module.exports = class CatFlapDevice extends Homey.Device {
           ['policies', () => this.refreshPolicies()],
           ['lock', () => this.updateLockState()],
           ['history', () => this.backfillLatestEvent()],
-          ['cats', () => this.refreshCatLocations()],
+          ['cats', () => this.syncCats()],
+          ['locations', () => this.refreshCatLocations()],
         ];
 
         for (const [name, run] of stages) {
@@ -545,10 +585,18 @@ module.exports = class CatFlapDevice extends Homey.Device {
       if (!values.length) return;
 
       // The enum's values are per-device and only knowable at runtime, so they are pushed with
-      // setCapabilityOptions() rather than declared in compose.
-      await this.setCapabilityOptions('policy_ONLYCAT', { values }).catch((error) => {
-        this.error('setCapabilityOptions(policy) failed:', error?.message ?? error);
-      });
+      // setCapabilityOptions() rather than declared in compose. Only when they changed: this
+      // now runs on the sync clock too, and re-sending an identical list is churn for nothing.
+      const serialized = JSON.stringify(values);
+      if (serialized !== this.appliedPolicyValues) {
+        await this.setCapabilityOptions('policy_ONLYCAT', { values })
+          .then(() => {
+            this.appliedPolicyValues = serialized;
+          })
+          .catch((error) => {
+            this.error('setCapabilityOptions(policy) failed:', error?.message ?? error);
+          });
+      }
 
       if (this.activePolicyId != null) {
         await this.setCapabilityValue('policy_ONLYCAT', String(this.activePolicyId)).catch(() => {});
@@ -846,11 +894,58 @@ module.exports = class CatFlapDevice extends Homey.Device {
       await this.backfillLastRefusal(usable);
     }
 
-    private async refreshCatLocations(): Promise<void> {
-      if (!this.cats.length) return;
+    /**
+     * Pick up cats added, renamed or hidden in the OnlyCat app.
+     *
+     * Pairing and Repair used to be the only places the cat list was read, so a new cat meant a
+     * Repair. Runs on every connect, on the sync clock, and when the flap reads a chip we do not
+     * track — the moment a new cat first uses the door.
+     */
+    private syncCats(): Promise<void> {
+      this.catSync ??= this.doSyncCats().finally(() => {
+        this.catSync = null;
+      });
+      return this.catSync;
+    }
+
+    private async doSyncCats(): Promise<void> {
+      const lastSeen = await this.gateway.getRfidLastSeenByDevice(this.deviceId);
+      const candidates = reconcileCats(this.cats, lastSeen, {});
+
+      const labels: Record<string, string | undefined> = {};
+      for (const cat of candidates) {
+        try {
+          labels[cat.rfidCode] = (await this.gateway.getRfidProfile(this.deviceId, cat.rfidCode))?.label ?? undefined;
+        } catch {
+          // A profile we cannot read keeps the name we have — never a reason to drop the cat.
+        }
+      }
+
+      const next = reconcileCats(this.cats, lastSeen, labels);
+      if (JSON.stringify(next) === JSON.stringify(this.cats)) return;
+
+      const added = next.filter((cat) => !this.cats.some((c) => c.rfidCode === cat.rfidCode));
+      const removed = this.cats.filter((cat) => !next.some((c) => c.rfidCode === cat.rfidCode));
+      this.logger.info(`cats: now ${next.map((c) => c.name).join(', ') || 'none'}`
+        + `${added.length ? ` (added ${added.map((c) => c.name).join(', ')})` : ''}`
+        + `${removed.length ? ` (hidden in OnlyCat: ${removed.map((c) => c.name).join(', ')})` : ''}`);
+
+      this.cats = next;
+      await this.setStoreValue('cats', next).catch(() => {});
+      await this.syncCapabilities();
+      await this.setSettings({ tracked_cats: next.map((cat) => cat.name).join(', ') || '—' }).catch(() => {});
+      // A new cat's tile should say where it is now, not stay blank until it next uses the door.
+      if (added.length) await this.refreshCatLocations(lastSeen, added);
+    }
+
+    private async refreshCatLocations(
+      known?: OnlyCatRfidLastSeen[],
+      cats: TrackedCat[] = this.cats,
+    ): Promise<void> {
+      if (!cats.length) return;
       try {
-        const lastSeen = await this.gateway.getRfidLastSeenByDevice(this.deviceId);
-        for (const cat of this.cats) {
+        const lastSeen = known ?? await this.gateway.getRfidLastSeenByDevice(this.deviceId);
+        for (const cat of cats) {
           const entry = lastSeen.find((e) => e.rfidCode === cat.rfidCode);
           if (!entry) continue;
           const location = initialLocation(entry);
@@ -1230,6 +1325,9 @@ module.exports = class CatFlapDevice extends Homey.Device {
       }
 
       if (!tracked) {
+        // Possibly a cat added in the OnlyCat app since we last looked. If so it gets its tile
+        // now; this event still fires as unknown, because at the time it was.
+        if (rfid) void this.syncCats().catch((error) => this.logger.error('cat sync:', error?.message ?? error));
         await this.fire('unknown_cat', {
           rfid, action: actionLabel, direction, image: this.lastImage,
         });
@@ -1319,6 +1417,7 @@ module.exports = class CatFlapDevice extends Homey.Device {
       await this.setStoreValue('cats', cats);
       this.cats = cats;
       await this.syncCapabilities();
+      this.startTimers();
       await this.connect();
     }
 

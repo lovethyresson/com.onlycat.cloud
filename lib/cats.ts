@@ -52,6 +52,29 @@ export function offerableCats(lastSeen: OnlyCatRfidLastSeen[]): string[] {
     .filter((code, index, all) => code && all.indexOf(code) === index);
 }
 
+/**
+ * The tracked cats after a fresh look at the account.
+ *
+ * Adds every chip pairing would have offered and drops the ones the household has since hidden,
+ * which is what makes OnlyCat's own "not my cat" reach Homey. A chip that is merely missing from
+ * `lastSeen` is kept: that list is a query, not a roster, and removing a capability takes its
+ * Insights history and every Flow pointing at it along with it — not a price to pay for a gap in
+ * one reply. Existing cats keep their order; new ones are appended. `labels` carries the names
+ * from the cats' OnlyCat profiles, and a cat with no label keeps the name it had.
+ */
+export function reconcileCats(
+  current: TrackedCat[],
+  lastSeen: OnlyCatRfidLastSeen[],
+  labels: Record<string, string | undefined>,
+): TrackedCat[] {
+  const hidden = new Set(lastSeen.filter((entry) => entry.hiddenAt).map((entry) => entry.rfidCode));
+  const kept = current.filter((cat) => !hidden.has(cat.rfidCode));
+  const added = offerableCats(lastSeen)
+    .filter((code) => !kept.some((cat) => cat.rfidCode === code))
+    .map((rfidCode) => ({ rfidCode, name: rfidCode }));
+  return [...kept, ...added].map((cat) => ({ rfidCode: cat.rfidCode, name: labels[cat.rfidCode] || cat.name }));
+}
+
 /** Initial location for a chip, from whatever OnlyCat last recorded. */
 export function initialLocation(entry: OnlyCatRfidLastSeen): boolean | null {
   const explicit = entry.location ?? locationFromSubevent(entry.lastSubevent);

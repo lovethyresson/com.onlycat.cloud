@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { describe, it } from 'node:test';
 import {
-  capabilityForCat, capabilitySyncPlan, initialLocation, offerableCats, rfidFromCapability,
+  capabilityForCat, capabilitySyncPlan, initialLocation, offerableCats, reconcileCats, rfidFromCapability,
 } from '../lib/cats';
 import {
   EventStore, clipUrl, isSummaryFinal, posterFrame, usableSubevents,
@@ -337,6 +337,32 @@ describe('cats as capabilities', () => {
       { deviceId: 'd', rfidCode: 'B', hiddenAt: '2026-01-01T00:00:00Z' },
     ]);
     assert.deepEqual(offered, ['A']);
+  });
+
+  it('picks up a cat added in the OnlyCat app, and keeps the ones it has', () => {
+    const next = reconcileCats(
+      [{ rfidCode: 'A', name: 'Zorro' }],
+      [{ deviceId: 'd', rfidCode: 'A' }, { deviceId: 'd', rfidCode: 'B' }],
+      { B: 'Misan' },
+    );
+    assert.deepEqual(next, [{ rfidCode: 'A', name: 'Zorro' }, { rfidCode: 'B', name: 'Misan' }]);
+  });
+
+  it('renames from the profile, and keeps the old name when there is none', () => {
+    const current = [{ rfidCode: 'A', name: 'Zorro' }, { rfidCode: 'B', name: 'Misan' }];
+    const lastSeen = [{ deviceId: 'd', rfidCode: 'A' }, { deviceId: 'd', rfidCode: 'B' }];
+    assert.deepEqual(reconcileCats(current, lastSeen, { A: 'Zorro II' }),
+      [{ rfidCode: 'A', name: 'Zorro II' }, { rfidCode: 'B', name: 'Misan' }]);
+  });
+
+  it('drops a cat hidden in OnlyCat, but never one merely missing from the reply', () => {
+    // Removing a capability takes its Insights and Flows with it. A gap in one query is not
+    // evidence the cat is gone; hiding it in OnlyCat is.
+    const current = [{ rfidCode: 'A', name: 'Zorro' }, { rfidCode: 'B', name: 'Misan' }];
+    const next = reconcileCats(current, [
+      { deviceId: 'd', rfidCode: 'B', hiddenAt: '2026-01-01T00:00:00Z' },
+    ], {});
+    assert.deepEqual(next, [{ rfidCode: 'A', name: 'Zorro' }]);
   });
 
   it('treats an unknown location as null, not as "out"', () => {

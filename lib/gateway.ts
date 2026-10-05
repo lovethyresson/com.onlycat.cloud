@@ -36,6 +36,11 @@ export const STATUS_UNAUTHORIZED = 401;
 const ACK_TIMEOUT_MS = 20000;
 const RECONNECT_DELAY_MS = 5000;
 
+/** Every server push the gateway listens for. Anything else is logged once seen. */
+const HANDLED_PUSHES = new Set([
+  'userUpdate', 'deviceUpdate', 'deviceEventUpdate', 'eventUpdate', 'eventSummaryUpdate',
+]);
+
 export class OnlyCatAuthError extends Error {}
 export class OnlyCatRequestError extends Error {}
 
@@ -212,6 +217,12 @@ export class Gateway {
         const data = merge(payload);
         if (!data.deviceId || data.eventId == null) return;
         this.emit('eventUpdate', data as OnlyCatEvent);
+      });
+
+      // Policies and cats change with no push we know of, so the device re-reads them on a clock.
+      // If OnlyCat does announce them under some other name, this is where it shows up first.
+      this.socket.onAny((event: string) => {
+        if (!HANDLED_PUSHES.has(event)) this.log(`gateway: unhandled push "${event}"`);
       });
 
       this.socket.on('eventSummaryUpdate', (payload: any) => {
