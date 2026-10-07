@@ -77,7 +77,6 @@
     }
   },
   "camera": {
-    "last_event": "Laatste gebeurtenis",
     "outside_today": "vandaag buiten",
     "last_clip": "Laatste clip",
     "last_still": "Laatste stilstaand beeld"

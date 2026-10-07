@@ -77,7 +77,6 @@
     }
   },
   "camera": {
-    "last_event": "Letztes Ereignis",
     "outside_today": "heute draußen",
     "last_clip": "Letzter Clip",
     "last_still": "Letztes Standbild"

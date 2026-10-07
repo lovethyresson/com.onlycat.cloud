@@ -515,6 +515,18 @@ describe('i18n', () => {
     }
   });
 
+  // `homey app build` merges compose locales into `locales/` and never removes a key, so one
+  // dropped from the source lives on in what ships. The store review reads `locales/`.
+  it('ships exactly the compose locales', () => {
+    for (const locale of locales) {
+      assert.deepEqual(
+        require(`../locales/${locale}.json`),
+        require(`../.homeycompose/locales/${locale}.json`),
+        `locales/${locale}.json has drifted from its compose source`,
+      );
+    }
+  });
+
   it('has a phrase for every vocabulary entry', () => {
     const en = require('../.homeycompose/locales/en.json');
     for (const kind of SUB_EVENT_KINDS) {
